@@ -16,14 +16,14 @@ describe("Home Page", () => {
     const getStartedLink = screen.getByRole("link", {
       name: /get started free/i,
     });
-    const browseTopicsLink = screen.getByRole("link", {
-      name: /browse topics/i,
+    const signInLink = screen.getByRole("link", {
+      name: /sign in/i,
     });
 
     expect(getStartedLink).toBeInTheDocument();
-    expect(getStartedLink).toHaveAttribute("href", "/signup");
-    expect(browseTopicsLink).toBeInTheDocument();
-    expect(browseTopicsLink).toHaveAttribute("href", "/topics");
+    expect(getStartedLink).toHaveAttribute("href", "/register");
+    expect(signInLink).toBeInTheDocument();
+    expect(signInLink).toHaveAttribute("href", "/login");
   });
 
   it("should render the community stats section", () => {

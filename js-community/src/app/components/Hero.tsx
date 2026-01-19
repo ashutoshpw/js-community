@@ -36,16 +36,16 @@ export default function Hero() {
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <Link
-              href="/signup"
+              href="/register"
               className="rounded-lg bg-black px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-gray-900 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black dark:bg-white dark:text-black dark:hover:bg-gray-200 dark:focus-visible:outline-white"
             >
               Get Started Free
             </Link>
             <Link
-              href="/topics"
+              href="/login"
               className="text-sm font-semibold leading-6 text-gray-900 dark:text-white"
             >
-              Browse Topics <span aria-hidden="true">→</span>
+              Sign In <span aria-hidden="true">→</span>
             </Link>
           </motion.div>
         </div>
