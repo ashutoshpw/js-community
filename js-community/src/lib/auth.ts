@@ -71,12 +71,6 @@ export const auth = betterAuth({
       maxAge: 5 * 60, // 5 minutes
     },
   },
-  advanced: {
-    generateId: () => {
-      // Generate a random ID using crypto
-      return crypto.randomUUID();
-    },
-  },
   baseURL: getBaseUrl(),
   trustedOrigins: [getBaseUrl()],
 });
