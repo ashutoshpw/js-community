@@ -62,14 +62,22 @@ export function buildWhereClause(
         break;
       case "in":
         if (Array.isArray(filter.value) && filter.value.length > 0) {
-          conditions.push(`${filter.field} IN (${placeholder})`);
-          params.push(filter.value);
+          const placeholders = filter.value
+            .map((_, i) => `$${paramIndex + i + 1}`)
+            .join(", ");
+          conditions.push(`${filter.field} IN (${placeholders})`);
+          params.push(...filter.value);
+          paramIndex += filter.value.length - 1; // Adjust for additional placeholders
         }
         break;
       case "nin":
         if (Array.isArray(filter.value) && filter.value.length > 0) {
-          conditions.push(`${filter.field} NOT IN (${placeholder})`);
-          params.push(filter.value);
+          const placeholders = filter.value
+            .map((_, i) => `$${paramIndex + i + 1}`)
+            .join(", ");
+          conditions.push(`${filter.field} NOT IN (${placeholders})`);
+          params.push(...filter.value);
+          paramIndex += filter.value.length - 1; // Adjust for additional placeholders
         }
         break;
     }
