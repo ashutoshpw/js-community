@@ -191,7 +191,9 @@ describe("Community Guidelines Page", () => {
       expect(screen.getByText(/5\.1 enforcement actions/i)).toBeInTheDocument();
       expect(screen.getAllByText(/content removal/i).length).toBeGreaterThan(0);
       expect(screen.getAllByText(/warning/i).length).toBeGreaterThan(0);
-      expect(screen.getAllByText(/temporary suspension/i).length).toBeGreaterThan(0);
+      expect(
+        screen.getAllByText(/temporary suspension/i).length,
+      ).toBeGreaterThan(0);
       expect(screen.getAllByText(/permanent ban/i).length).toBeGreaterThan(0);
     });
 
@@ -200,10 +202,14 @@ describe("Community Guidelines Page", () => {
       expect(
         screen.getByText(/5\.2 violation severity levels/i),
       ).toBeInTheDocument();
-      expect(screen.getAllByText(/minor violations/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/minor violations/i).length).toBeGreaterThan(
+        0,
+      );
       expect(screen.getByText(/moderate violations/i)).toBeInTheDocument();
       expect(screen.getByText(/severe violations/i)).toBeInTheDocument();
-      expect(screen.getAllByText(/critical violations/i).length).toBeGreaterThan(0);
+      expect(
+        screen.getAllByText(/critical violations/i).length,
+      ).toBeGreaterThan(0);
     });
 
     it("should describe notification process", () => {
