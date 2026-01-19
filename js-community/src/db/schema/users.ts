@@ -9,6 +9,7 @@ import { relations } from "drizzle-orm";
 import {
   boolean,
   index,
+  integer,
   pgTable,
   serial,
   text,
@@ -28,7 +29,7 @@ export const users = pgTable(
     email: varchar("email", { length: 255 }).notNull().unique(),
     admin: boolean("admin").default(false).notNull(),
     moderator: boolean("moderator").default(false).notNull(),
-    trustLevel: serial("trust_level").default(0).notNull(),
+    trustLevel: integer("trust_level").default(0).notNull(),
     active: boolean("active").default(true).notNull(),
     approved: boolean("approved").default(false).notNull(),
     suspended: boolean("suspended").default(false).notNull(),
@@ -55,7 +56,7 @@ export const userEmails = pgTable(
   "user_emails",
   {
     id: serial("id").primaryKey(),
-    userId: serial("user_id")
+    userId: integer("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     email: varchar("email", { length: 255 }).notNull().unique(),
@@ -78,7 +79,7 @@ export const userProfiles = pgTable(
   "user_profiles",
   {
     id: serial("id").primaryKey(),
-    userId: serial("user_id")
+    userId: integer("user_id")
       .notNull()
       .unique()
       .references(() => users.id, { onDelete: "cascade" }),
@@ -89,7 +90,7 @@ export const userProfiles = pgTable(
     avatarUrl: varchar("avatar_url", { length: 500 }),
     profileBackgroundUrl: varchar("profile_background_url", { length: 500 }),
     cardBackgroundUrl: varchar("card_background_url", { length: 500 }),
-    views: serial("views").default(0).notNull(),
+    views: integer("views").default(0).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
