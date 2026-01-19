@@ -166,7 +166,7 @@ The database connection is configured in `src/lib/database.ts` with the followin
 - **Idle timeout:** 20 seconds
 - **Connect timeout:** 10 seconds
 
-You can adjust these settings in `src/lib/db.ts` based on your needs.
+You can adjust these settings in `src/lib/database.ts` based on your needs.
 
 ## Best Practices
 
