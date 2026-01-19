@@ -57,8 +57,9 @@ export default function LoginForm() {
     return parsed;
   });
 
-  const isBlocked =
-    rateLimitInfo.blockedUntil && Date.now() < rateLimitInfo.blockedUntil;
+  const isBlocked = Boolean(
+    rateLimitInfo.blockedUntil && Date.now() < rateLimitInfo.blockedUntil,
+  );
   const remainingTime =
     isBlocked && rateLimitInfo.blockedUntil
       ? Math.ceil((rateLimitInfo.blockedUntil - Date.now()) / 1000 / 60)
