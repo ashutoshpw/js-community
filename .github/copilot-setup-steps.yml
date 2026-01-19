@@ -7,6 +7,10 @@ env:
   BUN_INSTALL: $HOME/.bun
 
 steps:
+  - name: Initialize Git Submodules
+    run: |
+      git submodule update --init --recursive
+
   - name: Install Bun
     run: |
       # Install Bun if not already available
