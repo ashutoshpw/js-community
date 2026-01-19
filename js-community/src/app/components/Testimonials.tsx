@@ -70,7 +70,7 @@ export default function Testimonials() {
                     <p>"{testimonial.body}"</p>
                   </blockquote>
                   <figcaption className="mt-6 flex items-center gap-x-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-500 text-xl font-bold text-white">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-black text-xl font-bold text-white dark:bg-white dark:text-black">
                       {testimonial.author.name.charAt(0)}
                     </div>
                     <div>
