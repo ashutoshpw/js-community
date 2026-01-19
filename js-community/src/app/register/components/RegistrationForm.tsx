@@ -6,6 +6,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   validateUsername,
   validateEmail,
@@ -381,9 +382,9 @@ export default function RegistrationForm() {
 
       <p className="text-center text-sm text-gray-600">
         Already have an account?{" "}
-        <a href="/login" className="text-blue-600 hover:text-blue-500">
+        <Link href="/login" className="text-blue-600 hover:text-blue-500">
           Sign in
-        </a>
+        </Link>
       </p>
     </form>
   );

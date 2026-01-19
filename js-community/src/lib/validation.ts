@@ -71,10 +71,11 @@ export function validateEmail(email: string): {
 /**
  * Password validation rules:
  * - 8-128 characters (matching better-auth config)
- * - At least one uppercase letter
- * - At least one lowercase letter
- * - At least one number
- * - At least one special character
+ * - At least three of the following:
+ *   - Uppercase letter
+ *   - Lowercase letter
+ *   - Number
+ *   - Special character
  */
 export function validatePassword(password: string): {
   valid: boolean;
@@ -118,7 +119,7 @@ export function validatePassword(password: string): {
     return {
       valid: false,
       error:
-        "Password must contain at least one uppercase letter, one lowercase letter, and one number",
+        "Password must contain at least 3 of: uppercase, lowercase, number, or special character",
       strength,
     };
   }

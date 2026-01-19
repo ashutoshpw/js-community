@@ -113,19 +113,19 @@ describe("validatePassword", () => {
   it("should reject password without uppercase letter", () => {
     const result = validatePassword("password123");
     expect(result.valid).toBe(false);
-    expect(result.error).toContain("uppercase");
+    expect(result.error).toContain("at least 3 of");
   });
 
   it("should reject password without lowercase letter", () => {
     const result = validatePassword("PASSWORD123");
     expect(result.valid).toBe(false);
-    expect(result.error).toContain("lowercase");
+    expect(result.error).toContain("at least 3 of");
   });
 
   it("should reject password without number", () => {
     const result = validatePassword("Password");
     expect(result.valid).toBe(false);
-    expect(result.error).toContain("number");
+    expect(result.error).toContain("at least 3 of");
   });
 
   it("should calculate password strength correctly", () => {
