@@ -22,6 +22,7 @@ export default defineConfig({
         "**/*.d.ts",
         "**/types/",
         "src/test/",
+        "src/db/schema/",
       ],
       thresholds: {
         lines: 80,
