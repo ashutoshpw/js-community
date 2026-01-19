@@ -1,0 +1,53 @@
+name: File Line Limits
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: file-line-limits-${{ format('{0}-{1}', github.head_ref || github.run_number, github.job) }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Check 500-line limit (js-community)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Get changed files
+        id: changed-files
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            git diff --name-only --diff-filter=ACMR origin/${{ github.base_ref }}...HEAD > changed_files.txt
+          else
+            git diff --name-only --diff-filter=ACMR HEAD~1 HEAD > changed_files.txt
+          fi
+
+          if [ -s changed_files.txt ]; then
+            echo "Files changed in this PR/push:"
+            cat changed_files.txt
+            echo "has_files=true" >> $GITHUB_OUTPUT
+          else
+            echo "No files changed"
+            echo "has_files=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check file line limits
+        if: steps.changed-files.outputs.has_files == 'true'
+        run: |
+          node scripts/check-file-lines.js $(cat changed_files.txt)

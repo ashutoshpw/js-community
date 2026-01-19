@@ -1,0 +1,12 @@
+{
+  "name": "js-discourse-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Monorepo for Discourse and JS Community",
+  "scripts": {
+    "prepare": "lefthook install"
+  },
+  "devDependencies": {
+    "lefthook": "^2.0.13"
+  }
+}

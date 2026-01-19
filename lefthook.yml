@@ -1,0 +1,27 @@
+output:
+  - summary
+  - empty_summary
+  - failure
+  - execution
+  - execution_out
+  - execution_info
+  - skips
+
+glob_matcher: doublestar
+
+pre-commit:
+  parallel: true
+  skip:
+    - merge
+    - rebase
+  commands:
+    file-line-limit:
+      glob:
+        - "js-community/**/*.{js,jsx,ts,tsx,cjs,mjs}"
+      exclude:
+        - "**/node_modules/**"
+        - "**/dist/**"
+        - "**/build/**"
+        - "**/.next/**"
+        - "**/coverage/**"
+      run: node scripts/check-file-lines.js {staged_files}
