@@ -42,4 +42,5 @@ yarn-error.log*
 next-env.d.ts
 
 # drizzle
-drizzle/.meta
+# Keep migration files and journal, ignore snapshots
+drizzle/meta/*_snapshot.json

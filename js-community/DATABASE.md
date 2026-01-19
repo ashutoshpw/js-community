@@ -102,7 +102,7 @@ const result = await client`SELECT * FROM users WHERE id = ${userId}`;
 
 ### Define schemas
 
-Add your table definitions to `src/lib/db/schema.ts`:
+Add your table definitions to `src/db/schema/`:
 
 ```typescript
 import { pgTable, serial, varchar, timestamp } from 'drizzle-orm/pg-core';
@@ -115,39 +115,29 @@ export const users = pgTable('users', {
 });
 ```
 
-### Generate migrations
+### Migrations
 
-When you modify the schema, generate a migration:
+For comprehensive migration documentation, see [docs/MIGRATIONS.md](docs/MIGRATIONS.md).
+
+**Quick Reference:**
 
 ```bash
+# Generate migration from schema changes
 npm run db:generate
-```
 
-This creates SQL migration files in the `drizzle/` directory.
-
-### Apply migrations
-
-Push changes directly to the database (for development):
-
-```bash
-npm run db:push
-```
-
-Or run migrations (for production):
-
-```bash
+# Apply migrations to database
 npm run db:migrate
-```
 
-### Database Studio
-
-Launch Drizzle Studio to browse your database:
-
-```bash
+# Open Drizzle Studio (database GUI)
 npm run db:studio
 ```
 
-This opens a web interface at `https://local.drizzle.studio`
+**Development workflow:**
+
+```bash
+# Push schema directly (development only - no migration files)
+npm run db:push
+```
 
 ## Available Scripts
 
@@ -157,6 +147,9 @@ This opens a web interface at `https://local.drizzle.studio`
 | `npm run db:migrate` | Apply pending migrations to the database |
 | `npm run db:push` | Push schema changes directly (dev only) |
 | `npm run db:studio` | Open Drizzle Studio web interface |
+| `npm run db:check` | Validate migration consistency |
+
+See [docs/MIGRATIONS.md](docs/MIGRATIONS.md) for detailed migration workflows.
 
 ## Connection Configuration
 
