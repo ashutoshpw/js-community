@@ -5,6 +5,27 @@
  * for the application.
  */
 
+// Auth schemas
+export type {
+  Account,
+  NewAccount,
+  NewPasswordResetToken,
+  NewSession,
+  NewVerificationToken,
+  PasswordResetToken,
+  Session,
+  VerificationToken,
+} from "./auth";
+export {
+  accounts,
+  accountsRelations,
+  passwordResetTokens,
+  passwordResetTokensRelations,
+  sessions,
+  sessionsRelations,
+  verificationTokens,
+} from "./auth";
+
 // Category schemas
 export type {
   Category,
