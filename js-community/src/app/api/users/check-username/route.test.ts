@@ -2,9 +2,9 @@
  * Tests for username availability check API
  */
 
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { GET } from "./route";
 import { NextRequest } from "next/server";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { GET } from "./route";
 
 // Mock the database module
 vi.mock("@/lib/database", () => ({

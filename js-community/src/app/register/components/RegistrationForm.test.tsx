@@ -2,7 +2,7 @@
  * Tests for RegistrationForm component
  */
 
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen, userEvent, waitFor } from "@/test/utils";
 import RegistrationForm from "./RegistrationForm";
 
@@ -188,10 +188,7 @@ describe("RegistrationForm", () => {
     await user.type(screen.getByLabelText(/^username$/i), "testuser");
     await user.type(screen.getByLabelText(/^email$/i), "test@example.com");
     await user.type(screen.getByLabelText(/^password$/i), "Password123!");
-    await user.type(
-      screen.getByLabelText(/confirm password/i),
-      "Password123!",
-    );
+    await user.type(screen.getByLabelText(/confirm password/i), "Password123!");
 
     // Wait for username check to complete
     await waitFor(

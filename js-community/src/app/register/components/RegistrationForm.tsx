@@ -4,14 +4,14 @@
  * Registration form component
  */
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
-  validateUsername,
   validateEmail,
-  validatePassword,
   validateName,
+  validatePassword,
+  validateUsername,
 } from "@/lib/validation";
 
 interface FormData {
@@ -362,10 +362,7 @@ export default function RegistrationForm() {
           }
         />
         {errors.confirmPassword && (
-          <p
-            id="confirm-password-error"
-            className="mt-1 text-sm text-red-600"
-          >
+          <p id="confirm-password-error" className="mt-1 text-sm text-red-600">
             {errors.confirmPassword}
           </p>
         )}

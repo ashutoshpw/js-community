@@ -2,9 +2,9 @@
  * Tests for register API route
  */
 
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { POST } from "./route";
 import { NextRequest } from "next/server";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { POST } from "./route";
 
 // Mock the database module
 vi.mock("@/lib/database", () => ({
@@ -137,14 +137,14 @@ describe("POST /api/register", () => {
 
   it("should return 400 when email is already registered", async () => {
     const { db } = await import("@/lib/database");
-    
+
     let callCount = 0;
     const mockSelect = vi.fn().mockImplementation(() => ({
       from: vi.fn().mockReturnValue({
         where: vi.fn().mockReturnValue({
-          limit: vi.fn().mockResolvedValue(
-            callCount++ === 0 ? [] : [{ id: 1 }]
-          ),
+          limit: vi
+            .fn()
+            .mockResolvedValue(callCount++ === 0 ? [] : [{ id: 1 }]),
         }),
       }),
     }));
@@ -268,8 +268,6 @@ describe("POST /api/register", () => {
     const data = await response.json();
 
     expect(response.status).toBe(500);
-    expect(data.error).toBe(
-      "An unexpected error occurred during registration",
-    );
+    expect(data.error).toBe("An unexpected error occurred during registration");
   });
 });

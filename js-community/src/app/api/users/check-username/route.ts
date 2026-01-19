@@ -2,11 +2,11 @@
  * API route to check username availability
  */
 
-import { db } from "@/lib/database";
-import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { validateUsername } from "@/lib/validation";
 import type { NextRequest } from "next/server";
+import { users } from "@/db/schema";
+import { db } from "@/lib/database";
+import { validateUsername } from "@/lib/validation";
 
 export async function GET(request: NextRequest) {
   try {

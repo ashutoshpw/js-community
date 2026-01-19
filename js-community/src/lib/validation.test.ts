@@ -46,15 +46,11 @@ describe("validateUsername", () => {
   it("should reject username ending with hyphen or underscore", () => {
     const result1 = validateUsername("username-");
     expect(result1.valid).toBe(false);
-    expect(result1.error).toBe(
-      "Username cannot end with hyphen or underscore",
-    );
+    expect(result1.error).toBe("Username cannot end with hyphen or underscore");
 
     const result2 = validateUsername("username_");
     expect(result2.valid).toBe(false);
-    expect(result2.error).toBe(
-      "Username cannot end with hyphen or underscore",
-    );
+    expect(result2.error).toBe("Username cannot end with hyphen or underscore");
   });
 
   it("should reject username with invalid characters", () => {

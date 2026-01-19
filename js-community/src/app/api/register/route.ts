@@ -3,16 +3,16 @@
  * Extends better-auth functionality to include username field
  */
 
-import { db } from "@/lib/database";
-import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import {
-  validateUsername,
-  validateEmail,
-  validatePassword,
-  validateName,
-} from "@/lib/validation";
 import type { NextRequest } from "next/server";
+import { users } from "@/db/schema";
+import { db } from "@/lib/database";
+import {
+  validateEmail,
+  validateName,
+  validatePassword,
+  validateUsername,
+} from "@/lib/validation";
 
 export async function POST(request: NextRequest) {
   try {
@@ -101,10 +101,7 @@ export async function POST(request: NextRequest) {
 
     // Update the user with username
     // Better-auth creates a user in the users table, so we need to update it
-    await db
-      .update(users)
-      .set({ username })
-      .where(eq(users.email, email));
+    await db.update(users).set({ username }).where(eq(users.email, email));
 
     return Response.json(
       {
