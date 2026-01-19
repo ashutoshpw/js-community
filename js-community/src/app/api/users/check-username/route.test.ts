@@ -16,6 +16,7 @@ vi.mock("@/lib/database", () => ({
 // Mock drizzle-orm
 vi.mock("drizzle-orm", () => ({
   eq: vi.fn(),
+  sql: vi.fn(),
 }));
 
 // Mock the users schema

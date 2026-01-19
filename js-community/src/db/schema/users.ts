@@ -24,7 +24,7 @@ export const users = pgTable(
   "users",
   {
     id: serial("id").primaryKey(),
-    username: varchar("username", { length: 255 }).notNull().unique(),
+    username: varchar("username", { length: 255 }).unique(),
     name: varchar("name", { length: 255 }),
     email: varchar("email", { length: 255 }).notNull().unique(),
     admin: boolean("admin").default(false).notNull(),

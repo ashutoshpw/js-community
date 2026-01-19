@@ -101,7 +101,7 @@ describe("validatePassword", () => {
   });
 
   it("should reject password longer than 128 characters", () => {
-    const result = validatePassword("A1!" + "a".repeat(126));
+    const result = validatePassword(`A1!${"a".repeat(126)}`);
     expect(result.valid).toBe(false);
     expect(result.error).toBe("Password must be at most 128 characters");
   });

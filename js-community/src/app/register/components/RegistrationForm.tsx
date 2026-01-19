@@ -66,6 +66,18 @@ export default function RegistrationForm() {
         const response = await fetch(
           `/api/users/check-username?username=${encodeURIComponent(formData.username)}`,
         );
+
+        if (!response.ok) {
+          // Handle HTTP errors
+          setUsernameAvailable(null);
+          setErrors((prev) => ({
+            ...prev,
+            username:
+              "Failed to check username availability. Please try again.",
+          }));
+          return;
+        }
+
         const data = await response.json();
         setUsernameAvailable(data.available);
 
@@ -80,6 +92,11 @@ export default function RegistrationForm() {
         }
       } catch (error) {
         console.error("Error checking username:", error);
+        setUsernameAvailable(null);
+        setErrors((prev) => ({
+          ...prev,
+          username: "Failed to check username availability. Please try again.",
+        }));
       } finally {
         setIsCheckingUsername(false);
       }
@@ -116,6 +133,9 @@ export default function RegistrationForm() {
     const usernameValidation = validateUsername(formData.username);
     if (!usernameValidation.valid) {
       newErrors.username = usernameValidation.error;
+    } else if (usernameAvailable === null) {
+      newErrors.username =
+        "Please wait for the username availability check to complete.";
     } else if (usernameAvailable === false) {
       newErrors.username = "Username is already taken";
     }
@@ -133,7 +153,9 @@ export default function RegistrationForm() {
     }
 
     // Validate confirm password
-    if (formData.password !== formData.confirmPassword) {
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = "Please confirm your password";
+    } else if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = "Passwords do not match";
     }
 
@@ -334,7 +356,8 @@ export default function RegistrationForm() {
           </p>
         ) : (
           <p id="password-help" className="mt-1 text-sm text-gray-500">
-            At least 8 characters with uppercase, lowercase, and number
+            At least 8 characters, including 3 of: uppercase, lowercase, number,
+            or special character
           </p>
         )}
       </div>

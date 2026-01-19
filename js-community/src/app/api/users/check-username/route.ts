@@ -2,7 +2,7 @@
  * API route to check username availability
  */
 
-import { eq } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import type { NextRequest } from "next/server";
 import { users } from "@/db/schema";
 import { db } from "@/lib/database";
@@ -29,11 +29,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Check if username exists in database
+    // Check if username exists in database (case-insensitive)
     const existingUser = await db
       .select({ id: users.id })
       .from(users)
-      .where(eq(users.username, username))
+      .where(sql`LOWER(${users.username}) = LOWER(${username})`)
       .limit(1);
 
     const available = existingUser.length === 0;
