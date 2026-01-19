@@ -25,6 +25,16 @@ pre-commit:
         - "**/.next/**"
         - "**/coverage/**"
       run: node scripts/check-file-lines.js {staged_files}
+    js-community-lint:
+      glob:
+        - "js-community/**/*.{js,jsx,ts,tsx,json,css}"
+      exclude:
+        - "**/node_modules/**"
+        - "**/dist/**"
+        - "**/build/**"
+        - "**/.next/**"
+        - "**/coverage/**"
+      run: cd js-community && bun run lint
     js-community-tests:
       glob:
         - "js-community/**/*.{js,jsx,ts,tsx}"

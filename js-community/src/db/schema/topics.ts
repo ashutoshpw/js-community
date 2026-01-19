@@ -31,9 +31,11 @@ export const topics = pgTable(
     userId: integer("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "restrict" }),
-    categoryId: integer("category_id").references((): any => categories.id, {
-      onDelete: "set null",
-    }),
+    categoryId: integer("category_id").references(
+      // biome-ignore lint/suspicious/noExplicitAny: Self-referencing foreign key requires any type
+      (): any => categories.id,
+      { onDelete: "set null" },
+    ),
     views: integer("views").default(0).notNull(),
     postsCount: integer("posts_count").default(0).notNull(),
     replyCount: integer("reply_count").default(0).notNull(),

@@ -38,6 +38,7 @@ export const categories = pgTable(
     postCount: integer("post_count").default(0).notNull(),
     position: integer("position").default(0).notNull(),
     parentCategoryId: integer("parent_category_id").references(
+      // biome-ignore lint/suspicious/noExplicitAny: Self-referencing foreign key requires any type
       (): any => categories.id,
       { onDelete: "set null" },
     ),
