@@ -63,7 +63,7 @@ export function buildWhereClause(
       case "in":
         if (Array.isArray(filter.value) && filter.value.length > 0) {
           const placeholders = filter.value
-            .map((_, i) => `$${paramIndex + i + 1}`)
+            .map((_, i) => `$${paramIndex + i}`)
             .join(", ");
           conditions.push(`${filter.field} IN (${placeholders})`);
           params.push(...filter.value);
@@ -73,7 +73,7 @@ export function buildWhereClause(
       case "nin":
         if (Array.isArray(filter.value) && filter.value.length > 0) {
           const placeholders = filter.value
-            .map((_, i) => `$${paramIndex + i + 1}`)
+            .map((_, i) => `$${paramIndex + i}`)
             .join(", ");
           conditions.push(`${filter.field} NOT IN (${placeholders})`);
           params.push(...filter.value);
