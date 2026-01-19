@@ -62,7 +62,7 @@ The project uses GitHub Actions with **Bun** to run the full test suite on every
 4. **Build** - Verification that the project builds successfully
 
 The workflow automatically:
-- Uses Bun for faster dependency installation (`bun install --frozen-lockfile`)
+- Uses Bun for faster dependency installation (`bun install`)
 - Comments coverage reports on PRs
 - Uploads coverage to Codecov (if configured)
 - Prevents merging if tests fail
