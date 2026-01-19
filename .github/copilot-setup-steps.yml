@@ -1,0 +1,33 @@
+name: Setup JS Community Development Environment
+
+# This workflow pre-installs dependencies before Copilot coding agent starts working
+# It ensures Bun and project dependencies are available for building, testing, and linting
+
+steps:
+  - name: Install Bun
+    run: |
+      # Install Bun if not already available
+      if ! command -v bun &> /dev/null; then
+        curl -fsSL https://bun.sh/install | bash
+        export BUN_INSTALL="$HOME/.bun"
+        export PATH="$BUN_INSTALL/bin:$PATH"
+      fi
+      bun --version
+
+  - name: Install Project Dependencies
+    run: |
+      cd js-community
+      export BUN_INSTALL="$HOME/.bun"
+      export PATH="$BUN_INSTALL/bin:$PATH"
+      bun install
+
+  - name: Verify Installation
+    run: |
+      cd js-community
+      export BUN_INSTALL="$HOME/.bun"
+      export PATH="$BUN_INSTALL/bin:$PATH"
+      echo "Verifying Bun installation..."
+      bun --version
+      echo "Checking project dependencies..."
+      bun run --version || true
+      echo "Setup complete!"
