@@ -151,17 +151,16 @@ export default function RegistrationForm() {
     setErrors({});
 
     try {
-      const response = await fetch("/api/auth/sign-up", {
+      const response = await fetch("/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           name: formData.name,
+          username: formData.username,
           email: formData.email,
           password: formData.password,
-          // Better-auth will create username from name if not provided
-          // We'll need to customize this or add username field to better-auth
         }),
       });
 
