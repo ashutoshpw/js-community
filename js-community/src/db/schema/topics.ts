@@ -15,6 +15,8 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
+import { categories } from "./categories";
+import { topicTags } from "./tags";
 import { users } from "./users";
 
 /**
@@ -29,7 +31,9 @@ export const topics = pgTable(
     userId: integer("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "restrict" }),
-    categoryId: integer("category_id"),
+    categoryId: integer("category_id").references((): any => categories.id, {
+      onDelete: "set null",
+    }),
     views: integer("views").default(0).notNull(),
     postsCount: integer("posts_count").default(0).notNull(),
     replyCount: integer("reply_count").default(0).notNull(),
@@ -112,7 +116,12 @@ export const topicsRelations = relations(topics, ({ one, many }) => ({
     fields: [topics.userId],
     references: [users.id],
   }),
+  category: one(categories, {
+    fields: [topics.categoryId],
+    references: [categories.id],
+  }),
   topicUsers: many(topicUsers),
+  topicTags: many(topicTags),
 }));
 
 export const topicUsersRelations = relations(topicUsers, ({ one }) => ({

@@ -9,8 +9,6 @@
  * 3. You have created a test table (see schema.ts)
  */
 
-import { db } from "@/lib/database";
-
 /**
  * Example 1: Simple query using raw SQL
  */
