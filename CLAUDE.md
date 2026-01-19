@@ -141,6 +141,45 @@ DATABASE_URL=postgres://user:password@localhost:5432/js_community
 - Ensure `bun run build` passes before committing
 - Keep files under 500 lines (checked automatically)
 
+## Testing
+
+### Test Framework
+- **Framework**: Vitest 4.x
+- **React Testing**: @testing-library/react 16.x
+- **Coverage**: 80% threshold for lines, functions, branches, and statements
+
+### Running Tests
+```bash
+bun test              # Run all tests
+bun test:watch        # Watch mode
+bun test:ui           # Vitest UI
+bun test:coverage     # Generate coverage report
+```
+
+### Test File Convention
+- Place tests next to source files: `[filename].test.ts` or `[filename].test.tsx`
+- Import test utilities from `@/test/utils`
+- Use Vitest's `describe`, `it`, `expect` pattern
+
+### GitHub Copilot Test Manager Agent
+
+The repository includes a custom GitHub Copilot agent (`@test-manager`) that automatically creates or updates tests when features are created or modified.
+
+**Usage** (in GitHub Copilot Chat):
+```
+@test-manager create tests for my new component
+@test-manager update tests after my recent changes
+```
+
+**What it does**:
+- Creates comprehensive test coverage for new features
+- Updates existing tests when code changes
+- Follows project conventions (Vitest, RTL, TypeScript)
+- Respects the 500-line file size limit
+- Ensures 80% coverage thresholds
+
+See [`.github/agents/README.md`](.github/agents/README.md) for detailed usage.
+
 ## Migration from Discourse
 
 When migrating features from the Discourse (Ruby) codebase:
