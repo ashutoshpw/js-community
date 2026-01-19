@@ -8,8 +8,8 @@ import {
   type NewTopicUser,
   type Topic,
   type TopicUser,
-  topicUsers,
   topics,
+  topicUsers,
 } from "./topics";
 
 describe("Topics Schema", () => {
