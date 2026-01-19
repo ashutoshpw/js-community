@@ -11,11 +11,11 @@ const stats = [
 
 export default function Stats() {
   return (
-    <section className="bg-black py-24 text-white dark:bg-white dark:text-black sm:py-32">
+    <section className="bg-black py-24 text-white sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <motion.h2
-            className="text-3xl font-bold tracking-tight text-white dark:text-black sm:text-4xl"
+            className="text-3xl font-bold tracking-tight text-white sm:text-4xl"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -24,7 +24,7 @@ export default function Stats() {
             Join a Thriving Community
           </motion.h2>
           <motion.p
-            className="mt-4 text-lg leading-8 text-white/70 dark:text-black/70"
+            className="mt-4 text-lg leading-8 text-white/70"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -38,7 +38,7 @@ export default function Stats() {
           {stats.map((stat, index) => (
             <motion.div
               key={stat.id}
-              className="flex flex-col gap-y-3 rounded-2xl bg-white/10 p-8 backdrop-blur-sm dark:bg-black/10"
+              className="flex flex-col gap-y-3 rounded-2xl bg-white/10 p-8 backdrop-blur-sm"
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
@@ -46,10 +46,8 @@ export default function Stats() {
               whileHover={{ scale: 1.05 }}
             >
               <div className="text-4xl">{stat.icon}</div>
-              <dt className="text-sm leading-6 text-white/70 dark:text-black/70">
-                {stat.name}
-              </dt>
-              <dd className="order-first text-3xl font-semibold tracking-tight text-white dark:text-black">
+              <dt className="text-sm leading-6 text-white/70">{stat.name}</dt>
+              <dd className="order-first text-3xl font-semibold tracking-tight text-white">
                 {stat.value}
               </dd>
             </motion.div>
