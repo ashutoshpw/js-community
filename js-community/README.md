@@ -22,7 +22,7 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 ## Testing
 
-This project uses [Vitest](https://vitest.dev) for testing. See [TESTING.md](./TESTING.md) for detailed testing guidelines and best practices.
+This project uses [Vitest](https://vitest.dev) for testing. See [docs/TESTING.md](./docs/TESTING.md) for detailed testing guidelines and best practices.
 
 ```bash
 # Run tests

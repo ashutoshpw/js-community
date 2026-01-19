@@ -1,8 +1,8 @@
 /**
  * Example: Using Drizzle ORM with PostgreSQL
- * 
+ *
  * This file demonstrates how to use the database connection in your application.
- * 
+ *
  * IMPORTANT: Before running these examples, ensure:
  * 1. PostgreSQL is running
  * 2. DATABASE_URL is set in your .env file
@@ -17,18 +17,18 @@ import { db } from "@/lib/database";
 export async function simpleQuery() {
   // You can use the db instance to run Drizzle queries
   // For now, since we don't have tables defined, here's a basic example:
-  
+
   // Once you define a schema (e.g., a users table), you can do:
   // const users = await db.select().from(usersTable);
   // return users;
-  
+
   console.log("Database instance is ready to use");
   return { status: "ready" };
 }
 
 /**
  * Example 2: Using transactions
- * 
+ *
  * Transactions ensure that multiple operations either all succeed or all fail
  */
 export async function exampleTransaction() {
@@ -38,12 +38,12 @@ export async function exampleTransaction() {
   //     username: 'john_doe',
   //     email: 'john@example.com',
   //   }).returning();
-  //   
+  //
   //   const profile = await tx.insert(profilesTable).values({
   //     userId: user[0].id,
   //     bio: 'Hello world',
   //   }).returning();
-  //   
+  //
   //   return { user, profile };
   // });
 }
@@ -57,7 +57,7 @@ export async function queryWithFilters() {
   //   .select()
   //   .from(usersTable)
   //   .where(eq(usersTable.status, 'active'));
-  // 
+  //
   // return activeUsers;
 }
 
@@ -72,22 +72,22 @@ export async function queryWithJoins() {
   //   })
   //   .from(usersTable)
   //   .leftJoin(profilesTable, eq(usersTable.id, profilesTable.userId));
-  // 
+  //
   // return usersWithProfiles;
 }
 
 /**
  * Next steps:
- * 
+ *
  * 1. Define your schema in src/lib/db/schema.ts
  * 2. Generate migrations: npm run db:generate
  * 3. Apply migrations: npm run db:push (dev) or npm run db:migrate (prod)
  * 4. Import your tables and use them with the db instance
- * 
+ *
  * Example schema:
- * 
+ *
  * import { pgTable, serial, varchar, timestamp } from 'drizzle-orm/pg-core';
- * 
+ *
  * export const users = pgTable('users', {
  *   id: serial('id').primaryKey(),
  *   username: varchar('username', { length: 255 }).notNull().unique(),

@@ -33,6 +33,42 @@ Testing is configured in `vitest.config.ts` with:
 - **Coverage**: v8 provider with 80% thresholds
 - **Path Aliases**: `@/*` resolves to `src/*` (matching tsconfig)
 
+### Pre-commit Hooks
+
+**Tests run automatically before every commit!** This ensures code quality and prevents broken tests from being committed.
+
+The project uses [Lefthook](https://github.com/evilmartians/lefthook) to run tests as a pre-commit hook. When you attempt to commit changes to JavaScript/TypeScript files, the following checks run automatically:
+
+1. File line limit validation
+2. **All tests must pass** ✅
+3. Build verification
+
+If tests fail, the commit will be blocked until you fix the issues. This guarantees that the main branch always has passing tests.
+
+To bypass the hooks in exceptional cases (not recommended):
+```bash
+git commit --no-verify -m "your message"
+```
+
+### Continuous Integration (CI)
+
+**Tests run automatically on every PR to main!** This provides an additional layer of quality assurance.
+
+The project uses GitHub Actions to run the full test suite on every pull request and push to the main branch. The CI workflow includes:
+
+1. **Linting** - Code quality checks with Biome
+2. **Tests** - Full test suite execution
+3. **Coverage** - Code coverage reporting with 80% thresholds
+4. **Build** - Verification that the project builds successfully
+
+The workflow automatically:
+- Comments coverage reports on PRs
+- Uploads coverage to Codecov (if configured)
+- Prevents merging if tests fail
+- Runs in parallel for faster feedback
+
+You can view the test results in the "Actions" tab of the GitHub repository or in the PR checks section.
+
 ## Running Tests
 
 ```bash
