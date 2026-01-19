@@ -21,6 +21,7 @@ js-community/
 │   ├── biome.json              # Biome configuration
 │   ├── next.config.ts          # Next.js configuration
 │   ├── package.json            # Project dependencies
+│   ├── postcss.config.mjs      # PostCSS and TailwindCSS v4 configuration
 │   └── tsconfig.json           # TypeScript configuration
 └── scripts/                    # Build and deployment scripts
 ```

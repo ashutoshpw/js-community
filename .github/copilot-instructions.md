@@ -35,7 +35,7 @@ This is a Next.js 16 project using Bun as the package manager and runtime. The r
   - `biome.json`: Biome linter and formatter configuration
   - `next.config.ts`: Next.js configuration
   - `tsconfig.json`: TypeScript configuration
-  - `tailwind.config.js`: TailwindCSS configuration
+  - `postcss.config.mjs`: PostCSS and TailwindCSS v4 configuration
 - `discourse/`: Legacy Discourse (Ruby) application files
 - `scripts/`: Build and deployment scripts
   - `ignore-build.js`: Vercel build skip logic for draft PRs
