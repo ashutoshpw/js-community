@@ -151,7 +151,7 @@ export async function PATCH(
     }
 
     // Verify user is updating their own profile
-    if (session.user.id !== targetUser.id) {
+    if (Number(session.user.id) !== targetUser.id) {
       return Response.json(
         { error: "You can only update your own profile" },
         { status: 403 },
