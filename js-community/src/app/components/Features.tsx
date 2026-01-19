@@ -47,7 +47,7 @@ export default function Features() {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <motion.h2
-            className="text-base font-semibold leading-7 text-blue-600 dark:text-blue-400"
+            className="text-base font-semibold leading-7 text-black dark:text-white"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}

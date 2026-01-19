@@ -6,37 +6,39 @@ describe("Home Page", () => {
   it("should render the main heading", () => {
     render(<Home />);
     const heading = screen.getByRole("heading", {
-      name: /to get started, edit the page\.tsx file/i,
+      name: /connect, learn, and grow with the javascript community/i,
     });
     expect(heading).toBeInTheDocument();
   });
 
-  it("should render the Next.js logo", () => {
+  it("should render primary call-to-action links", () => {
     render(<Home />);
-    const logo = screen.getByAltText("Next.js logo");
-    expect(logo).toBeInTheDocument();
+    const getStartedLink = screen.getByRole("link", {
+      name: /get started free/i,
+    });
+    const browseTopicsLink = screen.getByRole("link", {
+      name: /browse topics/i,
+    });
+
+    expect(getStartedLink).toBeInTheDocument();
+    expect(getStartedLink).toHaveAttribute("href", "/signup");
+    expect(browseTopicsLink).toBeInTheDocument();
+    expect(browseTopicsLink).toHaveAttribute("href", "/topics");
   });
 
-  it("should render links to Templates and Learning center", () => {
+  it("should render the community stats section", () => {
     render(<Home />);
-    const templatesLink = screen.getByRole("link", { name: /templates/i });
-    const learningLink = screen.getByRole("link", { name: /learning/i });
+    const statsHeading = screen.getByRole("heading", {
+      name: /join a thriving community/i,
+    });
 
-    expect(templatesLink).toBeInTheDocument();
-    expect(learningLink).toBeInTheDocument();
+    expect(statsHeading).toBeInTheDocument();
   });
 
-  it("should render Deploy Now button", () => {
+  it("should render footer legal navigation", () => {
     render(<Home />);
-    const deployButton = screen.getByRole("link", { name: /deploy now/i });
-    expect(deployButton).toBeInTheDocument();
-    expect(deployButton).toHaveAttribute("target", "_blank");
-  });
-
-  it("should render Documentation link", () => {
-    render(<Home />);
-    const docLink = screen.getByRole("link", { name: /documentation/i });
-    expect(docLink).toBeInTheDocument();
-    expect(docLink).toHaveAttribute("target", "_blank");
+    const termsLink = screen.getByRole("link", { name: /terms of service/i });
+    expect(termsLink).toBeInTheDocument();
+    expect(termsLink).toHaveAttribute("href", "/terms");
   });
 });
