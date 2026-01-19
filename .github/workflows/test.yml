@@ -41,7 +41,7 @@ jobs:
         run: bun run lint
 
       - name: Run tests
-        run: bun test
+        run: bun run test
 
       - name: Run tests with coverage
         run: bun run test:coverage
