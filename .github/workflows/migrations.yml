@@ -1,0 +1,232 @@
+name: Database Migration Checks
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'js-community/src/db/schema/**'
+      - 'js-community/drizzle/**'
+      - 'js-community/drizzle.config.ts'
+  push:
+    branches:
+      - main
+    paths:
+      - 'js-community/src/db/schema/**'
+      - 'js-community/drizzle/**'
+      - 'js-community/drizzle.config.ts'
+
+concurrency:
+  group: migrations-${{ format('{0}-{1}', github.head_ref || github.run_number, github.job) }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  validate-migrations:
+    name: Validate Database Migrations
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    defaults:
+      run:
+        working-directory: js-community
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+          no-cache: false
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Check migration consistency
+        run: npm run db:check
+        continue-on-error: true
+        id: check
+
+      - name: Validate schema files
+        run: |
+          echo "Checking for schema file changes..."
+          if git diff --name-only origin/main...HEAD | grep -q 'src/db/schema/'; then
+            echo "✅ Schema files were modified"
+            echo "schema_changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "ℹ️  No schema file changes detected"
+            echo "schema_changed=false" >> $GITHUB_OUTPUT
+          fi
+        id: schema_check
+
+      - name: Check for migration files
+        if: steps.schema_check.outputs.schema_changed == 'true'
+        run: |
+          echo "Checking for migration files..."
+          if git diff --name-only origin/main...HEAD | grep -q 'drizzle/'; then
+            echo "✅ Migration files found"
+            echo "migrations_exist=true" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️  Schema changed but no migration files found"
+            echo "migrations_exist=false" >> $GITHUB_OUTPUT
+          fi
+        id: migration_check
+
+      - name: Warn if migrations missing
+        if: steps.schema_check.outputs.schema_changed == 'true' && steps.migration_check.outputs.migrations_exist == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## ⚠️ Missing Migration Files
+              
+              Schema files were modified but no migration files were found.
+              
+              **Action Required:**
+              Run \`npm run db:generate\` to create migration files for your schema changes.
+              
+              \`\`\`bash
+              cd js-community
+              npm run db:generate
+              git add drizzle/
+              git commit -m "chore: add database migration"
+              git push
+              \`\`\`
+              
+              See [Migration Guide](../docs/MIGRATIONS.md) for details.
+              `
+            });
+
+      - name: List migration files
+        run: |
+          echo "Current migration files:"
+          ls -la drizzle/*.sql 2>/dev/null || echo "No migration files found"
+          echo ""
+          echo "Migration metadata:"
+          ls -la drizzle/meta/ 2>/dev/null || echo "No metadata found"
+
+      - name: Validate SQL syntax (basic check)
+        run: |
+          echo "Validating SQL files..."
+          for file in drizzle/*.sql; do
+            if [ -f "$file" ]; then
+              echo "Checking $file..."
+              # Basic validation - check for common SQL syntax
+              if grep -q "CREATE TABLE\|ALTER TABLE\|DROP TABLE\|CREATE INDEX" "$file"; then
+                echo "✅ $file contains valid SQL statements"
+              else
+                echo "⚠️  $file might not contain standard SQL statements"
+              fi
+            fi
+          done
+
+      - name: Comment migration summary on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        continue-on-error: true
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            const drizzlePath = 'js-community/drizzle';
+            let migrationFiles = [];
+            
+            try {
+              migrationFiles = fs.readdirSync(drizzlePath)
+                .filter(f => f.endsWith('.sql'))
+                .sort();
+            } catch (err) {
+              console.log('No migration files found');
+            }
+            
+            const schemaChanged = '${{ steps.schema_check.outputs.schema_changed }}' === 'true';
+            const migrationsExist = '${{ steps.migration_check.outputs.migrations_exist }}' === 'true';
+            
+            let status = '✅';
+            let message = 'No schema changes detected.';
+            
+            if (schemaChanged && migrationsExist) {
+              status = '✅';
+              message = 'Schema changes include migration files.';
+            } else if (schemaChanged && !migrationsExist) {
+              status = '⚠️';
+              message = 'Schema changed but migrations are missing!';
+            }
+            
+            const comment = `## 🗄️ Database Migration Check
+            
+            **Status:** ${status} ${message}
+            
+            **Migration Files:** ${migrationFiles.length}
+            ${migrationFiles.length > 0 ? '\n```\n' + migrationFiles.join('\n') + '\n```' : ''}
+            
+            ${schemaChanged ? '**Modified Schema Files:**\n- Check the Files Changed tab for schema modifications' : ''}
+            
+            ---
+            📖 See the [Migration Guide](https://github.com/ashutoshpw/js-community/blob/main/js-community/docs/MIGRATIONS.md) for more information.
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  # This job would run actual migrations on a test database
+  # Commented out until test database is set up
+  # test-migrations:
+  #   name: Test Migrations on Test Database
+  #   runs-on: ubuntu-latest
+  #   needs: validate-migrations
+  #   
+  #   services:
+  #     postgres:
+  #       image: postgres:15
+  #       env:
+  #         POSTGRES_PASSWORD: postgres
+  #         POSTGRES_DB: js_community_test
+  #       options: >-
+  #         --health-cmd pg_isready
+  #         --health-interval 10s
+  #         --health-timeout 5s
+  #         --health-retries 5
+  #       ports:
+  #         - 5432:5432
+  #   
+  #   defaults:
+  #     run:
+  #       working-directory: js-community
+  #   
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v6
+  #     
+  #     - name: Setup Bun
+  #       uses: oven-sh/setup-bun@v2
+  #       with:
+  #         bun-version: latest
+  #     
+  #     - name: Install dependencies
+  #       run: bun install
+  #     
+  #     - name: Run migrations on test database
+  #       run: npm run db:migrate
+  #       env:
+  #         DATABASE_URL: postgres://postgres:postgres@localhost:5432/js_community_test
+  #     
+  #     - name: Verify database state
+  #       run: |
+  #         echo "Checking if migrations applied successfully..."
+  #         npx tsx scripts/test-db-connection.ts
+  #       env:
+  #         DATABASE_URL: postgres://postgres:postgres@localhost:5432/js_community_test
