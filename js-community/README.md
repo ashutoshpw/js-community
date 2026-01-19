@@ -38,6 +38,21 @@ npm run test:coverage
 npm run test:ui
 ```
 
+## Database
+
+This project uses [Drizzle ORM](https://orm.drizzle.team) with PostgreSQL. See [DATABASE.md](./DATABASE.md) for database setup and [docs/MIGRATIONS.md](./docs/MIGRATIONS.md) for migration workflows.
+
+```bash
+# Generate migration from schema changes
+npm run db:generate
+
+# Apply migrations to database
+npm run db:migrate
+
+# Open Drizzle Studio (database GUI)
+npm run db:studio
+```
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
