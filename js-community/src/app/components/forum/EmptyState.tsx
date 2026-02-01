@@ -5,10 +5,10 @@
  */
 
 import {
-  MessageSquare,
   FolderOpen,
-  Search,
   type LucideIcon,
+  MessageSquare,
+  Search,
 } from "lucide-react";
 
 interface EmptyStateProps {

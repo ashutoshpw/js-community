@@ -8,15 +8,15 @@
 
 import {
   Bold,
+  Code,
+  Heading1,
+  Heading2,
+  Image,
   Italic,
+  Link as LinkIcon,
   List,
   ListOrdered,
   Quote,
-  Code,
-  Link as LinkIcon,
-  Image,
-  Heading1,
-  Heading2,
 } from "lucide-react";
 
 interface ComposerToolbarProps {
@@ -35,19 +35,73 @@ interface ToolConfig {
 
 const toolGroups: ToolConfig[][] = [
   [
-    { icon: Bold, label: "Bold", prefix: "**", suffix: "**", placeholder: "bold text" },
-    { icon: Italic, label: "Italic", prefix: "_", suffix: "_", placeholder: "italic text" },
-    { icon: Heading1, label: "Heading 1", prefix: "# ", suffix: "", placeholder: "Heading" },
-    { icon: Heading2, label: "Heading 2", prefix: "## ", suffix: "", placeholder: "Heading" },
+    {
+      icon: Bold,
+      label: "Bold",
+      prefix: "**",
+      suffix: "**",
+      placeholder: "bold text",
+    },
+    {
+      icon: Italic,
+      label: "Italic",
+      prefix: "_",
+      suffix: "_",
+      placeholder: "italic text",
+    },
+    {
+      icon: Heading1,
+      label: "Heading 1",
+      prefix: "# ",
+      suffix: "",
+      placeholder: "Heading",
+    },
+    {
+      icon: Heading2,
+      label: "Heading 2",
+      prefix: "## ",
+      suffix: "",
+      placeholder: "Heading",
+    },
   ],
   [
-    { icon: Quote, label: "Quote", prefix: "> ", suffix: "", placeholder: "quote" },
-    { icon: Code, label: "Code", prefix: "`", suffix: "`", placeholder: "code" },
-    { icon: LinkIcon, label: "Link", prefix: "[", suffix: "](url)", placeholder: "link text" },
+    {
+      icon: Quote,
+      label: "Quote",
+      prefix: "> ",
+      suffix: "",
+      placeholder: "quote",
+    },
+    {
+      icon: Code,
+      label: "Code",
+      prefix: "`",
+      suffix: "`",
+      placeholder: "code",
+    },
+    {
+      icon: LinkIcon,
+      label: "Link",
+      prefix: "[",
+      suffix: "](url)",
+      placeholder: "link text",
+    },
   ],
   [
-    { icon: List, label: "Bullet List", prefix: "- ", suffix: "", placeholder: "list item" },
-    { icon: ListOrdered, label: "Numbered List", prefix: "1. ", suffix: "", placeholder: "list item" },
+    {
+      icon: List,
+      label: "Bullet List",
+      prefix: "- ",
+      suffix: "",
+      placeholder: "list item",
+    },
+    {
+      icon: ListOrdered,
+      label: "Numbered List",
+      prefix: "1. ",
+      suffix: "",
+      placeholder: "list item",
+    },
   ],
 ];
 
@@ -69,7 +123,9 @@ export function ComposerToolbar({
               <button
                 key={tool.label}
                 type="button"
-                onClick={() => onInsert(tool.prefix, tool.suffix, tool.placeholder)}
+                onClick={() =>
+                  onInsert(tool.prefix, tool.suffix, tool.placeholder)
+                }
                 disabled={disabled}
                 className="rounded p-1.5 text-gray-600 transition-colors hover:bg-gray-200 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-400 dark:hover:bg-zinc-700 dark:hover:text-white"
                 title={tool.label}

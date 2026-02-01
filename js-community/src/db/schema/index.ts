@@ -25,7 +25,9 @@ export {
   sessionsRelations,
   verificationTokens,
 } from "./auth";
-
+// Bookmark schemas
+export type { Bookmark, NewBookmark } from "./bookmarks";
+export { bookmarks, bookmarksRelations } from "./bookmarks";
 // Category schemas
 export type {
   Category,
@@ -64,6 +66,22 @@ export {
   groupUsers,
   groupUsersRelations,
 } from "./groups";
+// Notification schemas
+export type {
+  NewNotification,
+  NewNotificationPreference,
+  Notification,
+  NotificationData,
+  NotificationPreference,
+  NotificationType,
+} from "./notifications";
+export {
+  NOTIFICATION_TYPES,
+  notificationPreferences,
+  notificationPreferencesRelations,
+  notifications,
+  notificationsRelations,
+} from "./notifications";
 // Permission schemas
 export type {
   Badge,
@@ -110,7 +128,6 @@ export {
   posts,
   postsRelations,
 } from "./posts";
-
 // Tag schemas
 export type {
   CategoryTag,
@@ -153,6 +170,21 @@ export {
   topicUsers,
   topicUsersRelations,
 } from "./topics";
+// User Actions schemas
+export type {
+  NewUserAction,
+  NewUserStat,
+  UserAction,
+  UserActionTypeKey,
+  UserStat,
+} from "./userActions";
+export {
+  USER_ACTION_TYPES,
+  userActions,
+  userActionsRelations,
+  userStats,
+  userStatsRelations,
+} from "./userActions";
 // User schemas
 export type {
   NewUser,

@@ -5,21 +5,24 @@
  * POST: Creates a new topic (requires authentication)
  */
 
-import { type NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/database";
-import * as schema from "@/db/schema";
-import { eq, desc, asc, and, sql, isNull } from "drizzle-orm";
-import { auth } from "@/lib/auth";
+import { and, desc, eq, isNull, sql } from "drizzle-orm";
 import { headers } from "next/headers";
+import { type NextRequest, NextResponse } from "next/server";
+import * as schema from "@/db/schema";
+import { auth } from "@/lib/auth";
+import { db } from "@/lib/database";
 import { parseMarkdownAsync } from "@/lib/markdown";
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const page = Math.max(1, Number.parseInt(searchParams.get("page") || "1"));
+    const page = Math.max(
+      1,
+      Number.parseInt(searchParams.get("page") || "1", 10),
+    );
     const perPage = Math.min(
       50,
-      Math.max(1, Number.parseInt(searchParams.get("per_page") || "20"))
+      Math.max(1, Number.parseInt(searchParams.get("per_page") || "20", 10)),
     );
     const sort = searchParams.get("sort") || "latest";
     const categorySlug = searchParams.get("category");
@@ -56,7 +59,6 @@ export async function GET(request: NextRequest) {
       case "new":
         orderBy = desc(schema.topics.createdAt);
         break;
-      case "latest":
       default:
         orderBy = desc(schema.topics.bumpedAt);
     }
@@ -90,7 +92,7 @@ export async function GET(request: NextRequest) {
       .innerJoin(schema.users, eq(schema.topics.userId, schema.users.id))
       .leftJoin(
         schema.categories,
-        eq(schema.topics.categoryId, schema.categories.id)
+        eq(schema.topics.categoryId, schema.categories.id),
       )
       .where(and(...conditions))
       .orderBy(desc(schema.topics.pinned), orderBy)
@@ -152,7 +154,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching topics:", error);
     return NextResponse.json(
       { error: "Failed to fetch topics" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -169,20 +171,17 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { title, content, categoryId, tags } = body;
+    const { title, content, categoryId, tags: _tags } = body;
 
     // Validate required fields
     if (!title?.trim()) {
-      return NextResponse.json(
-        { error: "Title is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Title is required" }, { status: 400 });
     }
 
     if (!content?.trim()) {
       return NextResponse.json(
         { error: "Content is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -253,7 +252,7 @@ export async function POST(request: NextRequest) {
     console.error("Error creating topic:", error);
     return NextResponse.json(
       { error: "Failed to create topic" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -5,12 +5,12 @@
  * POST: Creates a new reply in the topic
  */
 
-import { type NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/database";
-import * as schema from "@/db/schema";
-import { eq, and, isNull, asc, sql } from "drizzle-orm";
-import { auth } from "@/lib/auth";
+import { and, asc, eq, isNull, sql } from "drizzle-orm";
 import { headers } from "next/headers";
+import { type NextRequest, NextResponse } from "next/server";
+import * as schema from "@/db/schema";
+import { auth } from "@/lib/auth";
+import { db } from "@/lib/database";
 import { parseMarkdownAsync } from "@/lib/markdown";
 
 interface RouteParams {
@@ -20,17 +20,20 @@ interface RouteParams {
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
-    const topicId = Number.parseInt(id);
+    const topicId = Number.parseInt(id, 10);
 
     if (Number.isNaN(topicId)) {
       return NextResponse.json({ error: "Invalid topic ID" }, { status: 400 });
     }
 
     const { searchParams } = new URL(request.url);
-    const page = Math.max(1, Number.parseInt(searchParams.get("page") || "1"));
+    const page = Math.max(
+      1,
+      Number.parseInt(searchParams.get("page") || "1", 10),
+    );
     const perPage = Math.min(
       50,
-      Math.max(1, Number.parseInt(searchParams.get("per_page") || "20"))
+      Math.max(1, Number.parseInt(searchParams.get("per_page") || "20", 10)),
     );
     const offset = (page - 1) * perPage;
 
@@ -42,8 +45,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         and(
           eq(schema.topics.id, topicId),
           eq(schema.topics.visible, true),
-          isNull(schema.topics.deletedAt)
-        )
+          isNull(schema.topics.deletedAt),
+        ),
       )
       .limit(1);
 
@@ -99,17 +102,17 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       .innerJoin(schema.users, eq(schema.posts.userId, schema.users.id))
       .leftJoin(
         schema.userProfiles,
-        eq(schema.users.id, schema.userProfiles.userId)
+        eq(schema.users.id, schema.userProfiles.userId),
       )
       .where(
-        and(eq(schema.posts.topicId, topicId), isNull(schema.posts.deletedAt))
+        and(eq(schema.posts.topicId, topicId), isNull(schema.posts.deletedAt)),
       )
       .orderBy(asc(schema.posts.postNumber))
       .limit(perPage)
       .offset(offset);
 
     // Get user actions (likes, bookmarks) for current user
-    let userActions: Map<number, { liked: boolean; bookmarked: boolean }> =
+    const userActions: Map<number, { liked: boolean; bookmarked: boolean }> =
       new Map();
     if (currentUserId && posts.length > 0) {
       const postIds = posts.map((p) => p.id);
@@ -122,8 +125,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         .where(
           and(
             eq(schema.postActions.userId, currentUserId),
-            isNull(schema.postActions.deletedAt)
-          )
+            isNull(schema.postActions.deletedAt),
+          ),
         );
 
       for (const action of actions) {
@@ -144,7 +147,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       .select({ count: sql<number>`count(*)` })
       .from(schema.posts)
       .where(
-        and(eq(schema.posts.topicId, topicId), isNull(schema.posts.deletedAt))
+        and(eq(schema.posts.topicId, topicId), isNull(schema.posts.deletedAt)),
       );
 
     const total = Number(countResult[0]?.count || 0);
@@ -201,7 +204,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     console.error("Error fetching posts:", error);
     return NextResponse.json(
       { error: "Failed to fetch posts" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -217,7 +220,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     }
 
     const { id } = await params;
-    const topicId = Number.parseInt(id);
+    const topicId = Number.parseInt(id, 10);
 
     if (Number.isNaN(topicId)) {
       return NextResponse.json({ error: "Invalid topic ID" }, { status: 400 });
@@ -235,8 +238,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         and(
           eq(schema.topics.id, topicId),
           eq(schema.topics.visible, true),
-          isNull(schema.topics.deletedAt)
-        )
+          isNull(schema.topics.deletedAt),
+        ),
       )
       .limit(1);
 
@@ -247,7 +250,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     if (topicResult[0].closed) {
       return NextResponse.json(
         { error: "Topic is closed for replies" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -257,7 +260,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     if (!content?.trim()) {
       return NextResponse.json(
         { error: "Content is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -317,8 +320,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         .where(
           and(
             eq(schema.posts.topicId, topicId),
-            eq(schema.posts.postNumber, replyToPostNumber)
-          )
+            eq(schema.posts.postNumber, replyToPostNumber),
+          ),
         );
     }
 
@@ -332,7 +335,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     console.error("Error creating post:", error);
     return NextResponse.json(
       { error: "Failed to create post" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

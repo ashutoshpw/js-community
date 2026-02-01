@@ -19,7 +19,7 @@ async function getTopics(page: number) {
       `${baseUrl}/api/forum/topics?page=${page}&sort=top`,
       {
         cache: "no-store",
-      }
+      },
     );
 
     if (!res.ok) {
@@ -35,7 +35,7 @@ async function getTopics(page: number) {
 
 export default async function TopTopicsPage({ searchParams }: PageProps) {
   const params = await searchParams;
-  const page = Math.max(1, Number.parseInt(params.page || "1"));
+  const page = Math.max(1, Number.parseInt(params.page || "1", 10));
   const data = await getTopics(page);
 
   return (

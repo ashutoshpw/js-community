@@ -4,12 +4,12 @@
  * Main navigation header for the forum.
  */
 
-import Link from "next/link";
 import { MessageSquare, PenSquare } from "lucide-react";
-import { SearchBar } from "./SearchBar";
-import { NotificationBell } from "./NotificationBell";
-import { UserMenu } from "./UserMenu";
+import Link from "next/link";
 import { MobileNav } from "./MobileNav";
+import { NotificationBell } from "./NotificationBell";
+import { SearchBar } from "./SearchBar";
+import { UserMenu } from "./UserMenu";
 
 interface Category {
   id: number;
@@ -63,7 +63,7 @@ export function Header({ categories = [] }: HeaderProps) {
 
           {/* Notifications */}
           <div className="hidden sm:block">
-            <NotificationBell unreadCount={0} />
+            <NotificationBell />
           </div>
 
           {/* User menu (desktop only, mobile has it in drawer) */}

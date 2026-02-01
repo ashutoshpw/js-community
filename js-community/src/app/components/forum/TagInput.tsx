@@ -6,8 +6,8 @@
 
 "use client";
 
-import { useState, useRef, useCallback, type KeyboardEvent } from "react";
 import { X } from "lucide-react";
+import { type KeyboardEvent, useCallback, useRef, useState } from "react";
 
 interface TagInputProps {
   value: string[];
@@ -29,8 +29,11 @@ export function TagInput({
 
   const addTag = useCallback(
     (tag: string) => {
-      const normalizedTag = tag.trim().toLowerCase().replace(/[^a-z0-9-]/g, "-");
-      
+      const normalizedTag = tag
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, "-");
+
       if (
         normalizedTag &&
         !value.includes(normalizedTag) &&
@@ -40,14 +43,14 @@ export function TagInput({
       }
       setInputValue("");
     },
-    [value, onChange, maxTags]
+    [value, onChange, maxTags],
   );
 
   const removeTag = useCallback(
     (tagToRemove: string) => {
       onChange(value.filter((tag) => tag !== tagToRemove));
     },
-    [value, onChange]
+    [value, onChange],
   );
 
   const handleKeyDown = useCallback(
@@ -59,7 +62,7 @@ export function TagInput({
         removeTag(value[value.length - 1]);
       }
     },
-    [inputValue, value, addTag, removeTag]
+    [inputValue, value, addTag, removeTag],
   );
 
   const handleBlur = useCallback(() => {

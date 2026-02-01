@@ -4,8 +4,8 @@
  * Displays a topic with all its posts.
  */
 
+import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
-import { Metadata } from "next";
 import { TopicHeader } from "@/app/components/forum/TopicHeader";
 import { TopicDetailClient } from "./TopicDetailClient";
 
@@ -35,7 +35,7 @@ async function getPosts(topicId: number) {
     `${baseUrl}/api/forum/topics/${topicId}/posts?per_page=20`,
     {
       cache: "no-store",
-    }
+    },
   );
 
   if (!response.ok) {
@@ -49,7 +49,7 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { id } = await params;
-  const topicId = Number.parseInt(id);
+  const topicId = Number.parseInt(id, 10);
 
   if (Number.isNaN(topicId)) {
     return { title: "Topic Not Found" };
@@ -72,7 +72,7 @@ export async function generateMetadata({
 
 export default async function TopicDetailPage({ params }: PageProps) {
   const { id, slug } = await params;
-  const topicId = Number.parseInt(id);
+  const topicId = Number.parseInt(id, 10);
 
   if (Number.isNaN(topicId)) {
     notFound();

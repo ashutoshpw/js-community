@@ -5,8 +5,8 @@
  * Shows avatar, username, badges, and trust level.
  */
 
+import { Crown, Shield, Star } from "lucide-react";
 import Link from "next/link";
-import { Shield, Star, Crown } from "lucide-react";
 import { UserAvatar } from "./UserAvatar";
 
 interface PostAuthorProps {

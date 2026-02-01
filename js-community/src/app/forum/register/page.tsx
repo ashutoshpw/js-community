@@ -6,11 +6,11 @@
 
 "use client";
 
-import { useState } from "react";
+import { AlertCircle, Check, Loader2, Lock, Mail, User } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Mail, Lock, User, Loader2, AlertCircle, Check } from "lucide-react";
-import { signUp, signIn } from "@/lib/auth-client";
+import { useState } from "react";
+import { signIn, signUp } from "@/lib/auth-client";
 
 export default function RegisterPage() {
   const router = useRouter();

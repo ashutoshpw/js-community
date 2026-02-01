@@ -6,9 +6,9 @@
 
 "use client";
 
+import { Clock, Sparkles, TrendingUp } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
-import { Clock, TrendingUp, Sparkles } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 interface SortOption {
   value: string;

@@ -6,18 +6,18 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import {
+  Clock,
+  Folder,
+  Home,
+  Menu,
+  Sparkles,
+  TrendingUp,
+  X,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Menu,
-  X,
-  Home,
-  Folder,
-  TrendingUp,
-  Clock,
-  Sparkles,
-} from "lucide-react";
+import { useEffect, useState } from "react";
 import { UserMenu } from "./UserMenu";
 
 interface NavItem {

@@ -5,12 +5,12 @@
  * DELETE: Remove an action from a post
  */
 
-import { type NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/database";
-import * as schema from "@/db/schema";
-import { eq, and, isNull, sql } from "drizzle-orm";
-import { auth } from "@/lib/auth";
+import { and, eq, isNull, sql } from "drizzle-orm";
 import { headers } from "next/headers";
+import { type NextRequest, NextResponse } from "next/server";
+import * as schema from "@/db/schema";
+import { auth } from "@/lib/auth";
+import { db } from "@/lib/database";
 
 // Action types (following Discourse convention)
 const ACTION_TYPES = {
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     }
 
     const { id } = await params;
-    const postId = Number.parseInt(id);
+    const postId = Number.parseInt(id, 10);
 
     if (Number.isNaN(postId)) {
       return NextResponse.json({ error: "Invalid post ID" }, { status: 400 });
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     if (!action || !ACTION_TYPES[action]) {
       return NextResponse.json(
         { error: "Invalid action type. Must be: bookmark, like, or flag" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -81,20 +81,23 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     if (action === "like" && postResult[0].userId === userId) {
       return NextResponse.json(
         { error: "You cannot like your own post" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Check if action already exists
     const existingAction = await db
-      .select({ id: schema.postActions.id, deletedAt: schema.postActions.deletedAt })
+      .select({
+        id: schema.postActions.id,
+        deletedAt: schema.postActions.deletedAt,
+      })
       .from(schema.postActions)
       .where(
         and(
           eq(schema.postActions.postId, postId),
           eq(schema.postActions.userId, userId),
-          eq(schema.postActions.postActionTypeId, actionTypeId)
-        )
+          eq(schema.postActions.postActionTypeId, actionTypeId),
+        ),
       )
       .limit(1);
 
@@ -159,7 +162,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     console.error("Error performing post action:", error);
     return NextResponse.json(
       { error: "Failed to perform action" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -175,7 +178,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     }
 
     const { id } = await params;
-    const postId = Number.parseInt(id);
+    const postId = Number.parseInt(id, 10);
 
     if (Number.isNaN(postId)) {
       return NextResponse.json({ error: "Invalid post ID" }, { status: 400 });
@@ -187,7 +190,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     if (!action || !ACTION_TYPES[action]) {
       return NextResponse.json(
         { error: "Invalid action type" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -207,7 +210,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     const now = new Date();
 
     // Soft delete the action
-    const result = await db
+    const _result = await db
       .update(schema.postActions)
       .set({
         deletedAt: now,
@@ -219,8 +222,8 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
           eq(schema.postActions.postId, postId),
           eq(schema.postActions.userId, userId),
           eq(schema.postActions.postActionTypeId, actionTypeId),
-          isNull(schema.postActions.deletedAt)
-        )
+          isNull(schema.postActions.deletedAt),
+        ),
       );
 
     // Update like count if removing a like
@@ -242,7 +245,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     console.error("Error removing post action:", error);
     return NextResponse.json(
       { error: "Failed to remove action" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

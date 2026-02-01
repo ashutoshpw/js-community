@@ -4,10 +4,10 @@
  * GET: Returns all categories with topic counts
  */
 
+import { eq, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import { db } from "@/lib/database";
 import * as schema from "@/db/schema";
-import { eq, isNull, sql, desc } from "drizzle-orm";
+import { db } from "@/lib/database";
 
 export async function GET() {
   try {
@@ -23,13 +23,13 @@ export async function GET() {
         position: schema.categories.position,
         parentCategoryId: schema.categories.parentCategoryId,
         topicCount: sql<number>`count(distinct ${schema.topics.id})`.as(
-          "topic_count"
+          "topic_count",
         ),
       })
       .from(schema.categories)
       .leftJoin(
         schema.topics,
-        eq(schema.topics.categoryId, schema.categories.id)
+        eq(schema.topics.categoryId, schema.categories.id),
       )
       .groupBy(schema.categories.id)
       .orderBy(schema.categories.position);
@@ -41,7 +41,7 @@ export async function GET() {
     const result = parentCategories.map((parent) => ({
       ...parent,
       subcategories: childCategories.filter(
-        (child) => child.parentCategoryId === parent.id
+        (child) => child.parentCategoryId === parent.id,
       ),
     }));
 
@@ -53,7 +53,7 @@ export async function GET() {
     console.error("Error fetching categories:", error);
     return NextResponse.json(
       { error: "Failed to fetch categories" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

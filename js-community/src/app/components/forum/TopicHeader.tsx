@@ -4,8 +4,17 @@
  * Displays the topic title, metadata, and action buttons.
  */
 
+import {
+  Archive,
+  Edit,
+  Eye,
+  Heart,
+  Lock,
+  MessageSquare,
+  Pin,
+  Trash2,
+} from "lucide-react";
 import Link from "next/link";
-import { Pin, Lock, Archive, Edit, Trash2, Eye, MessageSquare, Heart } from "lucide-react";
 import { CategoryBadge } from "./CategoryBadge";
 import { formatTopicDate } from "./RelativeTime";
 
@@ -83,7 +92,9 @@ export function TopicHeader({
           {(topic.pinned || topic.pinnedGlobally) && (
             <span
               className="flex items-center gap-1 rounded bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-              title={topic.pinnedGlobally ? "Pinned globally" : "Pinned in category"}
+              title={
+                topic.pinnedGlobally ? "Pinned globally" : "Pinned in category"
+              }
             >
               <Pin className="h-3 w-3" />
               Pinned
@@ -164,11 +175,17 @@ export function TopicHeader({
 
         {/* Stats */}
         <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1" title={`${topic.views} views`}>
+          <span
+            className="flex items-center gap-1"
+            title={`${topic.views} views`}
+          >
             <Eye className="h-4 w-4" />
             {formatNumber(topic.views)}
           </span>
-          <span className="flex items-center gap-1" title={`${topic.replyCount} replies`}>
+          <span
+            className="flex items-center gap-1"
+            title={`${topic.replyCount} replies`}
+          >
             <MessageSquare className="h-4 w-4" />
             {topic.replyCount}
           </span>

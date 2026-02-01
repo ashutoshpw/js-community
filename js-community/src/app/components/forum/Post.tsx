@@ -7,8 +7,8 @@
 "use client";
 
 import { useState } from "react";
-import { PostAuthor } from "./PostAuthor";
 import { PostActions } from "./PostActions";
+import { PostAuthor } from "./PostAuthor";
 
 interface PostProps {
   post: {
@@ -49,7 +49,7 @@ export function Post({
   isFirstPost = false,
   onReply,
 }: PostProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, _setIsExpanded] = useState(true);
 
   const handleReply = () => {
     onReply?.(post.postNumber);

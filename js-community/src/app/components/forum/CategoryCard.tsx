@@ -4,8 +4,8 @@
  * Displays a category with its description and stats.
  */
 
+import { MessageSquare } from "lucide-react";
 import Link from "next/link";
-import { MessageSquare, FileText } from "lucide-react";
 
 interface CategoryCardProps {
   category: {
@@ -75,7 +75,9 @@ export function CategoryCard({ category }: CategoryCardProps) {
                 className="inline-flex items-center gap-1 rounded px-2 py-1 text-xs"
                 style={{
                   backgroundColor: `${sub.color.startsWith("#") ? sub.color : `#${sub.color}`}20`,
-                  color: sub.color.startsWith("#") ? sub.color : `#${sub.color}`,
+                  color: sub.color.startsWith("#")
+                    ? sub.color
+                    : `#${sub.color}`,
                 }}
               >
                 <span

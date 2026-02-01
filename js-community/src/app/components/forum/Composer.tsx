@@ -6,14 +6,14 @@
 
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
-import { X, Eye, Edit3, Send, Loader2 } from "lucide-react";
+import { Edit3, Eye, Loader2, Send, X } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { getDraftKey, useDraft } from "@/app/hooks/useDraft";
+import { CategorySelector } from "./CategorySelector";
+import { ComposerToolbar } from "./ComposerToolbar";
 import { MarkdownEditor } from "./MarkdownEditor";
 import { MarkdownPreview } from "./MarkdownPreview";
-import { ComposerToolbar } from "./ComposerToolbar";
-import { CategorySelector } from "./CategorySelector";
 import { TagInput } from "./TagInput";
-import { useDraft, getDraftKey } from "@/app/hooks/useDraft";
 
 type ComposerMode = "new-topic" | "reply" | "edit";
 
@@ -59,13 +59,15 @@ export function Composer({
     postId,
     categoryId,
   });
-  const { draft, saveDraft, clearDraft, isRestored } = useDraft({ key: draftKey });
+  const { draft, saveDraft, clearDraft, isRestored } = useDraft({
+    key: draftKey,
+  });
 
   // Form state
   const [title, setTitle] = useState(initialTitle);
   const [content, setContent] = useState(initialContent);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
-    initialCategoryId
+    initialCategoryId,
   );
   const [tags, setTags] = useState<string[]>(initialTags);
   const [showPreview, setShowPreview] = useState(false);
@@ -79,7 +81,8 @@ export function Composer({
     if (isRestored && draft) {
       if (draft.title && mode === "new-topic") setTitle(draft.title);
       if (draft.content) setContent(draft.content);
-      if (draft.categoryId !== undefined) setSelectedCategoryId(draft.categoryId);
+      if (draft.categoryId !== undefined)
+        setSelectedCategoryId(draft.categoryId);
       if (draft.tags) setTags(draft.tags);
     }
   }, [isRestored, draft, mode]);
@@ -94,7 +97,16 @@ export function Composer({
       tags,
       replyToPostNumber,
     });
-  }, [title, content, selectedCategoryId, tags, replyToPostNumber, saveDraft, isRestored, mode]);
+  }, [
+    title,
+    content,
+    selectedCategoryId,
+    tags,
+    replyToPostNumber,
+    saveDraft,
+    isRestored,
+    mode,
+  ]);
 
   // Insert text at cursor position
   const handleInsert = useCallback(
@@ -120,7 +132,8 @@ export function Composer({
       requestAnimationFrame(() => {
         if (selectedText) {
           editor.selectionStart = start;
-          editor.selectionEnd = start + prefix.length + textToInsert.length + suffix.length;
+          editor.selectionEnd =
+            start + prefix.length + textToInsert.length + suffix.length;
         } else {
           editor.selectionStart = start + prefix.length;
           editor.selectionEnd = start + prefix.length + textToInsert.length;
@@ -128,7 +141,7 @@ export function Composer({
         editor.focus();
       });
     },
-    [content]
+    [content],
   );
 
   // Handle form submission
@@ -275,10 +288,7 @@ export function Composer({
 
       {/* Toolbar */}
       {!showPreview && (
-        <ComposerToolbar
-          onInsert={handleInsert}
-          disabled={isSubmitting}
-        />
+        <ComposerToolbar onInsert={handleInsert} disabled={isSubmitting} />
       )}
 
       {/* Editor / Preview */}
@@ -312,7 +322,10 @@ export function Composer({
           <button
             type="button"
             onClick={handleSubmit}
-            disabled={isSubmitting || (!content.trim() && (mode !== "new-topic" || !title.trim()))}
+            disabled={
+              isSubmitting ||
+              (!content.trim() && (mode !== "new-topic" || !title.trim()))
+            }
             className="flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isSubmitting ? (
@@ -323,7 +336,11 @@ export function Composer({
             ) : (
               <>
                 <Send className="h-4 w-4" />
-                {mode === "new-topic" ? "Create Topic" : mode === "reply" ? "Post Reply" : "Save Edit"}
+                {mode === "new-topic"
+                  ? "Create Topic"
+                  : mode === "reply"
+                    ? "Post Reply"
+                    : "Save Edit"}
               </>
             )}
           </button>

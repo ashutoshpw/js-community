@@ -4,9 +4,9 @@
  * Container for displaying a list of topics.
  */
 
-import { TopicRow } from "./TopicRow";
 import { NoTopicsFound } from "./EmptyState";
 import { Pagination } from "./Pagination";
+import { TopicRow } from "./TopicRow";
 
 interface Topic {
   id: number;
@@ -48,7 +48,7 @@ export function TopicList({
   topics,
   pagination,
   baseUrl = "/forum/latest",
-  emptyMessage,
+  emptyMessage: _emptyMessage,
 }: TopicListProps) {
   if (topics.length === 0) {
     return <NoTopicsFound />;

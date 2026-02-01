@@ -6,10 +6,10 @@
 
 "use client";
 
-import { useState } from "react";
+import { AlertCircle, Loader2, Lock, Mail } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Mail, Lock, Loader2, AlertCircle } from "lucide-react";
+import { useState } from "react";
 import { signIn } from "@/lib/auth-client";
 
 export default function LoginPage() {

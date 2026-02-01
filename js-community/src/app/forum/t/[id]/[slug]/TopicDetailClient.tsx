@@ -6,13 +6,13 @@
 
 "use client";
 
-import { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { PostStream } from "@/app/components/forum/PostStream";
-import { Composer } from "@/app/components/forum/Composer";
-import { useSession } from "@/lib/auth-client";
-import Link from "next/link";
 import { MessageSquare, Plus } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
+import { Composer } from "@/app/components/forum/Composer";
+import { PostStream } from "@/app/components/forum/PostStream";
+import { useSession } from "@/lib/auth-client";
 
 interface TopicDetailClientProps {
   topic: {

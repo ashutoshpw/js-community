@@ -5,9 +5,9 @@
  */
 
 import { notFound } from "next/navigation";
+import { Breadcrumbs } from "@/app/components/forum/Breadcrumbs";
 import { TopicList } from "@/app/components/forum/TopicList";
 import { TopicListHeader } from "@/app/components/forum/TopicListHeader";
-import { Breadcrumbs } from "@/app/components/forum/Breadcrumbs";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -29,19 +29,22 @@ const categoryMap: Record<
     id: 2,
     name: "JavaScript",
     color: "#F59E0B",
-    description: "Discussions about vanilla JavaScript, ES6+, and core language features.",
+    description:
+      "Discussions about vanilla JavaScript, ES6+, and core language features.",
   },
   typescript: {
     id: 3,
     name: "TypeScript",
     color: "#3178C6",
-    description: "Everything TypeScript - types, interfaces, generics, and more.",
+    description:
+      "Everything TypeScript - types, interfaces, generics, and more.",
   },
   react: {
     id: 4,
     name: "React",
     color: "#61DAFB",
-    description: "React components, hooks, state management, and ecosystem discussions.",
+    description:
+      "React components, hooks, state management, and ecosystem discussions.",
   },
   nextjs: {
     id: 5,
@@ -65,7 +68,8 @@ const categoryMap: Record<
     id: 8,
     name: "Show & Tell",
     color: "#8B5CF6",
-    description: "Share your projects, demos, and creations with the community.",
+    description:
+      "Share your projects, demos, and creations with the community.",
   },
 };
 
@@ -75,7 +79,7 @@ async function getTopics(categorySlug: string, page: number, sort: string) {
   try {
     const res = await fetch(
       `${baseUrl}/api/forum/topics?page=${page}&sort=${sort}&category=${categorySlug}`,
-      { cache: "no-store" }
+      { cache: "no-store" },
     );
 
     if (!res.ok) {
@@ -101,7 +105,7 @@ export default async function CategoryPage({
     notFound();
   }
 
-  const page = Math.max(1, Number.parseInt(pageParam || "1"));
+  const page = Math.max(1, Number.parseInt(pageParam || "1", 10));
   const sort = sortParam || "latest";
   const data = await getTopics(slug, page, sort);
 

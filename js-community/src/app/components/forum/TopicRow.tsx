@@ -4,11 +4,11 @@
  * Displays a single topic in the topic list.
  */
 
+import { Archive, Eye, Heart, Lock, MessageSquare, Pin } from "lucide-react";
 import Link from "next/link";
-import { MessageSquare, Eye, Heart, Pin, Lock, Archive } from "lucide-react";
-import { UserAvatar } from "./UserAvatar";
 import { CategoryBadge } from "./CategoryBadge";
 import { formatTopicDate } from "./RelativeTime";
+import { UserAvatar } from "./UserAvatar";
 
 interface TopicRowProps {
   topic: {

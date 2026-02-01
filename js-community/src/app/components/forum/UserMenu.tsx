@@ -7,18 +7,18 @@
 
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import {
+  Bookmark,
+  ChevronDown,
+  LogOut,
+  MessageSquare,
+  Settings,
+  User,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  User,
-  Settings,
-  LogOut,
-  ChevronDown,
-  Bookmark,
-  MessageSquare,
-} from "lucide-react";
-import { useSession, signOut } from "@/lib/auth-client";
+import { useEffect, useRef, useState } from "react";
+import { signOut, useSession } from "@/lib/auth-client";
 import { UserAvatar } from "./UserAvatar";
 
 export function UserMenu() {

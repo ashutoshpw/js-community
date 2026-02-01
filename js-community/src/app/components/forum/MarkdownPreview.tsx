@@ -6,7 +6,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { parseMarkdownAsync } from "@/lib/markdown";
 
 interface MarkdownPreviewProps {

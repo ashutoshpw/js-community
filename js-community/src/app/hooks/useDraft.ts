@@ -7,7 +7,7 @@
 
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface DraftData {
   title?: string;
@@ -94,7 +94,7 @@ export function useDraft({
         }
       }, debounceMs);
     },
-    [draft, storageKey, debounceMs]
+    [draft, storageKey, debounceMs],
   );
 
   // Clear draft

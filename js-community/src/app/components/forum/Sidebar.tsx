@@ -5,8 +5,8 @@
  * Server component that fetches category data.
  */
 
+import { Clock, Folder, Sparkles, TrendingUp, Users } from "lucide-react";
 import Link from "next/link";
-import { Folder, TrendingUp, Clock, Sparkles, Users } from "lucide-react";
 
 interface Category {
   id: number;

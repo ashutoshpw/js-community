@@ -6,22 +6,22 @@
  * DELETE: Soft deletes a post
  */
 
-import { type NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/database";
-import * as schema from "@/db/schema";
-import { eq, and, isNull } from "drizzle-orm";
-import { auth } from "@/lib/auth";
+import { and, eq, isNull } from "drizzle-orm";
 import { headers } from "next/headers";
+import { type NextRequest, NextResponse } from "next/server";
+import * as schema from "@/db/schema";
+import { auth } from "@/lib/auth";
+import { db } from "@/lib/database";
 import { parseMarkdownAsync } from "@/lib/markdown";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(_request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
-    const postId = Number.parseInt(id);
+    const postId = Number.parseInt(id, 10);
 
     if (Number.isNaN(postId)) {
       return NextResponse.json({ error: "Invalid post ID" }, { status: 400 });
@@ -83,7 +83,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     console.error("Error fetching post:", error);
     return NextResponse.json(
       { error: "Failed to fetch post" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -99,7 +99,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     }
 
     const { id } = await params;
-    const postId = Number.parseInt(id);
+    const postId = Number.parseInt(id, 10);
 
     if (Number.isNaN(postId)) {
       return NextResponse.json({ error: "Invalid post ID" }, { status: 400 });
@@ -111,7 +111,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     if (!content?.trim()) {
       return NextResponse.json(
         { error: "Content is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -195,12 +195,12 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     console.error("Error updating post:", error);
     return NextResponse.json(
       { error: "Failed to update post" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: RouteParams) {
+export async function DELETE(_request: NextRequest, { params }: RouteParams) {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -211,7 +211,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     }
 
     const { id } = await params;
-    const postId = Number.parseInt(id);
+    const postId = Number.parseInt(id, 10);
 
     if (Number.isNaN(postId)) {
       return NextResponse.json({ error: "Invalid post ID" }, { status: 400 });
@@ -257,7 +257,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     if (post.postNumber === 1) {
       return NextResponse.json(
         { error: "Cannot delete the first post. Delete the topic instead." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -276,7 +276,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     console.error("Error deleting post:", error);
     return NextResponse.json(
       { error: "Failed to delete post" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

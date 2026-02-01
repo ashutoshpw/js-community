@@ -7,9 +7,9 @@
 
 "use client";
 
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface BasePaginationProps {
   currentPage: number;
@@ -147,17 +147,14 @@ export function Pagination({
       <div className="flex items-center gap-1">
         {visiblePages.map((page) =>
           typeof page === "string" ? (
-            <span
-              key={page}
-              className="px-2 text-gray-400 dark:text-gray-500"
-            >
+            <span key={page} className="px-2 text-gray-400 dark:text-gray-500">
               ...
             </span>
           ) : (
             <PageItem key={page} page={page} isActive={page === currentPage}>
               {page}
             </PageItem>
-          )
+          ),
         )}
       </div>
 

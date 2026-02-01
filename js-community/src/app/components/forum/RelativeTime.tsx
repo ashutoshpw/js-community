@@ -5,7 +5,7 @@
  * Shows full date on hover.
  */
 
-import { formatDistanceToNow, format } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 
 interface RelativeTimeProps {
   date: Date | string;

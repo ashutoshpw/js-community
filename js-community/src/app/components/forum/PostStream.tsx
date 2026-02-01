@@ -7,10 +7,10 @@
 
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { Post } from "./Post";
+import { useCallback, useEffect, useState } from "react";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { Pagination } from "./Pagination";
+import { Post } from "./Post";
 
 interface PostData {
   id: number;
@@ -72,7 +72,7 @@ export function PostStream({
       totalPages: 1,
       hasNext: false,
       hasPrev: false,
-    }
+    },
   );
   const [isLoading, setIsLoading] = useState(!initialPosts);
   const [error, setError] = useState<string | null>(null);
@@ -84,7 +84,7 @@ export function PostStream({
 
       try {
         const response = await fetch(
-          `/api/forum/topics/${topicId}/posts?page=${page}&per_page=20`
+          `/api/forum/topics/${topicId}/posts?page=${page}&per_page=20`,
         );
 
         if (!response.ok) {
@@ -103,7 +103,7 @@ export function PostStream({
         setIsLoading(false);
       }
     },
-    [topicId]
+    [topicId],
   );
 
   useEffect(() => {

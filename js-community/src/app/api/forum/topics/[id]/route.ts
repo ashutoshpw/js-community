@@ -6,21 +6,21 @@
  * DELETE: Soft deletes a topic
  */
 
-import { type NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/database";
-import * as schema from "@/db/schema";
-import { eq, and, isNull, sql } from "drizzle-orm";
-import { auth } from "@/lib/auth";
+import { and, eq, isNull, sql } from "drizzle-orm";
 import { headers } from "next/headers";
+import { type NextRequest, NextResponse } from "next/server";
+import * as schema from "@/db/schema";
+import { auth } from "@/lib/auth";
+import { db } from "@/lib/database";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(_request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
-    const topicId = Number.parseInt(id);
+    const topicId = Number.parseInt(id, 10);
 
     if (Number.isNaN(topicId)) {
       return NextResponse.json({ error: "Invalid topic ID" }, { status: 400 });
@@ -56,14 +56,14 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       .innerJoin(schema.users, eq(schema.topics.userId, schema.users.id))
       .leftJoin(
         schema.categories,
-        eq(schema.topics.categoryId, schema.categories.id)
+        eq(schema.topics.categoryId, schema.categories.id),
       )
       .where(
         and(
           eq(schema.topics.id, topicId),
           eq(schema.topics.visible, true),
-          isNull(schema.topics.deletedAt)
-        )
+          isNull(schema.topics.deletedAt),
+        ),
       )
       .limit(1);
 
@@ -117,7 +117,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     console.error("Error fetching topic:", error);
     return NextResponse.json(
       { error: "Failed to fetch topic" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -133,7 +133,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     }
 
     const { id } = await params;
-    const topicId = Number.parseInt(id);
+    const topicId = Number.parseInt(id, 10);
 
     if (Number.isNaN(topicId)) {
       return NextResponse.json({ error: "Invalid topic ID" }, { status: 400 });
@@ -203,12 +203,12 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     console.error("Error updating topic:", error);
     return NextResponse.json(
       { error: "Failed to update topic" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: RouteParams) {
+export async function DELETE(_request: NextRequest, { params }: RouteParams) {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -219,7 +219,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     }
 
     const { id } = await params;
-    const topicId = Number.parseInt(id);
+    const topicId = Number.parseInt(id, 10);
 
     if (Number.isNaN(topicId)) {
       return NextResponse.json({ error: "Invalid topic ID" }, { status: 400 });
@@ -270,7 +270,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     console.error("Error deleting topic:", error);
     return NextResponse.json(
       { error: "Failed to delete topic" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

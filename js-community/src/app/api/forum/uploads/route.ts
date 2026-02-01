@@ -4,10 +4,10 @@
  * POST: Upload an image file to Vercel Blob storage
  */
 
-import { type NextRequest, NextResponse } from "next/server";
 import { put } from "@vercel/blob";
-import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { type NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
         {
           error: `Invalid file type. Allowed: ${ALLOWED_TYPES.join(", ")}`,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     if (file.size > MAX_SIZE) {
       return NextResponse.json(
         { error: `File too large. Maximum size: ${MAX_SIZE / 1024 / 1024}MB` },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -74,13 +74,13 @@ export async function POST(request: NextRequest) {
           error:
             "File upload is not configured. Please set up Vercel Blob storage.",
         },
-        { status: 503 }
+        { status: 503 },
       );
     }
 
     return NextResponse.json(
       { error: "Failed to upload file" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
