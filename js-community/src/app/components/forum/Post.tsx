@@ -6,6 +6,7 @@
 
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { PostActions } from "./PostActions";
 import { PostAuthor } from "./PostAuthor";
@@ -77,9 +78,11 @@ export function Post({
         <div className="mb-3 flex items-center gap-2 sm:hidden">
           <div className="h-8 w-8 overflow-hidden rounded-full bg-gray-200 dark:bg-zinc-700">
             {post.author.avatarUrl ? (
-              <img
+              <Image
                 src={post.author.avatarUrl}
                 alt={post.author.username}
+                width={32}
+                height={32}
                 className="h-full w-full object-cover"
               />
             ) : (

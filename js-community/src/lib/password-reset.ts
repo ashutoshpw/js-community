@@ -6,7 +6,7 @@
  */
 
 import { randomBytes } from "node:crypto";
-import { eq, gt } from "drizzle-orm";
+import { eq, lt } from "drizzle-orm";
 import { passwordResetTokens } from "@/db/schema";
 import { db } from "@/lib/database";
 
@@ -92,7 +92,8 @@ export async function markTokenAsUsed(token: string): Promise<void> {
 export async function cleanupExpiredTokens(): Promise<number> {
   const result = await db
     .delete(passwordResetTokens)
-    .where(gt(new Date(), passwordResetTokens.expiresAt));
+    .where(lt(passwordResetTokens.expiresAt, new Date()))
+    .returning({ id: passwordResetTokens.id });
 
-  return result.rowCount || 0;
+  return result.length;
 }

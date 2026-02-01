@@ -244,7 +244,9 @@ describe("cleanupExpiredTokens", () => {
     const { db } = await import("@/lib/database");
 
     const mockDelete = vi.fn().mockReturnValue({
-      where: vi.fn().mockResolvedValue({ rowCount: 5 }),
+      where: vi.fn().mockReturnValue({
+        returning: vi.fn().mockResolvedValue([{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }]),
+      }),
     });
 
     vi.mocked(db.delete).mockImplementation(mockDelete);
@@ -259,7 +261,9 @@ describe("cleanupExpiredTokens", () => {
     const { db } = await import("@/lib/database");
 
     const mockDelete = vi.fn().mockReturnValue({
-      where: vi.fn().mockResolvedValue({ rowCount: 0 }),
+      where: vi.fn().mockReturnValue({
+        returning: vi.fn().mockResolvedValue([]),
+      }),
     });
 
     vi.mocked(db.delete).mockImplementation(mockDelete);
@@ -269,11 +273,13 @@ describe("cleanupExpiredTokens", () => {
     expect(result).toBe(0);
   });
 
-  it("should return 0 when rowCount is null", async () => {
+  it("should return 0 when result is empty array", async () => {
     const { db } = await import("@/lib/database");
 
     const mockDelete = vi.fn().mockReturnValue({
-      where: vi.fn().mockResolvedValue({ rowCount: null }),
+      where: vi.fn().mockReturnValue({
+        returning: vi.fn().mockResolvedValue([]),
+      }),
     });
 
     vi.mocked(db.delete).mockImplementation(mockDelete);

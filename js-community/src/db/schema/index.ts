@@ -66,6 +66,43 @@ export {
   groupUsers,
   groupUsersRelations,
 } from "./groups";
+// Private Messages schemas
+export type {
+  Conversation,
+  ConversationParticipant,
+  NewConversation,
+  NewConversationParticipant,
+  NewPrivateMessage,
+  PrivateMessage,
+} from "./messages";
+export {
+  conversationParticipants,
+  conversationParticipantsRelations,
+  conversations,
+  conversationsRelations,
+  privateMessages,
+  privateMessagesRelations,
+} from "./messages";
+// Moderation schemas
+export type {
+  ModeratorAction,
+  NewModeratorAction,
+  NewReviewable,
+  NewReviewableScore,
+  NewUserWarning,
+  Reviewable,
+  ReviewableScore,
+  UserWarning,
+} from "./moderation";
+export {
+  moderatorActions,
+  moderatorActionsRelations,
+  reviewableScores,
+  reviewableScoresRelations,
+  reviewables,
+  reviewablesRelations,
+  userWarnings,
+} from "./moderation";
 // Notification schemas
 export type {
   NewNotification,
@@ -128,6 +165,8 @@ export {
   posts,
   postsRelations,
 } from "./posts";
+// Site Settings schemas (admin)
+export { adminActions, siteSettings, userBans } from "./site-settings";
 // Tag schemas
 export type {
   CategoryTag,
@@ -200,5 +239,6 @@ export {
   userProfiles,
   userProfilesRelations,
   users,
+  users as user, // Alias for better-auth compatibility
   usersRelations,
 } from "./users";

@@ -33,6 +33,7 @@ export const NOTIFICATION_TYPES = {
   badge_earned: 8,
   topic_linked: 9,
   watching_first_post: 10,
+  trust_level_change: 11,
 } as const;
 
 export type NotificationType = keyof typeof NOTIFICATION_TYPES;
