@@ -121,7 +121,7 @@ if (violations.length > 0) {
   });
   console.error('💡 Large files are harder to understand, test, and maintain.');
   console.error('   Refactoring into smaller files improves code quality.\n');
-  console.error(`Found ${violations.length} file(s) exceeding the 500-line limit.`);
+  console.error(`Found ${violations.length} file(s) exceeding the ${LINE_LIMIT}-line limit.`);
   process.exit(1);
 } else {
   process.exit(0);

@@ -44,8 +44,8 @@ pre-commit:
         - "**/build/**"
         - "**/.next/**"
         - "**/coverage/**"
-      run: cd js-community && npm test
+      run: cd js-community && bun test --run
     js-community-build:
       glob:
         - "js-community/**/*.{js,jsx,ts,tsx,json,css}"
-      run: cd js-community && npm run build
+      run: cd js-community && bun run build
