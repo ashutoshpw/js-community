@@ -35,6 +35,10 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "collections/server": path.resolve(
+        __dirname,
+        "./src/test/mocks/collections-server.ts",
+      ),
     },
   },
 });
