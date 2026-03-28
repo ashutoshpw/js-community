@@ -29,7 +29,10 @@ export async function GET() {
     const startOfYesterday = new Date(startOfToday);
     startOfYesterday.setDate(startOfYesterday.getDate() - 1);
 
-    const calculateTrend = (todayCount: number, yesterdayCount: number): number =>
+    const calculateTrend = (
+      todayCount: number,
+      yesterdayCount: number,
+    ): number =>
       yesterdayCount > 0
         ? Math.round(((todayCount - yesterdayCount) / yesterdayCount) * 100)
         : todayCount > 0
@@ -37,7 +40,9 @@ export async function GET() {
           : 0;
 
     // Get user counts
-    const [totalUsers] = await db.select({ count: count() }).from(schema.users);
+    const [totalUsersResult] = await db
+      .select({ count: count() })
+      .from(schema.users);
 
     const [newUsersToday] = await db
       .select({ count: count() })
@@ -120,7 +125,7 @@ export async function GET() {
 
     return NextResponse.json({
       users: {
-        total: totalUsers.count,
+        total: totalUsersResult.count,
         newToday: newUsersToday.count,
         activeToday: activeUsersToday.count,
         trend: calculateTrend(newUsersToday.count, newUsersYesterday.count),

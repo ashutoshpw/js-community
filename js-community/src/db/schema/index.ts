@@ -25,12 +25,6 @@ export {
   sessionsRelations,
   verificationTokens,
 } from "./auth";
-// Password reset rate limit schemas
-export type {
-  NewPasswordResetRateLimit,
-  PasswordResetRateLimit,
-} from "./rate-limits";
-export { passwordResetRateLimits } from "./rate-limits";
 // Bookmark schemas
 export type { Bookmark, NewBookmark } from "./bookmarks";
 export { bookmarks, bookmarksRelations } from "./bookmarks";
@@ -171,6 +165,12 @@ export {
   posts,
   postsRelations,
 } from "./posts";
+// Password reset rate limit schemas
+export type {
+  NewPasswordResetRateLimit,
+  PasswordResetRateLimit,
+} from "./rate-limits";
+export { passwordResetRateLimits } from "./rate-limits";
 // Site Settings schemas (admin)
 export { adminActions, siteSettings, userBans } from "./site-settings";
 // Tag schemas

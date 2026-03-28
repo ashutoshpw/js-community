@@ -6,8 +6,8 @@
 
 import { headers } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { isRealtimeEnabled } from "@/lib/alpha-features";
+import { auth } from "@/lib/auth";
 import { eventStore, getChannelName } from "@/lib/realtime";
 
 // In-memory typing store (use Redis in production)

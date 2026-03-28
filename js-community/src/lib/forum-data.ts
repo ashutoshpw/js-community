@@ -83,8 +83,12 @@ export async function getForumCategories(): Promise<ForumCategory[]> {
     .groupBy(schema.categories.id)
     .orderBy(asc(schema.categories.position), asc(schema.categories.id));
 
-  const parentCategories = categories.filter((category) => !category.parentCategoryId);
-  const childCategories = categories.filter((category) => category.parentCategoryId);
+  const parentCategories = categories.filter(
+    (category) => !category.parentCategoryId,
+  );
+  const childCategories = categories.filter(
+    (category) => category.parentCategoryId,
+  );
 
   return parentCategories.map((category) => ({
     ...category,
@@ -104,7 +108,9 @@ export async function getForumCategoryBySlug(
       return category;
     }
 
-    const subcategory = category.subcategories.find((item) => item.slug === slug);
+    const subcategory = category.subcategories.find(
+      (item) => item.slug === slug,
+    );
     if (subcategory) {
       return {
         ...subcategory,
@@ -130,7 +136,10 @@ export async function getForumTopics({
   const safePage = Math.max(1, page);
   const safePerPage = Math.min(50, Math.max(1, perPage));
   const offset = (safePage - 1) * safePerPage;
-  const conditions = [eq(schema.topics.visible, true), isNull(schema.topics.deletedAt)];
+  const conditions = [
+    eq(schema.topics.visible, true),
+    isNull(schema.topics.deletedAt),
+  ];
 
   if (categorySlug) {
     const [category] = await db
@@ -189,7 +198,10 @@ export async function getForumTopics({
     })
     .from(schema.topics)
     .innerJoin(schema.users, eq(schema.topics.userId, schema.users.id))
-    .leftJoin(schema.categories, eq(schema.topics.categoryId, schema.categories.id))
+    .leftJoin(
+      schema.categories,
+      eq(schema.topics.categoryId, schema.categories.id),
+    )
     .where(and(...conditions))
     .orderBy(desc(schema.topics.pinned), orderBy)
     .limit(safePerPage)
@@ -221,17 +233,21 @@ export async function getForumTopics({
       bumpedAt: topic.bumpedAt,
       author: {
         id: topic.authorId,
-        username: topic.authorUsername,
+        username: topic.authorUsername || "[deleted]",
         name: topic.authorName,
       },
-      category: topic.categoryId
-        ? {
-            id: topic.categoryId,
-            name: topic.categoryName,
-            slug: topic.categorySlug,
-            color: topic.categoryColor,
-          }
-        : null,
+      category:
+        topic.categoryId &&
+        topic.categoryName &&
+        topic.categorySlug &&
+        topic.categoryColor
+          ? {
+              id: topic.categoryId,
+              name: topic.categoryName,
+              slug: topic.categorySlug,
+              color: topic.categoryColor,
+            }
+          : null,
     })),
     pagination: {
       page: safePage,

@@ -27,6 +27,7 @@ export const passwordResetRateLimits = pgTable(
   }),
 );
 
-export type PasswordResetRateLimit = typeof passwordResetRateLimits.$inferSelect;
+export type PasswordResetRateLimit =
+  typeof passwordResetRateLimits.$inferSelect;
 export type NewPasswordResetRateLimit =
   typeof passwordResetRateLimits.$inferInsert;

@@ -10,6 +10,8 @@ import { TopicList } from "@/app/components/forum/TopicList";
 import { TopicListHeader } from "@/app/components/forum/TopicListHeader";
 import { getForumCategoryBySlug, getForumTopics } from "@/lib/forum-data";
 
+export const dynamic = "force-dynamic";
+
 interface PageProps {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ page?: string; sort?: string }>;
@@ -22,7 +24,14 @@ async function getTopics(categorySlug: string, page: number, sort: string) {
     console.error("Error fetching topics:", error);
     return {
       topics: [],
-      pagination: { page: 1, perPage: 20, total: 0, totalPages: 1, hasNext: false, hasPrev: false },
+      pagination: {
+        page: 1,
+        perPage: 20,
+        total: 0,
+        totalPages: 1,
+        hasNext: false,
+        hasPrev: false,
+      },
     };
   }
 }

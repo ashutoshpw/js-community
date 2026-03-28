@@ -6,8 +6,8 @@
 
 import { headers } from "next/headers";
 import type { NextRequest } from "next/server";
-import { auth } from "@/lib/auth";
 import { isRealtimeEnabled } from "@/lib/alpha-features";
+import { auth } from "@/lib/auth";
 import type { RealtimeEvent } from "@/lib/realtime";
 import { eventStore } from "@/lib/realtime";
 

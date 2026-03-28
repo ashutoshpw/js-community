@@ -7,7 +7,6 @@
 
 import { and, eq, isNull, lt, or } from "drizzle-orm";
 import { passwordResetRateLimits } from "@/db/schema";
-import { db } from "@/lib/database";
 
 interface RateLimitEntry {
   attempts: number;
@@ -19,9 +18,33 @@ const memoryStore = new Map<string, RateLimitEntry>();
 const MAX_ATTEMPTS = 3;
 const WINDOW_MS = 15 * 60 * 1000;
 const BLOCK_DURATION_MS = 60 * 60 * 1000;
+let hasLoggedProductionFallbackWarning = false;
 
 function useMemoryFallback(): boolean {
-  return process.env.NODE_ENV === "test" || !process.env.DATABASE_URL;
+  if (process.env.NODE_ENV === "test") {
+    return true;
+  }
+
+  if (!process.env.DATABASE_URL) {
+    if (
+      process.env.NODE_ENV === "production" &&
+      !hasLoggedProductionFallbackWarning
+    ) {
+      hasLoggedProductionFallbackWarning = true;
+      console.warn(
+        "DATABASE_URL is not configured; password reset rate limiting is using in-memory fallback.",
+      );
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+async function getDatabase() {
+  const { db } = await import("@/lib/database");
+  return db;
 }
 
 function checkMemoryRateLimit(identifier: string): {
@@ -95,6 +118,7 @@ export async function checkRateLimit(identifier: string): Promise<{
     return checkMemoryRateLimit(identifier);
   }
 
+  const db = await getDatabase();
   const [entry] = await db
     .select()
     .from(passwordResetRateLimits)
@@ -150,6 +174,7 @@ export async function recordAttempt(identifier: string): Promise<void> {
     return;
   }
 
+  const db = await getDatabase();
   const [entry] = await db
     .select()
     .from(passwordResetRateLimits)
@@ -196,6 +221,7 @@ export async function clearRateLimit(identifier: string): Promise<void> {
     return;
   }
 
+  const db = await getDatabase();
   await db
     .delete(passwordResetRateLimits)
     .where(eq(passwordResetRateLimits.identifier, identifier));
@@ -221,6 +247,7 @@ export async function cleanupRateLimitStore(): Promise<number> {
 
   const now = new Date();
   const expiredWindow = new Date(now.getTime() - WINDOW_MS);
+  const db = await getDatabase();
 
   const deleted = await db
     .delete(passwordResetRateLimits)

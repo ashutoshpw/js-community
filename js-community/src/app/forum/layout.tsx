@@ -9,6 +9,8 @@ import { Header } from "@/app/components/forum/Header";
 import { Sidebar } from "@/app/components/forum/Sidebar";
 import { getForumCategories } from "@/lib/forum-data";
 
+export const dynamic = "force-dynamic";
+
 export default async function ForumLayout({
   children,
 }: {

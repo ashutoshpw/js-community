@@ -10,6 +10,8 @@ import { TopicHeader } from "@/app/components/forum/TopicHeader";
 import { buildAppUrl } from "@/lib/site-url";
 import { TopicDetailClient } from "./TopicDetailClient";
 
+export const dynamic = "force-dynamic";
+
 interface PageProps {
   params: Promise<{ id: string; slug: string }>;
 }

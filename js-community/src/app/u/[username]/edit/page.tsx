@@ -10,6 +10,8 @@ import { getServerSession } from "@/lib/session";
 import { buildAppUrl } from "@/lib/site-url";
 import ProfileEditForm from "./components/ProfileEditForm";
 
+export const dynamic = "force-dynamic";
+
 type ProfileEditPageProps = {
   params: Promise<{ username: string }>;
 };

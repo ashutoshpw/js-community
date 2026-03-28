@@ -26,7 +26,7 @@ export async function sendPasswordResetEmail({
   if (!isEmailDeliveryConfigured()) {
     if (process.env.NODE_ENV === "production") {
       throw new Error(
-        "Password reset email delivery is not configured. Set RESEND_API_KEY and EMAIL_FROM.",
+        "Password reset email delivery is not configured. Both RESEND_API_KEY and EMAIL_FROM environment variables are required.",
       );
     }
 

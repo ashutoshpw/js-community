@@ -17,15 +17,15 @@ import { validateEmail } from "@/lib/validation";
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { email } = body;
-
     if (process.env.NODE_ENV === "production" && !isEmailDeliveryConfigured()) {
       return NextResponse.json(
         { error: "Password reset is temporarily unavailable." },
         { status: 503 },
       );
     }
+
+    const body = await request.json();
+    const { email } = body;
 
     // Validate email
     const emailValidation = validateEmail(email);

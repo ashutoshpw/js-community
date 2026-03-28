@@ -8,6 +8,8 @@ import { CategoryCard } from "@/app/components/forum/CategoryCard";
 import { NoCategoriesFound } from "@/app/components/forum/EmptyState";
 import { getForumCategories } from "@/lib/forum-data";
 
+export const dynamic = "force-dynamic";
+
 export default async function CategoriesPage() {
   const categories = await getForumCategories();
 

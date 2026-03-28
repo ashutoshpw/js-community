@@ -27,7 +27,8 @@ export async function getAppBaseUrl(): Promise<string> {
 
   try {
     const requestHeaders = await headers();
-    const host = requestHeaders.get("x-forwarded-host") || requestHeaders.get("host");
+    const host =
+      requestHeaders.get("x-forwarded-host") || requestHeaders.get("host");
     const protocol = requestHeaders.get("x-forwarded-proto") || "https";
 
     if (host) {
