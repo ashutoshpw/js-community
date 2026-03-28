@@ -49,15 +49,28 @@ export default function AvatarUpload({
       };
       reader.readAsDataURL(file);
 
-      // In a real implementation, you would upload to a storage service
-      // For now, we'll just simulate an upload
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const formData = new FormData();
+      formData.append("file", file);
 
-      // Simulated avatar URL - in production, this would be the uploaded image URL
-      const mockAvatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`;
-      onAvatarUpdate(mockAvatarUrl);
+      const response = await fetch("/api/forum/uploads", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = (await response.json()) as { error?: string; url?: string };
+
+      if (!response.ok || !data.url) {
+        throw new Error(data.error || "Failed to upload image");
+      }
+
+      setPreviewUrl(data.url);
+      onAvatarUpdate(data.url);
     } catch (err) {
-      setError("Failed to upload image. Please try again.");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to upload image. Please try again.",
+      );
       console.error("Upload error:", err);
     } finally {
       setIsUploading(false);
@@ -104,7 +117,7 @@ export default function AvatarUpload({
             {isUploading ? "Uploading..." : "Change Avatar"}
           </label>
           <p className="mt-2 text-sm text-gray-500">
-            JPG, PNG or GIF. Max size 5MB.
+            JPG, PNG, GIF or WebP. Max size 5MB.
           </p>
           {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
         </div>

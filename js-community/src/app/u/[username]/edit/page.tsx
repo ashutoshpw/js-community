@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getServerSession } from "@/lib/session";
+import { buildAppUrl } from "@/lib/site-url";
 import ProfileEditForm from "./components/ProfileEditForm";
 
 type ProfileEditPageProps = {
@@ -23,8 +24,7 @@ export const metadata: Metadata = {
  */
 async function getUserProfile(username: string) {
   try {
-    const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
-    const response = await fetch(`${baseUrl}/api/users/${username}`, {
+    const response = await fetch(await buildAppUrl(`/api/users/${username}`), {
       cache: "no-store",
     });
 

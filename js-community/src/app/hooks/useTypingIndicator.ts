@@ -28,7 +28,7 @@ interface UseTypingIndicatorReturn {
 
 export function useTypingIndicator({
   topicId,
-  enabled = true,
+  enabled = process.env.NEXT_PUBLIC_ENABLE_REALTIME === "true",
   debounceMs = 2000,
 }: UseTypingIndicatorOptions): UseTypingIndicatorReturn {
   const { data: session } = useSession();

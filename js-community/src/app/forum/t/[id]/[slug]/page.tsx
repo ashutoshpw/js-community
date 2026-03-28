@@ -7,6 +7,7 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { TopicHeader } from "@/app/components/forum/TopicHeader";
+import { buildAppUrl } from "@/lib/site-url";
 import { TopicDetailClient } from "./TopicDetailClient";
 
 interface PageProps {
@@ -14,8 +15,7 @@ interface PageProps {
 }
 
 async function getTopic(id: number) {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-  const response = await fetch(`${baseUrl}/api/forum/topics/${id}`, {
+  const response = await fetch(await buildAppUrl(`/api/forum/topics/${id}`), {
     cache: "no-store",
   });
 
@@ -30,9 +30,8 @@ async function getTopic(id: number) {
 }
 
 async function getPosts(topicId: number) {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
   const response = await fetch(
-    `${baseUrl}/api/forum/topics/${topicId}/posts?per_page=20`,
+    await buildAppUrl(`/api/forum/topics/${topicId}/posts?per_page=20`),
     {
       cache: "no-store",
     },

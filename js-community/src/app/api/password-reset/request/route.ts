@@ -8,7 +8,9 @@
 import { eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import { users } from "@/db/schema";
+import { isEmailDeliveryConfigured } from "@/lib/alpha-features";
 import { db } from "@/lib/database";
+import { sendPasswordResetEmail } from "@/lib/email";
 import { createPasswordResetToken } from "@/lib/password-reset";
 import { checkRateLimit, recordAttempt } from "@/lib/rate-limit";
 import { validateEmail } from "@/lib/validation";
@@ -17,6 +19,13 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { email } = body;
+
+    if (process.env.NODE_ENV === "production" && !isEmailDeliveryConfigured()) {
+      return NextResponse.json(
+        { error: "Password reset is temporarily unavailable." },
+        { status: 503 },
+      );
+    }
 
     // Validate email
     const emailValidation = validateEmail(email);
@@ -34,8 +43,10 @@ export async function POST(request: NextRequest) {
       "unknown";
 
     // Check rate limit (by IP and email)
-    const ipRateLimit = checkRateLimit(`ip:${ip}`);
-    const emailRateLimit = checkRateLimit(`email:${email}`);
+    const [ipRateLimit, emailRateLimit] = await Promise.all([
+      checkRateLimit(`ip:${ip}`),
+      checkRateLimit(`email:${email}`),
+    ]);
 
     if (!ipRateLimit.allowed) {
       return NextResponse.json(
@@ -58,8 +69,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Record the attempt
-    recordAttempt(`ip:${ip}`);
-    recordAttempt(`email:${email}`);
+    await Promise.all([
+      recordAttempt(`ip:${ip}`),
+      recordAttempt(`email:${email}`),
+    ]);
 
     // Find user by email
     const [user] = await db
@@ -82,16 +95,7 @@ export async function POST(request: NextRequest) {
 
     // Generate reset token
     const token = await createPasswordResetToken(user.id);
-
-    // In a real application, send email here
-    // For now, we'll log it (in production, use a proper email service)
-    console.log(`Password reset token for ${email}: ${token}`);
-    console.log(
-      `Reset link: ${process.env.NEXTAUTH_URL || "http://localhost:3000"}/reset-password?token=${token}`,
-    );
-
-    // TODO: Send email with reset link
-    // await sendPasswordResetEmail(email, token);
+    await sendPasswordResetEmail({ email, token });
 
     return NextResponse.json(
       {

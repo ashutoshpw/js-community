@@ -52,6 +52,7 @@ export default function ProfileEditForm({
     location: profile.location || "",
     website: profile.website || "",
     bioRaw: profile.bioRaw || "",
+    avatarUrl: profile.avatarUrl || "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -99,8 +100,10 @@ export default function ProfileEditForm({
   };
 
   const handleAvatarUpdate = (avatarUrl: string) => {
-    // In a real implementation, this would update the avatar URL
-    console.log("Avatar updated:", avatarUrl);
+    setFormData((prev) => ({
+      ...prev,
+      avatarUrl,
+    }));
   };
 
   return (

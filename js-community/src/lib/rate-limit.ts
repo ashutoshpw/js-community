@@ -1,9 +1,13 @@
 /**
- * Rate limiting utilities for password reset requests
+ * Persistent rate limiting utilities for password reset requests.
  *
- * This module provides server-side rate limiting to prevent abuse
- * of the password reset functionality.
+ * Uses PostgreSQL in production/serverless environments and falls back to
+ * in-memory state for tests or local environments without a configured database.
  */
+
+import { and, eq, isNull, lt, or } from "drizzle-orm";
+import { passwordResetRateLimits } from "@/db/schema";
+import { db } from "@/lib/database";
 
 interface RateLimitEntry {
   attempts: number;
@@ -11,36 +15,27 @@ interface RateLimitEntry {
   lastAttempt: number;
 }
 
-/**
- * In-memory rate limit store
- * In production, this should use Redis or a database
- */
-const rateLimitStore = new Map<string, RateLimitEntry>();
+const memoryStore = new Map<string, RateLimitEntry>();
+const MAX_ATTEMPTS = 3;
+const WINDOW_MS = 15 * 60 * 1000;
+const BLOCK_DURATION_MS = 60 * 60 * 1000;
 
-/**
- * Rate limit configuration
- */
-const MAX_ATTEMPTS = 3; // Max attempts per window
-const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
-const BLOCK_DURATION_MS = 60 * 60 * 1000; // 1 hour
+function useMemoryFallback(): boolean {
+  return process.env.NODE_ENV === "test" || !process.env.DATABASE_URL;
+}
 
-/**
- * Check if an identifier (email/IP) is rate limited
- */
-export function checkRateLimit(identifier: string): {
+function checkMemoryRateLimit(identifier: string): {
   allowed: boolean;
   remainingAttempts?: number;
   blockedUntil?: Date;
 } {
-  const entry = rateLimitStore.get(identifier);
+  const entry = memoryStore.get(identifier);
   const now = Date.now();
 
-  // No previous attempts
   if (!entry) {
     return { allowed: true, remainingAttempts: MAX_ATTEMPTS - 1 };
   }
 
-  // Check if currently blocked
   if (entry.blockedUntil && now < entry.blockedUntil) {
     return {
       allowed: false,
@@ -48,16 +43,14 @@ export function checkRateLimit(identifier: string): {
     };
   }
 
-  // Reset if window has passed
   if (now - entry.lastAttempt > WINDOW_MS) {
-    rateLimitStore.delete(identifier);
+    memoryStore.delete(identifier);
     return { allowed: true, remainingAttempts: MAX_ATTEMPTS - 1 };
   }
 
-  // Check if max attempts reached
   if (entry.attempts >= MAX_ATTEMPTS) {
     const blockedUntil = now + BLOCK_DURATION_MS;
-    rateLimitStore.set(identifier, {
+    memoryStore.set(identifier, {
       ...entry,
       blockedUntil,
     });
@@ -73,15 +66,12 @@ export function checkRateLimit(identifier: string): {
   };
 }
 
-/**
- * Record a password reset attempt
- */
-export function recordAttempt(identifier: string): void {
-  const entry = rateLimitStore.get(identifier);
+function recordMemoryAttempt(identifier: string): void {
+  const entry = memoryStore.get(identifier);
   const now = Date.now();
 
   if (!entry || now - entry.lastAttempt > WINDOW_MS) {
-    rateLimitStore.set(identifier, {
+    memoryStore.set(identifier, {
       attempts: 1,
       blockedUntil: null,
       lastAttempt: now,
@@ -89,39 +79,161 @@ export function recordAttempt(identifier: string): void {
     return;
   }
 
-  rateLimitStore.set(identifier, {
+  memoryStore.set(identifier, {
     attempts: entry.attempts + 1,
     blockedUntil: entry.blockedUntil,
     lastAttempt: now,
   });
 }
 
-/**
- * Clear rate limit for an identifier (for testing or admin purposes)
- */
-export function clearRateLimit(identifier: string): void {
-  rateLimitStore.delete(identifier);
-}
-
-/**
- * Clean up old entries periodically
- */
-export function cleanupRateLimitStore(): number {
-  const now = Date.now();
-  let cleaned = 0;
-
-  for (const [key, entry] of rateLimitStore.entries()) {
-    // Remove if not blocked and window has passed
-    if (!entry.blockedUntil && now - entry.lastAttempt > WINDOW_MS) {
-      rateLimitStore.delete(key);
-      cleaned++;
-    }
-    // Remove if block period has passed
-    else if (entry.blockedUntil && now > entry.blockedUntil) {
-      rateLimitStore.delete(key);
-      cleaned++;
-    }
+export async function checkRateLimit(identifier: string): Promise<{
+  allowed: boolean;
+  remainingAttempts?: number;
+  blockedUntil?: Date;
+}> {
+  if (useMemoryFallback()) {
+    return checkMemoryRateLimit(identifier);
   }
 
-  return cleaned;
+  const [entry] = await db
+    .select()
+    .from(passwordResetRateLimits)
+    .where(eq(passwordResetRateLimits.identifier, identifier))
+    .limit(1);
+
+  const now = new Date();
+
+  if (!entry) {
+    return { allowed: true, remainingAttempts: MAX_ATTEMPTS - 1 };
+  }
+
+  if (entry.blockedUntil && now < entry.blockedUntil) {
+    return {
+      allowed: false,
+      blockedUntil: entry.blockedUntil,
+    };
+  }
+
+  if (now.getTime() - entry.lastAttemptAt.getTime() > WINDOW_MS) {
+    await db
+      .delete(passwordResetRateLimits)
+      .where(eq(passwordResetRateLimits.identifier, identifier));
+    return { allowed: true, remainingAttempts: MAX_ATTEMPTS - 1 };
+  }
+
+  if (entry.attempts >= MAX_ATTEMPTS) {
+    const blockedUntil = new Date(now.getTime() + BLOCK_DURATION_MS);
+
+    await db
+      .update(passwordResetRateLimits)
+      .set({
+        blockedUntil,
+        updatedAt: now,
+      })
+      .where(eq(passwordResetRateLimits.identifier, identifier));
+
+    return {
+      allowed: false,
+      blockedUntil,
+    };
+  }
+
+  return {
+    allowed: true,
+    remainingAttempts: MAX_ATTEMPTS - entry.attempts - 1,
+  };
+}
+
+export async function recordAttempt(identifier: string): Promise<void> {
+  if (useMemoryFallback()) {
+    recordMemoryAttempt(identifier);
+    return;
+  }
+
+  const [entry] = await db
+    .select()
+    .from(passwordResetRateLimits)
+    .where(eq(passwordResetRateLimits.identifier, identifier))
+    .limit(1);
+
+  const now = new Date();
+
+  if (!entry || now.getTime() - entry.lastAttemptAt.getTime() > WINDOW_MS) {
+    await db
+      .insert(passwordResetRateLimits)
+      .values({
+        identifier,
+        attempts: 1,
+        blockedUntil: null,
+        lastAttemptAt: now,
+        updatedAt: now,
+      })
+      .onConflictDoUpdate({
+        target: passwordResetRateLimits.identifier,
+        set: {
+          attempts: 1,
+          blockedUntil: null,
+          lastAttemptAt: now,
+          updatedAt: now,
+        },
+      });
+    return;
+  }
+
+  await db
+    .update(passwordResetRateLimits)
+    .set({
+      attempts: entry.attempts + 1,
+      lastAttemptAt: now,
+      updatedAt: now,
+    })
+    .where(eq(passwordResetRateLimits.identifier, identifier));
+}
+
+export async function clearRateLimit(identifier: string): Promise<void> {
+  if (useMemoryFallback()) {
+    memoryStore.delete(identifier);
+    return;
+  }
+
+  await db
+    .delete(passwordResetRateLimits)
+    .where(eq(passwordResetRateLimits.identifier, identifier));
+}
+
+export async function cleanupRateLimitStore(): Promise<number> {
+  if (useMemoryFallback()) {
+    const now = Date.now();
+    let cleaned = 0;
+
+    for (const [key, entry] of memoryStore.entries()) {
+      if (!entry.blockedUntil && now - entry.lastAttempt > WINDOW_MS) {
+        memoryStore.delete(key);
+        cleaned++;
+      } else if (entry.blockedUntil && now > entry.blockedUntil) {
+        memoryStore.delete(key);
+        cleaned++;
+      }
+    }
+
+    return cleaned;
+  }
+
+  const now = new Date();
+  const expiredWindow = new Date(now.getTime() - WINDOW_MS);
+
+  const deleted = await db
+    .delete(passwordResetRateLimits)
+    .where(
+      or(
+        and(
+          isNull(passwordResetRateLimits.blockedUntil),
+          lt(passwordResetRateLimits.lastAttemptAt, expiredWindow),
+        ),
+        lt(passwordResetRateLimits.blockedUntil, now),
+      ),
+    )
+    .returning({ id: passwordResetRateLimits.id });
+
+  return deleted.length;
 }
