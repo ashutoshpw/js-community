@@ -8,6 +8,7 @@
 
 import { useEffect, useState } from "react";
 import { parseMarkdownAsync } from "@/lib/markdown";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 interface MarkdownPreviewProps {
   content: string;
@@ -87,8 +88,8 @@ export function MarkdownPreview({
     >
       <div
         className="prose prose-sm max-w-none dark:prose-invert prose-headings:font-semibold prose-a:text-blue-600 prose-code:rounded prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:before:content-none prose-code:after:content-none dark:prose-a:text-blue-400 dark:prose-code:bg-zinc-700"
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: Content is sanitized by marked
-        dangerouslySetInnerHTML={{ __html: html }}
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: Content is sanitized with DOMPurify
+        dangerouslySetInnerHTML={{ __html: sanitizeHtml(html) }}
       />
     </div>
   );

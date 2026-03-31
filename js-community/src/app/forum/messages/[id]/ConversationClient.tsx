@@ -11,6 +11,7 @@ import { LoadingSpinner } from "@/app/components/forum/LoadingSpinner";
 import { RelativeTime } from "@/app/components/forum/RelativeTime";
 import { useRealtime } from "@/app/hooks/useRealtime";
 import { useSession } from "@/lib/auth-client";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 interface Participant {
   userId: number;
@@ -219,8 +220,10 @@ export function ConversationClient({
                 )}
                 <div
                   className="prose prose-sm max-w-none dark:prose-invert"
-                  // biome-ignore lint/security/noDangerouslySetInnerHtml: Content is sanitized markdown from server
-                  dangerouslySetInnerHTML={{ __html: msg.content }}
+                  // biome-ignore lint/security/noDangerouslySetInnerHtml: Content is sanitized with DOMPurify
+                  dangerouslySetInnerHTML={{
+                    __html: sanitizeHtml(msg.content),
+                  }}
                 />
                 <p
                   className={`mt-1 text-right text-xs ${

@@ -5,6 +5,7 @@
 
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { sanitizeHtml } from "@/lib/sanitize";
 import ProfileBadges from "./components/ProfileBadges";
 import ProfileHeader from "./components/ProfileHeader";
 import ProfileStats from "./components/ProfileStats";
@@ -82,8 +83,10 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                 </h3>
                 <div
                   className="text-gray-700 prose max-w-none"
-                  // biome-ignore lint/security/noDangerouslySetInnerHtml: Profile bio is sanitized server-side
-                  dangerouslySetInnerHTML={{ __html: profile.bioCooked }}
+                  // biome-ignore lint/security/noDangerouslySetInnerHtml: Content is sanitized with DOMPurify
+                  dangerouslySetInnerHTML={{
+                    __html: sanitizeHtml(profile.bioCooked),
+                  }}
                 />
               </div>
             )}
