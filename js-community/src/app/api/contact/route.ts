@@ -1,11 +1,10 @@
 /**
  * Contact form API route
- * Validates submitted contact form data and simulates email notification.
- * TODO: Integrate a real email service (e.g., Resend, SendGrid) to deliver
- *       notifications to the appropriate department inbox.
+ * Validates submitted contact form data and sends email notification.
  */
 
 import type { NextRequest } from "next/server";
+import { sendContactFormEmail } from "@/lib/email";
 import { validateEmail, validateName } from "@/lib/validation";
 
 const VALID_CATEGORIES = ["support", "sales", "feedback"] as const;
@@ -80,14 +79,22 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // TODO: Send email notification to the relevant department.
-  // Example using Resend:
-  //   await resend.emails.send({
-  //     from: 'noreply@jscommunity.example.com',
-  //     to: DEPARTMENT_EMAILS[category],
-  //     subject: `[${category}] ${subject}`,
-  //     text: `From: ${name} <${email}>\n\n${message}`,
-  //   });
+  // Send email notification to the relevant department
+  try {
+    await sendContactFormEmail({
+      name: (name as string).trim(),
+      email: (email as string).trim(),
+      category,
+      subject: subject.trim(),
+      message: message.trim(),
+    });
+  } catch (error) {
+    console.error("Failed to send contact form email:", error);
+    return Response.json(
+      { error: "Failed to send message. Please try again later." },
+      { status: 500 },
+    );
+  }
 
   return Response.json({ ok: true }, { status: 200 });
 }
