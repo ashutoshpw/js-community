@@ -232,7 +232,7 @@ export default function RegistrationForm() {
           onChange={handleInputChange}
           className={`mt-1 block w-full rounded-md border ${
             errors.name ? "border-red-300" : "border-gray-300"
-          } px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500`}
+          } bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500`}
           aria-invalid={errors.name ? "true" : "false"}
           aria-describedby={errors.name ? "name-error" : undefined}
         />
@@ -260,7 +260,7 @@ export default function RegistrationForm() {
             onChange={handleInputChange}
             className={`mt-1 block w-full rounded-md border ${
               errors.username ? "border-red-300" : "border-gray-300"
-            } px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500`}
+            } bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500`}
             aria-invalid={errors.username ? "true" : "false"}
             aria-describedby={
               errors.username ? "username-error" : "username-help"
@@ -317,7 +317,7 @@ export default function RegistrationForm() {
           onChange={handleInputChange}
           className={`mt-1 block w-full rounded-md border ${
             errors.email ? "border-red-300" : "border-gray-300"
-          } px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500`}
+          } bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500`}
           aria-invalid={errors.email ? "true" : "false"}
           aria-describedby={errors.email ? "email-error" : undefined}
         />
@@ -344,7 +344,7 @@ export default function RegistrationForm() {
           onChange={handleInputChange}
           className={`mt-1 block w-full rounded-md border ${
             errors.password ? "border-red-300" : "border-gray-300"
-          } px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500`}
+          } bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500`}
           aria-invalid={errors.password ? "true" : "false"}
           aria-describedby={
             errors.password ? "password-error" : "password-help"
@@ -378,7 +378,7 @@ export default function RegistrationForm() {
           onChange={handleInputChange}
           className={`mt-1 block w-full rounded-md border ${
             errors.confirmPassword ? "border-red-300" : "border-gray-300"
-          } px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500`}
+          } bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500`}
           aria-invalid={errors.confirmPassword ? "true" : "false"}
           aria-describedby={
             errors.confirmPassword ? "confirm-password-error" : undefined

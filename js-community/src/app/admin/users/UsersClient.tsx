@@ -114,7 +114,7 @@ export function UsersClient() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search users by name or email..."
-            className="w-full rounded-lg border border-gray-200 py-2 pl-10 pr-4 dark:border-zinc-700 dark:bg-zinc-800"
+            className="w-full rounded-lg border border-gray-200 bg-white py-2 pl-10 pr-4 text-gray-900 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
           />
         </div>
         <button

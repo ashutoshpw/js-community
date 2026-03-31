@@ -106,7 +106,7 @@ export function SettingsClient() {
   function renderSettingInput(setting: Setting) {
     const value = getSettingValue(setting);
     const baseClasses =
-      "w-full rounded-lg border border-gray-200 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-800";
+      "w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-900 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white";
 
     switch (setting.dataType) {
       case "boolean":

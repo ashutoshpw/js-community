@@ -198,7 +198,7 @@ export function BookmarksClient({ username: _username }: BookmarksClientProps) {
                           value={editName}
                           onChange={(e) => setEditName(e.target.value)}
                           placeholder="Add a note..."
-                          className="flex-1 rounded border border-gray-300 px-2 py-1 text-sm dark:border-zinc-600 dark:bg-zinc-700"
+                          className="flex-1 rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white"
                         />
                         <button
                           type="button"
