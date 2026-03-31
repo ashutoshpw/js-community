@@ -5,6 +5,7 @@
 
 import type { NextRequest } from "next/server";
 import { sendContactFormEmail } from "@/lib/email";
+import { logger } from "@/lib/logger";
 import { validateEmail, validateName } from "@/lib/validation";
 
 const VALID_CATEGORIES = ["support", "sales", "feedback"] as const;
@@ -89,7 +90,10 @@ export async function POST(request: NextRequest) {
       message: message.trim(),
     });
   } catch (error) {
-    console.error("Failed to send contact form email:", error);
+    logger.exception("Failed to send contact form email", error, {
+      category,
+      subject: subject.trim(),
+    });
     return Response.json(
       { error: "Failed to send message. Please try again later." },
       { status: 500 },

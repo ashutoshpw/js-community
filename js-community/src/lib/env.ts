@@ -5,6 +5,8 @@
  * if critical configuration is missing rather than failing at runtime.
  */
 
+import { logger } from "@/lib/logger";
+
 type EnvVarConfig = {
   name: string;
   required: boolean | "production";
@@ -83,7 +85,7 @@ export function assertEnv(): void {
 
   // Log warnings
   for (const warning of result.warnings) {
-    console.warn(`[env] WARNING: ${warning}`);
+    logger.warn(warning, { component: "env" });
   }
 
   // Throw on errors
@@ -93,8 +95,15 @@ export function assertEnv(): void {
       ...result.errors.map((e) => `  - ${e}`),
     ].join("\n");
 
+    logger.error("Environment validation failed", {
+      component: "env",
+      errors: result.errors,
+    });
+
     throw new Error(errorMessage);
   }
+
+  logger.info("Environment validation passed", { component: "env" });
 }
 
 /**
