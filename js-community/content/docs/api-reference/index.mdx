@@ -1,0 +1,21 @@
+---
+title: API Reference
+description: Review the primary HTTP endpoints that back authentication, account recovery, and forum features.
+---
+
+# API Reference
+
+The platform exposes route handlers under `src/app/api`.
+
+## Example endpoint
+
+```http
+POST /api/register
+Content-Type: application/json
+
+{
+  "username": "new-user",
+  "email": "new-user@example.com",
+  "password": "strong-password"
+}
+```
