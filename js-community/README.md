@@ -1,17 +1,12 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+JS Community is a Next.js 16 forum platform that is replacing the legacy Discourse app in this repository.
 
 ## Getting Started
 
-First, run the development server:
+First, install dependencies and run the development server:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -53,6 +48,13 @@ npm run db:migrate
 npm run db:studio
 ```
 
+## Documentation
+
+- [Testing guide](./docs/TESTING.md)
+- [Authentication guide](./docs/AUTH.md)
+- [Migration guide](./docs/MIGRATIONS.md)
+- [Deployment guide](./docs/DEPLOYMENT.md)
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
@@ -64,6 +66,14 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This project is intended to deploy on Vercel with PostgreSQL, Vercel Blob, and Resend.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Before deploying:
+
+1. Create and migrate a PostgreSQL database.
+2. Configure the environment variables listed in [`.env.example`](./.env.example).
+3. Add a Vercel Blob store for uploads.
+4. Add a Resend API key and verified sender for password reset emails.
+5. Keep `NEXT_PUBLIC_ENABLE_REALTIME=false` for the alpha deployment.
+
+See [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md) for the full checklist.

@@ -30,7 +30,7 @@ export function useRealtime({
   onConnect,
   onDisconnect,
   onError,
-  enabled = true,
+  enabled = process.env.NEXT_PUBLIC_ENABLE_REALTIME === "true",
   reconnectDelay = 3000,
   maxReconnectAttempts = 5,
 }: UseRealtimeOptions): UseRealtimeReturn {

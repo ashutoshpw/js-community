@@ -6,6 +6,7 @@
 
 import { headers } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
+import { isRealtimeEnabled } from "@/lib/alpha-features";
 import { auth } from "@/lib/auth";
 import { eventStore, getChannelName } from "@/lib/realtime";
 
@@ -18,6 +19,13 @@ const TYPING_TIMEOUT = 5000; // 5 seconds
 
 export async function POST(request: NextRequest) {
   try {
+    if (!isRealtimeEnabled()) {
+      return NextResponse.json({
+        success: true,
+        typingUsers: [],
+      });
+    }
+
     const session = await auth.api.getSession({
       headers: await headers(),
     });

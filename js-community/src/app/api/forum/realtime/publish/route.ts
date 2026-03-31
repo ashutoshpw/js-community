@@ -6,12 +6,20 @@
 
 import { headers } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
+import { isRealtimeEnabled } from "@/lib/alpha-features";
 import { auth } from "@/lib/auth";
 import type { RealtimeEventType } from "@/lib/realtime";
 import { eventStore } from "@/lib/realtime";
 
 export async function POST(request: NextRequest) {
   try {
+    if (!isRealtimeEnabled()) {
+      return NextResponse.json(
+        { error: "Realtime is disabled for this deployment" },
+        { status: 503 },
+      );
+    }
+
     const session = await auth.api.getSession({
       headers: await headers(),
     });

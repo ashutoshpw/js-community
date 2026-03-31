@@ -26,6 +26,7 @@ vi.mock("drizzle-orm", () => ({
   eq: vi.fn(),
   and: vi.fn(),
   gt: vi.fn(),
+  lt: vi.fn(),
 }));
 
 // Mock the schema
@@ -245,7 +246,15 @@ describe("cleanupExpiredTokens", () => {
 
     const mockDelete = vi.fn().mockReturnValue({
       where: vi.fn().mockReturnValue({
-        returning: vi.fn().mockResolvedValue([{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }]),
+        returning: vi
+          .fn()
+          .mockResolvedValue([
+            { id: 1 },
+            { id: 2 },
+            { id: 3 },
+            { id: 4 },
+            { id: 5 },
+          ]),
       }),
     });
 
