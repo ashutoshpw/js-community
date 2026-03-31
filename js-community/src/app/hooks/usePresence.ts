@@ -28,7 +28,7 @@ interface UsePresenceReturn {
 
 export function usePresence({
   channel,
-  enabled = true,
+  enabled = process.env.NEXT_PUBLIC_ENABLE_REALTIME === "true",
   heartbeatInterval = 30000,
 }: UsePresenceOptions): UsePresenceReturn {
   const { data: session } = useSession();

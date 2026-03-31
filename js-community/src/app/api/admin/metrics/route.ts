@@ -4,7 +4,7 @@
  * GET: Get dashboard metrics
  */
 
-import { count, eq, gte, sql } from "drizzle-orm";
+import { and, count, desc, eq, gte, ne, sql } from "drizzle-orm";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import * as schema from "@/db/schema";
@@ -29,13 +29,30 @@ export async function GET() {
     const startOfYesterday = new Date(startOfToday);
     startOfYesterday.setDate(startOfYesterday.getDate() - 1);
 
+    const calculateTrend = (
+      todayCount: number,
+      yesterdayCount: number,
+    ): number =>
+      yesterdayCount > 0
+        ? Math.round(((todayCount - yesterdayCount) / yesterdayCount) * 100)
+        : todayCount > 0
+          ? 100
+          : 0;
+
     // Get user counts
-    const [totalUsers] = await db.select({ count: count() }).from(schema.user);
+    const [totalUsersResult] = await db
+      .select({ count: count() })
+      .from(schema.users);
 
     const [newUsersToday] = await db
       .select({ count: count() })
-      .from(schema.user)
-      .where(gte(schema.user.createdAt, startOfToday));
+      .from(schema.users)
+      .where(gte(schema.users.createdAt, startOfToday));
+
+    const [activeUsersToday] = await db
+      .select({ count: count() })
+      .from(schema.users)
+      .where(gte(schema.users.lastSeenAt, startOfToday));
 
     // Get topic counts
     const [totalTopics] = await db
@@ -61,47 +78,73 @@ export async function GET() {
       .from(schema.reviewables)
       .where(eq(schema.reviewables.status, "pending"));
 
+    const [resolvedFlagsToday] = await db
+      .select({ count: count() })
+      .from(schema.reviewables)
+      .where(
+        and(
+          ne(schema.reviewables.status, "pending"),
+          gte(schema.reviewables.reviewedAt, startOfToday),
+        ),
+      );
+
     // Calculate trends (simplified - compare today to yesterday)
     const [newUsersYesterday] = await db
       .select({ count: count() })
-      .from(schema.user)
+      .from(schema.users)
       .where(
-        sql`${schema.user.createdAt} >= ${startOfYesterday} AND ${schema.user.createdAt} < ${startOfToday}`,
+        sql`${schema.users.createdAt} >= ${startOfYesterday} AND ${schema.users.createdAt} < ${startOfToday}`,
       );
 
-    const userTrend =
-      newUsersYesterday.count > 0
-        ? Math.round(
-            ((newUsersToday.count - newUsersYesterday.count) /
-              newUsersYesterday.count) *
-              100,
-          )
-        : newUsersToday.count > 0
-          ? 100
-          : 0;
+    const [newTopicsYesterday] = await db
+      .select({ count: count() })
+      .from(schema.topics)
+      .where(
+        sql`${schema.topics.createdAt} >= ${startOfYesterday} AND ${schema.topics.createdAt} < ${startOfToday}`,
+      );
+
+    const [newPostsYesterday] = await db
+      .select({ count: count() })
+      .from(schema.posts)
+      .where(
+        sql`${schema.posts.createdAt} >= ${startOfYesterday} AND ${schema.posts.createdAt} < ${startOfToday}`,
+      );
+
+    const recentActions = await db
+      .select({
+        id: schema.adminActions.id,
+        action: schema.adminActions.action,
+        user: schema.users.username,
+        target: sql<string>`coalesce(${schema.adminActions.targetType}, 'site')`,
+        createdAt: schema.adminActions.createdAt,
+      })
+      .from(schema.adminActions)
+      .leftJoin(schema.users, eq(schema.adminActions.userId, schema.users.id))
+      .orderBy(desc(schema.adminActions.createdAt))
+      .limit(10);
 
     return NextResponse.json({
       users: {
-        total: totalUsers.count,
+        total: totalUsersResult.count,
         newToday: newUsersToday.count,
-        activeToday: 0, // Would need activity tracking
-        trend: userTrend,
+        activeToday: activeUsersToday.count,
+        trend: calculateTrend(newUsersToday.count, newUsersYesterday.count),
       },
       topics: {
         total: totalTopics.count,
         newToday: newTopicsToday.count,
-        trend: 0,
+        trend: calculateTrend(newTopicsToday.count, newTopicsYesterday.count),
       },
       posts: {
         total: totalPosts.count,
         newToday: newPostsToday.count,
-        trend: 0,
+        trend: calculateTrend(newPostsToday.count, newPostsYesterday.count),
       },
       flags: {
         pending: pendingFlags.count,
-        resolvedToday: 0,
+        resolvedToday: resolvedFlagsToday.count,
       },
-      recentActions: [],
+      recentActions,
     });
   } catch (error) {
     console.error("Error fetching metrics:", error);

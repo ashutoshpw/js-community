@@ -28,6 +28,10 @@ vi.mock("@/lib/password-reset", () => ({
   createPasswordResetToken: vi.fn(),
 }));
 
+vi.mock("@/lib/email", () => ({
+  sendPasswordResetEmail: vi.fn(),
+}));
+
 vi.mock("@/lib/rate-limit", () => ({
   checkRateLimit: vi.fn(),
   recordAttempt: vi.fn(),
@@ -51,7 +55,7 @@ describe("POST /api/password-reset/request", () => {
     vi.clearAllMocks();
     // Default mock for rate limiting (allow)
     const { checkRateLimit } = vi.mocked(await import("@/lib/rate-limit"));
-    checkRateLimit.mockReturnValue({ allowed: true, remainingAttempts: 2 });
+    checkRateLimit.mockResolvedValue({ allowed: true, remainingAttempts: 2 });
   });
 
   it("should return 400 when email is invalid", async () => {
@@ -82,7 +86,7 @@ describe("POST /api/password-reset/request", () => {
 
   it("should return 429 when IP is rate limited", async () => {
     const { checkRateLimit } = vi.mocked(await import("@/lib/rate-limit"));
-    checkRateLimit.mockReturnValueOnce({
+    checkRateLimit.mockResolvedValueOnce({
       allowed: false,
       blockedUntil: new Date(Date.now() + 3600000),
     });
@@ -102,8 +106,8 @@ describe("POST /api/password-reset/request", () => {
   it("should return 429 when email is rate limited", async () => {
     const { checkRateLimit } = vi.mocked(await import("@/lib/rate-limit"));
     checkRateLimit
-      .mockReturnValueOnce({ allowed: true, remainingAttempts: 2 })
-      .mockReturnValueOnce({
+      .mockResolvedValueOnce({ allowed: true, remainingAttempts: 2 })
+      .mockResolvedValueOnce({
         allowed: false,
         blockedUntil: new Date(Date.now() + 3600000),
       });
@@ -176,6 +180,7 @@ describe("POST /api/password-reset/request", () => {
     const { createPasswordResetToken } = vi.mocked(
       await import("@/lib/password-reset"),
     );
+    const { sendPasswordResetEmail } = vi.mocked(await import("@/lib/email"));
 
     const mockSelect = vi.fn().mockReturnValue({
       from: vi.fn().mockReturnValue({
@@ -204,6 +209,10 @@ describe("POST /api/password-reset/request", () => {
     expect(response.status).toBe(200);
     expect(data.message).toContain("If an account exists");
     expect(createPasswordResetToken).toHaveBeenCalledWith(123);
+    expect(sendPasswordResetEmail).toHaveBeenCalledWith({
+      email: "test@example.com",
+      token: "test-token-123",
+    });
   });
 
   it("should handle database errors gracefully", async () => {
