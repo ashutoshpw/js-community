@@ -4,9 +4,9 @@
  * Helper functions for checking user permissions and roles.
  */
 
-import { db } from "@/lib/database";
-import * as schema from "@/db/schema";
 import { eq } from "drizzle-orm";
+import * as schema from "@/db/schema";
+import { db } from "@/lib/database";
 
 /**
  * Check if a user is an admin by looking up their record in the database
@@ -27,7 +27,7 @@ export async function isUserAdmin(userId: string | number): Promise<boolean> {
  * Check if a user is a moderator
  */
 export async function isUserModerator(
-  userId: string | number
+  userId: string | number,
 ): Promise<boolean> {
   const id = typeof userId === "string" ? Number(userId) : userId;
 

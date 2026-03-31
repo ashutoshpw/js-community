@@ -6,6 +6,7 @@
 
 import { headers } from "next/headers";
 import type { NextRequest } from "next/server";
+import { isRealtimeEnabled } from "@/lib/alpha-features";
 import { auth } from "@/lib/auth";
 import type { RealtimeEvent } from "@/lib/realtime";
 import { eventStore } from "@/lib/realtime";
@@ -13,6 +14,12 @@ import { eventStore } from "@/lib/realtime";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
+  if (!isRealtimeEnabled()) {
+    return new Response("Realtime is disabled for this deployment.", {
+      status: 503,
+    });
+  }
+
   const { searchParams } = new URL(request.url);
   const channels = searchParams.get("channels")?.split(",") || ["/global"];
 

@@ -184,6 +184,9 @@ export async function PATCH(
       // In a real app, you'd process markdown here
       profileUpdates.bioCooked = body.bioRaw;
     }
+    if (body.avatarUrl !== undefined) {
+      profileUpdates.avatarUrl = body.avatarUrl;
+    }
 
     if (Object.keys(profileUpdates).length > 0) {
       // Check if profile exists

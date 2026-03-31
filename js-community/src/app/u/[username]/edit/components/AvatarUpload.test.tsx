@@ -8,9 +8,15 @@ import AvatarUpload from "./AvatarUpload";
 
 describe("AvatarUpload", () => {
   const mockOnAvatarUpdate = vi.fn();
+  const mockFetch = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
+    global.fetch = mockFetch;
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({ url: "https://example.com/uploaded-avatar.png" }),
+    } as Response);
   });
 
   it("should render current avatar", () => {
@@ -81,6 +87,10 @@ describe("AvatarUpload", () => {
         expect(mockOnAvatarUpdate).toHaveBeenCalled();
       },
       { timeout: 2000 },
+    );
+
+    expect(mockOnAvatarUpdate).toHaveBeenCalledWith(
+      "https://example.com/uploaded-avatar.png",
     );
   });
 
@@ -191,7 +201,7 @@ describe("AvatarUpload", () => {
     );
 
     expect(
-      screen.getByText("JPG, PNG or GIF. Max size 5MB."),
+      screen.getByText("JPG, PNG, GIF or WebP. Max size 5MB."),
     ).toBeInTheDocument();
   });
 });

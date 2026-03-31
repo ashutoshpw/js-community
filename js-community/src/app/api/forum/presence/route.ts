@@ -7,6 +7,7 @@
 
 import { headers } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
+import { isRealtimeEnabled } from "@/lib/alpha-features";
 import { auth } from "@/lib/auth";
 import { eventStore } from "@/lib/realtime";
 
@@ -42,6 +43,10 @@ setInterval(cleanupStalePresence, 30000);
 
 export async function POST(request: NextRequest) {
   try {
+    if (!isRealtimeEnabled()) {
+      return NextResponse.json({ success: true, onlineCount: 0 });
+    }
+
     const session = await auth.api.getSession({
       headers: await headers(),
     });
@@ -110,6 +115,15 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    if (!isRealtimeEnabled()) {
+      const { searchParams } = new URL(request.url);
+      return NextResponse.json({
+        channel: searchParams.get("channel"),
+        users: [],
+        count: 0,
+      });
+    }
+
     const { searchParams } = new URL(request.url);
     const channel = searchParams.get("channel");
 

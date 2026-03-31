@@ -7,6 +7,7 @@ export default {
     "./src/db/schema/index.ts",
     "./src/db/schema/permissions.ts",
     "./src/db/schema/posts.ts",
+    "./src/db/schema/rate-limits.ts",
     "./src/db/schema/tags.ts",
     "./src/db/schema/topics.ts",
     "./src/db/schema/users.ts",

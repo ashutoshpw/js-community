@@ -6,30 +6,30 @@
 
 import { TopicList } from "@/app/components/forum/TopicList";
 import { TopicListHeader } from "@/app/components/forum/TopicListHeader";
+import { getForumTopics } from "@/lib/forum-data";
+
+export const dynamic = "force-dynamic";
 
 interface PageProps {
   searchParams: Promise<{ page?: string }>;
 }
 
 async function getTopics(page: number) {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-
   try {
-    const res = await fetch(
-      `${baseUrl}/api/forum/topics?page=${page}&sort=latest`,
-      {
-        cache: "no-store",
-      },
-    );
-
-    if (!res.ok) {
-      throw new Error("Failed to fetch topics");
-    }
-
-    return await res.json();
+    return await getForumTopics({ page, sort: "latest" });
   } catch (error) {
     console.error("Error fetching topics:", error);
-    return { topics: [], pagination: { page: 1, totalPages: 1 } };
+    return {
+      topics: [],
+      pagination: {
+        page: 1,
+        perPage: 20,
+        total: 0,
+        totalPages: 1,
+        hasNext: false,
+        hasPrev: false,
+      },
+    };
   }
 }
 
