@@ -62,9 +62,34 @@ export async function generateMetadata({
       return { title: "Topic Not Found" };
     }
 
+    const topic = data.topic;
+    const description = topic.firstPostExcerpt
+      ? String(topic.firstPostExcerpt).slice(0, 160)
+      : `Discussion with ${topic.postsCount ?? 0} replies in JS Community.`;
+
     return {
-      title: `${data.topic.title} - JS Community`,
-      description: `Discussion: ${data.topic.title}`,
+      title: topic.title,
+      description,
+      openGraph: {
+        title: topic.title,
+        description,
+        type: "article",
+        publishedTime: topic.createdAt,
+        authors: topic.author?.username
+          ? [topic.author.username]
+          : undefined,
+        tags: Array.isArray(topic.tags)
+          ? topic.tags.map((t: { name: string }) => t.name)
+          : undefined,
+      },
+      twitter: {
+        card: "summary",
+        title: topic.title,
+        description,
+      },
+      alternates: {
+        canonical: `/forum/t/${topic.id}/${topic.slug}`,
+      },
     };
   } catch {
     return { title: "Topic Not Found" };
@@ -95,8 +120,38 @@ export default async function TopicDetailPage({ params }: PageProps) {
     redirect(`/forum/t/${topic.id}/${topic.slug}`);
   }
 
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "DiscussionForumPosting",
+    headline: topic.title,
+    url: `/forum/t/${topic.id}/${topic.slug}`,
+    datePublished: topic.createdAt,
+    dateModified: topic.updatedAt ?? topic.createdAt,
+    author: {
+      "@type": "Person",
+      name: topic.author?.username ?? "Unknown",
+    },
+    interactionStatistic: [
+      {
+        "@type": "InteractionCounter",
+        interactionType: "https://schema.org/ReplyAction",
+        userInteractionCount: topic.replyCount ?? 0,
+      },
+      {
+        "@type": "InteractionCounter",
+        interactionType: "https://schema.org/LikeAction",
+        userInteractionCount: topic.likeCount ?? 0,
+      },
+    ],
+  };
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-6">
+      <script
+        type="application/ld+json"
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD structured data is safe static content
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
       <TopicHeader topic={topic} />
 
       <div className="mt-6">

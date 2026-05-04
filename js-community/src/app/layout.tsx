@@ -14,7 +14,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "JS Community - Connect, Learn, and Grow Together",
+  metadataBase: new URL(
+    process.env.BETTER_AUTH_URL ||
+      process.env.VERCEL_PROJECT_PRODUCTION_URL
+        ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+        : "http://localhost:3000",
+  ),
+  title: {
+    default: "JS Community - Connect, Learn, and Grow Together",
+    template: "%s | JS Community",
+  },
   description:
     "Join the vibrant JavaScript community. Connect with developers, share knowledge, and grow your skills through engaging discussions and collaborative learning.",
   keywords: [
@@ -27,6 +36,11 @@ export const metadata: Metadata = {
     "discussion",
   ],
   authors: [{ name: "JS Community" }],
+  alternates: {
+    types: {
+      "application/rss+xml": "/api/forum/rss",
+    },
+  },
   openGraph: {
     title: "JS Community - Connect, Learn, and Grow Together",
     description:
