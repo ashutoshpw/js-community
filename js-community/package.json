@@ -19,7 +19,9 @@
     "db:migrate": "tsx src/scripts/migrate.ts",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:check": "drizzle-kit check"
+    "db:check": "drizzle-kit check",
+    "import:discourse": "bun src/scripts/discourse-import/index.ts",
+    "import:discourse:dry-run": "bun src/scripts/discourse-import/index.ts --dry-run"
   },
   "dependencies": {
     "@types/mdx": "^2.0.13",
