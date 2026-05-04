@@ -5,9 +5,9 @@ import Link from "next/link";
 
 const navigation = {
   product: [
-    { name: "Features", href: "#features" },
-    { name: "Topics", href: "/topics" },
-    { name: "Community Stats", href: "#stats" },
+    { name: "Features", href: "/features" },
+    { name: "FAQ", href: "/faq" },
+    { name: "Forum", href: "/forum" },
   ],
   company: [
     { name: "About", href: "/about" },
