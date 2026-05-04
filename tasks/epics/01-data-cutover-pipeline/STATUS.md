@@ -1,7 +1,7 @@
 ---
 epic: 01-data-cutover-pipeline
 title: Data Cutover Pipeline
-status: todo
+status: done
 owner: core-platform
 last_updated: 2026-05-04
 ---
@@ -12,7 +12,7 @@ last_updated: 2026-05-04
 
 - [x] `01-build-import-pipeline` - Create resumable Discourse export/import pipeline CLI
 - [x] `02-avatar-and-upload-migration` - Migrate avatar and upload assets to Blob + rewrite references
-- [ ] `03-cutover-validation-and-reconciliation` - Add data parity and reconciliation checks
+- [x] `03-cutover-validation-and-reconciliation` - Add data parity and reconciliation checks
 
 ## Completion Rule
 
