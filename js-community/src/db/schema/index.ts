@@ -165,12 +165,18 @@ export {
   posts,
   postsRelations,
 } from "./posts";
+// API rate limit schema
+export type { ApiRateLimit, NewApiRateLimit } from "./api-rate-limits";
+export { apiRateLimits } from "./api-rate-limits";
 // Password reset rate limit schemas
 export type {
   NewPasswordResetRateLimit,
   PasswordResetRateLimit,
 } from "./rate-limits";
 export { passwordResetRateLimits } from "./rate-limits";
+// Query cache schema
+export type { NewQueryCacheEntry, QueryCacheEntry } from "./cache";
+export { queryCache } from "./cache";
 // Site Settings schemas (admin)
 export { adminActions, siteSettings, userBans } from "./site-settings";
 // Tag schemas

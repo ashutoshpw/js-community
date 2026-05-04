@@ -6,4 +6,5 @@
 
 export { cleanupRateLimits } from "./functions/cleanup-rate-limits";
 export { cleanupExpiredSessions } from "./functions/cleanup-expired-sessions";
+export { cleanupCache } from "./functions/cleanup-cache";
 export { sendEmail } from "./functions/send-email";
