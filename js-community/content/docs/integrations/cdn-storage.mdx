@@ -1,0 +1,79 @@
+---
+title: CDN & File Storage
+description: Vercel Blob setup for image uploads, the upload endpoint, and file policy configuration.
+---
+
+# CDN & File Storage
+
+JS Community stores user-uploaded files (avatars, post images) on **Vercel Blob** — a globally distributed, CDN-backed object store. No additional infrastructure is required when deploying to Vercel.
+
+## Setup
+
+### 1. Create a Blob store
+
+In the Vercel dashboard, go to **Storage → Blob → Create Store**. A `BLOB_READ_WRITE_TOKEN` is generated automatically for your project.
+
+For local development, copy the token from the Vercel dashboard:
+
+```bash
+BLOB_READ_WRITE_TOKEN=vercel_blob_rw_...
+```
+
+### 2. Set the environment variable
+
+Add `BLOB_READ_WRITE_TOKEN` to your `.env` file and to the Vercel project's environment variables.
+
+## Upload endpoint
+
+```http
+POST /api/forum/uploads
+Authorization: required
+Content-Type: multipart/form-data
+
+file: <binary>
+```
+
+### File policy
+
+| Policy | Value |
+|--------|-------|
+| Allowed formats | JPEG, PNG, GIF, WebP |
+| Maximum file size | 5 MB |
+| Authentication | Required (401 for unauthenticated) |
+| Storage | Vercel Blob (CDN-backed, public read) |
+
+Files that fail MIME type or size validation return `400 Bad Request`.
+
+### Response
+
+```json
+{
+  "url": "https://[hash].public.blob.vercel-storage.com/avatars/user-123.png",
+  "filename": "user-123.png",
+  "size": 123456
+}
+```
+
+The returned `url` is a permanent, public CDN URL. Embed it in a post with Markdown:
+
+```markdown
+![My screenshot](https://[hash].public.blob.vercel-storage.com/posts/screenshot.png)
+```
+
+## Avatar uploads
+
+Avatar uploads follow the same endpoint. The profile edit page at `/forum/u/[username]/edit` POSTs to `/api/forum/uploads` and saves the returned URL to `userProfiles.avatarUrl`.
+
+## Self-hosted alternative
+
+If you're not deploying to Vercel, replace `@vercel/blob` with any S3-compatible storage provider:
+
+1. Replace `put()` from `@vercel/blob` with the equivalent from `@aws-sdk/client-s3` or `minio`
+2. Update the environment variables to your provider's credentials
+3. Ensure the returned URL is publicly accessible
+
+The upload endpoint is isolated in `src/app/api/forum/uploads/route.ts` — only this file needs changing.
+
+## File retention
+
+Uploaded files are not automatically deleted when a post is deleted or a user account is removed. Periodic cleanup of orphaned blobs is not yet implemented. For now, manage storage manually via the Vercel Blob dashboard.

@@ -1,0 +1,103 @@
+---
+title: Email Services
+description: Configuring Resend for email delivery, the Inngest email function, and supported email types.
+---
+
+# Email Services
+
+JS Community uses [Resend](https://resend.com) for transactional email delivery. Emails are sent durably through an Inngest background function that retries on failure.
+
+## Setup
+
+### 1. Create a Resend account
+
+Sign up at [resend.com](https://resend.com) and create an API key.
+
+### 2. Verify your sending domain
+
+In the Resend dashboard, add and verify your domain's DNS records (SPF, DKIM, DMARC). Sending from a verified domain improves deliverability and avoids spam filters.
+
+### 3. Set environment variables
+
+```bash
+RESEND_API_KEY=re_...
+EMAIL_FROM=noreply@yourdomain.com
+```
+
+These are required in production. Without them, email features return a `503` error.
+
+### 4. Optional: department routing
+
+Contact form emails are routed by category. Configure department addresses:
+
+```bash
+CONTACT_SUPPORT_EMAIL=support@yourdomain.com
+CONTACT_SALES_EMAIL=sales@yourdomain.com
+CONTACT_FEEDBACK_EMAIL=feedback@yourdomain.com
+```
+
+If not set, default placeholder addresses are used.
+
+## Supported email types
+
+### Password reset
+
+Triggered when a user requests a password reset at `/forgot-password`. The API route fires an Inngest `app/email.send` event instead of calling Resend inline:
+
+```typescript
+await inngest.send({
+  name: "app/email.send",
+  data: {
+    type: "password-reset",
+    email: user.email,
+    token: resetToken,
+  },
+});
+```
+
+The `send-email` Inngest function picks up the event and calls `sendPasswordResetEmail()` with up to 3 automatic retries on failure.
+
+### Contact form
+
+When a visitor submits the contact form at `/contact`, the submission is dispatched as an Inngest event:
+
+```typescript
+await inngest.send({
+  name: "app/email.send",
+  data: {
+    type: "contact-form",
+    name: formData.name,
+    email: formData.email,
+    category: formData.category,  // "support" | "sales" | "feedback"
+    subject: formData.subject,
+    message: formData.message,
+  },
+});
+```
+
+The email is forwarded to the appropriate department address.
+
+## Adding a new email type
+
+1. Add a new branch to `SendEmailEventData` in `src/inngest/functions/send-email.ts`
+2. Add a sending function in `src/lib/email.ts`
+3. Fire the `app/email.send` event from the relevant API route
+
+Example: notification digest email
+
+```typescript
+// src/lib/email.ts
+export async function sendDigestEmail(options: DigestEmailInput) { ... }
+
+// src/inngest/functions/send-email.ts
+if (data.type === "digest") {
+  await sendDigestEmail({ email: data.email, topics: data.topics });
+  return { sent: true, type: "digest" };
+}
+```
+
+## Testing email locally
+
+In development (`NODE_ENV !== "production"`), emails print to the console instead of calling Resend. Set `RESEND_API_KEY` and `EMAIL_FROM` locally if you want to test actual delivery.
+
+Use the [Resend sandbox](https://resend.com/docs/send-with-nodejs#test-your-integration) (`delivered@resend.dev`) as a test recipient.

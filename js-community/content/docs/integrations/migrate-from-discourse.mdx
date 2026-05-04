@@ -1,0 +1,169 @@
+---
+title: Migrate from Discourse
+description: How to move users, categories, topics, and posts from a Discourse instance into JS Community.
+---
+
+# Migrate from Discourse
+
+JS Community's data model is directly inspired by Discourse. The tables map closely, making migration feasible with SQL exports and a transformation script.
+
+## Data model mapping
+
+| Discourse table | JS Community table | Notes |
+|-----------------|-------------------|-------|
+| `users` | `users` | Most columns match directly |
+| `user_profiles` | `user_profiles` | `bio_raw`, `website`, `location` align |
+| `categories` | `categories` | `name`, `slug`, `color`, `description` align |
+| `topics` | `topics` | `title`, `slug`, `views`, `closed`, `archived`, `pinned` align |
+| `posts` | `posts` | `raw`, `cooked`, `post_number`, `reply_to_post_number` align |
+| `tags` | `tags` | Direct mapping |
+| `topic_tags` | `topic_tags` | Direct mapping |
+| `notifications` | `notifications` | Type IDs match Discourse's notification types |
+| `user_actions` | `post_actions` | Like/bookmark actions |
+
+## Column differences
+
+| Discourse | JS Community | Action needed |
+|-----------|-------------|--------------|
+| `user_id` (integer) | `userId` (integer) | Rename — same semantics |
+| `topic_id` | `topicId` | Rename |
+| `post_number` | `postNumber` | Rename |
+| `trust_level` (0–4) | `trustLevel` (0–4) | Direct copy |
+| `suspended_till` | `suspendedTill` | Direct copy |
+| `deleted_at` | `deletedAt` | Direct copy (soft delete) |
+| `avatar_template` | `avatarUrl` | Transform: download and re-upload to Vercel Blob |
+
+## Migration steps
+
+### 1. Export from Discourse
+
+Use the Discourse Data Explorer plugin or direct database access to export tables as CSV or JSON.
+
+For PostgreSQL:
+
+```sql
+\COPY users TO '/tmp/users.csv' WITH (FORMAT CSV, HEADER);
+\COPY categories TO '/tmp/categories.csv' WITH (FORMAT CSV, HEADER);
+\COPY topics TO '/tmp/topics.csv' WITH (FORMAT CSV, HEADER);
+\COPY posts TO '/tmp/posts.csv' WITH (FORMAT CSV, HEADER);
+```
+
+### 2. Transform and import users
+
+```typescript
+// Example: transform and insert users
+import { db } from "@/lib/database";
+import { users, userProfiles } from "@/db/schema";
+import discourseUsers from "./discourse-users.json";
+
+for (const du of discourseUsers) {
+  const [user] = await db.insert(users).values({
+    username: du.username,
+    email: du.email,
+    admin: du.admin,
+    moderator: du.moderator,
+    trustLevel: du.trust_level,
+    active: du.active,
+    approved: du.approved,
+    suspended: du.suspended,
+    createdAt: new Date(du.created_at),
+  }).returning({ id: users.id });
+
+  await db.insert(userProfiles).values({
+    userId: user.id,
+    bioRaw: du.bio_raw,
+    location: du.location,
+    website: du.website,
+  });
+}
+```
+
+### 3. Import categories
+
+Slugs in Discourse are already URL-safe, so they can be imported directly.
+
+```typescript
+for (const dc of discourseCategories) {
+  await db.insert(categories).values({
+    name: dc.name,
+    slug: dc.slug,
+    color: `#${dc.color}`,
+    description: dc.description,
+    position: dc.position,
+  });
+}
+```
+
+### 4. Import topics and posts
+
+Import topics first (they reference categories), then posts (they reference topics and users).
+
+```typescript
+// Map old Discourse IDs to new IDs
+const topicIdMap = new Map<number, number>();
+
+for (const dt of discourseTopics) {
+  const [topic] = await db.insert(topics).values({
+    title: dt.title,
+    slug: dt.slug,
+    userId: userIdMap.get(dt.user_id)!,
+    categoryId: categoryIdMap.get(dt.category_id),
+    views: dt.views,
+    postsCount: dt.posts_count,
+    closed: dt.closed,
+    archived: dt.archived,
+    pinned: dt.pinned,
+    visible: !dt.deleted_at,
+    createdAt: new Date(dt.created_at),
+  }).returning({ id: topics.id });
+
+  topicIdMap.set(dt.id, topic.id);
+}
+```
+
+### 5. Preserve URLs
+
+Discourse uses `/t/[slug]/[id]` for topics. JS Community uses `/forum/t/[id]/[slug]`.
+
+To preserve inbound links, add Next.js redirects in `next.config.ts`:
+
+```typescript
+async redirects() {
+  return [
+    {
+      source: "/t/:slug/:id",
+      destination: "/forum/t/:id/:slug",
+      permanent: true,
+    },
+  ];
+},
+```
+
+### 6. Avatar migration
+
+Discourse stores avatars as template strings (e.g., `/user_avatar/.../{size}.png`). Download each avatar, upload to Vercel Blob, and update `userProfiles.avatarUrl`:
+
+```typescript
+import { put } from "@vercel/blob";
+
+for (const [userId, avatarTemplate] of avatarMap) {
+  const url = avatarTemplate.replace("{size}", "120");
+  const res = await fetch(`https://your-discourse.com${url}`);
+  const blob = await res.blob();
+
+  const { url: blobUrl } = await put(`avatars/${userId}.png`, blob, {
+    access: "public",
+  });
+
+  await db.update(userProfiles)
+    .set({ avatarUrl: blobUrl })
+    .where(eq(userProfiles.userId, userId));
+}
+```
+
+## Common pitfalls
+
+- **ID collisions** — always build an ID mapping table rather than inserting with the original IDs
+- **Cooked HTML** — Discourse's `cooked` HTML uses custom plugins; re-render from `raw` Markdown using the JS Community `parseMarkdownAsync` function
+- **Attachment URLs** — posts may reference `/uploads/...` paths from Discourse; migrate files to Vercel Blob and do a string replace on `raw`
+- **Email uniqueness** — Discourse allows multiple email addresses per user; import only the `primary = true` email

@@ -1,0 +1,132 @@
+---
+title: Webhooks & Events
+description: How to trigger Inngest events, extend background functions, and hook into platform activity.
+---
+
+# Webhooks & Events
+
+JS Community uses [Inngest](https://www.inngest.com) as its event bus and job queue. Any part of the application can fire an event; Inngest routes it to the registered function(s) that handle it.
+
+## Firing an event
+
+Import the Inngest client and call `send`:
+
+```typescript
+import { inngest } from "@/lib/inngest";
+
+await inngest.send({
+  name: "app/user.created",
+  data: {
+    userId: 42,
+    username: "alice",
+    email: "alice@example.com",
+  },
+});
+```
+
+Events can be fired from any API route handler or server action. They are delivered asynchronously — the `send` call returns immediately and Inngest processes the event in the background.
+
+## Built-in events
+
+| Event name | Fired by | Handled by |
+|-----------|----------|-----------|
+| `app/email.send` | `/api/password-reset/request`, `/api/contact` | `send-email` function |
+
+## Built-in scheduled functions
+
+| Function | Cron | What it does |
+|----------|------|-------------|
+| `cleanup-rate-limits` | `0 * * * *` | Prunes stale `password_reset_rate_limits` rows |
+| `cleanup-expired-sessions` | `0 3 * * *` | Deletes expired sessions and used reset tokens |
+
+## Adding a new background function
+
+### 1. Create the function file
+
+```typescript
+// src/inngest/functions/notify-on-mention.ts
+import { inngest } from "@/lib/inngest";
+import { db } from "@/lib/database";
+import { notifications } from "@/db/schema";
+
+export const notifyOnMention = inngest.createFunction(
+  {
+    id: "notify-on-mention",
+    name: "Send Mention Notification",
+    retries: 2,
+    triggers: [{ event: "app/post.mentioned" }],
+  },
+  async ({ event, logger }) => {
+    const { mentionedUserId, postId, topicId, byUsername } = event.data;
+
+    await db.insert(notifications).values({
+      userId: mentionedUserId,
+      notificationTypeId: 1, // mentioned
+      read: false,
+      data: JSON.stringify({ postId, topicId, username: byUsername }),
+    });
+
+    logger.info(`Notified user ${mentionedUserId} of mention in post ${postId}`);
+    return { notified: mentionedUserId };
+  },
+);
+```
+
+### 2. Export from the index
+
+```typescript
+// src/inngest/index.ts
+export { notifyOnMention } from "./functions/notify-on-mention";
+```
+
+### 3. Register in the route handler
+
+```typescript
+// src/app/api/inngest/route.ts
+import { notifyOnMention } from "@/inngest";
+
+export const { GET, POST, PUT } = serve({
+  client: inngest,
+  functions: [cleanupRateLimits, cleanupExpiredSessions, sendEmail, notifyOnMention],
+});
+```
+
+### 4. Fire the event from an API route
+
+```typescript
+await inngest.send({
+  name: "app/post.mentioned",
+  data: {
+    mentionedUserId: 7,
+    postId: 99,
+    topicId: 12,
+    byUsername: "alice",
+  },
+});
+```
+
+## Retries and failure handling
+
+Each function specifies `retries` in its config. Inngest retries on any thrown error with exponential backoff. After all retries are exhausted, the run is marked as failed in the Inngest dashboard.
+
+## Local development
+
+Run the Inngest dev server alongside `bun dev`:
+
+```bash
+npx inngest-cli@latest dev
+```
+
+Open [http://localhost:8288](http://localhost:8288) to see event history, trigger test events, and replay failed runs.
+
+## Inngest + Vercel Cron
+
+`vercel.json` includes a cron job that hits `/api/inngest` every minute. This keeps the Vercel serverless function warm and allows Inngest to deliver scheduled jobs reliably without cold-start delays.
+
+```json
+{
+  "crons": [
+    { "path": "/api/inngest", "schedule": "* * * * *" }
+  ]
+}
+```
