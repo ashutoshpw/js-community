@@ -3,12 +3,15 @@
  *
  * Usage:
  *   bun run import:discourse -- --input-dir=./exports [--stage=all] [--dry-run] [--resume] [--batch-size=500]
+ *   bun run import:discourse -- --input-dir=./exports --assets   # run avatar/upload migration
  *
  * Stages run in order: users → categories → topics → posts → tags → post_actions
+ * Asset migration (--assets) runs after data stages and requires BLOB_READ_WRITE_TOKEN + DISCOURSE_BASE_URL.
  */
 
 import type { StageName } from "./config";
 import { parseConfig, STAGE_ORDER } from "./config";
+import { runAssetsStage } from "./stages/assets.stage";
 import { runCategoriesStage } from "./stages/categories.stage";
 import { runPostActionsStage } from "./stages/post-actions.stage";
 import { runPostsStage } from "./stages/posts.stage";
@@ -31,13 +34,16 @@ const RUNNERS: Record<
 };
 
 async function main() {
+  const argv = process.argv.slice(2);
+  const runAssets = argv.includes("--assets");
+
   let config: ReturnType<typeof parseConfig>;
   try {
-    config = parseConfig();
+    config = parseConfig(argv.filter((a) => a !== "--assets"));
   } catch (err) {
     process.stderr.write(`Error: ${String(err)}\n`);
     process.stderr.write(
-      "Usage: bun run import:discourse -- --input-dir=<path> [--stage=<name|all>] [--dry-run] [--resume] [--batch-size=500]\n",
+      "Usage: bun run import:discourse -- --input-dir=<path> [--stage=<name|all>] [--dry-run] [--resume] [--batch-size=500] [--assets]\n",
     );
     process.exit(1);
   }
@@ -54,13 +60,14 @@ async function main() {
       msg: "Discourse import started",
       inputDir: config.inputDir,
       stages: stagesToRun,
+      assets: runAssets,
       dryRun: config.dryRun,
       resume: config.resume,
       batchSize: config.batchSize,
     }) + "\n",
   );
 
-  const allProgress: Partial<Record<StageName, StageProgress>> = {};
+  const allProgress: Partial<Record<string, StageProgress>> = {};
 
   for (const stage of stagesToRun) {
     if (config.resume && state.isStageComplete(stage)) {
@@ -78,6 +85,11 @@ async function main() {
     const runner = RUNNERS[stage];
     const progress = await runner(config, state);
     allProgress[stage] = progress;
+  }
+
+  // Asset migration runs after data stages (needs IDs in DB)
+  if (runAssets) {
+    allProgress.assets = await runAssetsStage(config, state);
   }
 
   // Final summary

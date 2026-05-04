@@ -11,7 +11,7 @@ last_updated: 2026-05-04
 ## Tasks
 
 - [x] `01-build-import-pipeline` - Create resumable Discourse export/import pipeline CLI
-- [ ] `02-avatar-and-upload-migration` - Migrate avatar and upload assets to Blob + rewrite references
+- [x] `02-avatar-and-upload-migration` - Migrate avatar and upload assets to Blob + rewrite references
 - [ ] `03-cutover-validation-and-reconciliation` - Add data parity and reconciliation checks
 
 ## Completion Rule

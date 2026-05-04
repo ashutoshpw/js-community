@@ -2,14 +2,19 @@
 epic: 01-data-cutover-pipeline
 task_slug: 02-avatar-and-upload-migration
 title: Avatar and Upload Asset Migration
-status: todo
+status: done
 priority: p0
 owner: backend-platform
 estimate: 2-4 days
 dependencies:
   - 01-build-import-pipeline
 last_updated: 2026-05-04
-verification_evidence: []
+verification_evidence:
+  - "20 unit tests pass (expandAvatarUrl, blobKey helpers, rewriteRaw, rewriteCooked, extractDiscourseUrls)"
+  - "bun run lint: 0 errors"
+  - "bun run build: success"
+  - "Dry-run mode validated: no DB writes or Blob uploads when --dry-run set"
+  - "failed-assets.jsonl written on per-asset fetch/upload failure; safe to retry"
 ---
 
 # Task: Avatar and Upload Asset Migration
@@ -27,24 +32,24 @@ Migrate Discourse-hosted avatars and post uploads into Vercel Blob (or target ob
 
 ## Implementation Checklist
 
-- [ ] Add `src/scripts/discourse-import/stages/assets.ts`.
-- [ ] Implement avatar fetch using Discourse template expansion (`{size}` replacement).
-- [ ] Implement upload key convention:
+- [x] Add `src/scripts/discourse-import/stages/assets.ts`.
+- [x] Implement avatar fetch using Discourse template expansion (`{size}` replacement).
+- [x] Implement upload key convention:
   - `avatars/<legacyUserId>/<hash>.<ext>`
   - `uploads/<legacyUploadId>/<hash>.<ext>`
-- [ ] Add URL rewrite utility for post raw content.
-- [ ] Add failure queue output (`failed-assets.jsonl`) for retry jobs.
-- [ ] Add checksum/hash verification to avoid duplicate uploads.
-- [ ] Add rate limiting for source fetch and destination upload APIs.
-- [ ] Document storage configuration and required env vars.
+- [x] Add URL rewrite utility for post raw content.
+- [x] Add failure queue output (`failed-assets.jsonl`) for retry jobs.
+- [x] Add checksum/hash verification to avoid duplicate uploads.
+- [x] Add rate limiting for source fetch and destination upload APIs.
+- [x] Document storage configuration and required env vars.
 
 ## Verification
 
 ### Automated
 
-- [ ] Unit tests for avatar URL expansion and markdown rewrite logic.
-- [ ] Integration-style test for upload failure recovery path.
-- [ ] `cd js-community && bun run lint && bun run test && bun run build`
+- [x] Unit tests for avatar URL expansion and markdown rewrite logic.
+- [x] Integration-style test for upload failure recovery path.
+- [x] `cd js-community && bun run lint && bun run test && bun run build`
 
 ### Manual
 
