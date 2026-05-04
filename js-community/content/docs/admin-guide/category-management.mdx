@@ -1,0 +1,76 @@
+---
+title: Category Management
+description: Creating, editing, and organizing forum categories.
+---
+
+# Category Management
+
+Categories are the top-level organizational structure of the forum. They are managed at `/admin/categories`.
+
+## Creating a category
+
+1. Navigate to `/admin/categories`
+2. Click **New Category**
+3. Fill in the required fields and click **Save**
+
+### Required fields
+
+| Field | Description |
+|-------|-------------|
+| **Name** | Display name shown in the sidebar and category browser |
+| **Slug** | URL-safe identifier used in API queries (e.g., `javascript`) |
+| **Color** | Hex color code used for the category badge (e.g., `#3B82F6`) |
+
+### Optional fields
+
+| Field | Description |
+|-------|-------------|
+| **Description** | Shown in the category browser — explain what belongs here |
+| **Parent category** | Nest this category under another (for sub-categories) |
+| **Position** | Integer for manual ordering in the sidebar |
+| **Read restricted** | If true, only specific groups can see the category |
+| **Post restricted** | If true, only specific trust levels can post |
+
+## Editing a category
+
+Click any category in `/admin/categories` to open the edit form. All fields except the slug can be changed. Slug changes break existing category-filtered URLs.
+
+## Deleting a category
+
+Deleting a category is irreversible from the admin UI. Topics in the deleted category have their `categoryId` set to `NULL`. Before deleting, move important topics to another category.
+
+## Category API
+
+```http
+GET /api/admin/categories
+Authorization: session cookie (admin only)
+```
+
+```http
+POST /api/admin/categories
+Content-Type: application/json
+
+{
+  "name": "JavaScript",
+  "slug": "javascript",
+  "color": "#F7DF1E",
+  "description": "General JavaScript discussion"
+}
+```
+
+```http
+PUT /api/admin/categories/[id]
+Content-Type: application/json
+
+{ "name": "Updated Name", "color": "#FFCC00" }
+```
+
+```http
+DELETE /api/admin/categories/[id]
+```
+
+The public categories endpoint (no auth required) returns all visible categories:
+
+```http
+GET /api/forum/categories
+```

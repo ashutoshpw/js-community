@@ -1,0 +1,174 @@
+---
+title: Database Schema
+description: All database tables, their columns, relationships, and the migration workflow.
+---
+
+# Database Schema
+
+All schema files live in `src/db/schema/`. They are TypeScript files using Drizzle ORM's table builders and are re-exported from `src/db/schema/index.ts`.
+
+## Tables
+
+### `users`
+
+Core user accounts.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | serial PK | |
+| `username` | varchar(255) | Unique |
+| `email` | varchar(255) | Unique, not null |
+| `admin` | boolean | Default false |
+| `moderator` | boolean | Default false |
+| `trustLevel` | integer | 0–4, default 0 |
+| `active` | boolean | Default true |
+| `suspended` | boolean | Default false |
+| `silenced` | boolean | Default false |
+| `lastSeenAt` | timestamp | |
+| `createdAt` / `updatedAt` | timestamp | |
+
+### `user_profiles`
+
+Extended profile data, one row per user.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `userId` | FK → users.id | Unique |
+| `bio_raw` | text | |
+| `avatarUrl` | varchar(500) | Vercel Blob URL |
+| `location` / `website` | varchar | |
+
+### `topics`
+
+Discussion threads.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | serial PK | |
+| `title` | varchar(500) | |
+| `slug` | varchar(500) | Unique |
+| `userId` | FK → users.id | |
+| `categoryId` | FK → categories.id | Nullable |
+| `postsCount` | integer | Maintained by triggers/API |
+| `likeCount` | integer | |
+| `pinned` / `pinnedGlobally` | boolean | |
+| `visible` / `closed` / `archived` | boolean | |
+| `deletedAt` | timestamp | Soft delete |
+
+### `posts`
+
+Individual messages within topics.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | serial PK | |
+| `userId` | FK → users.id | |
+| `topicId` | FK → topics.id | Cascade delete |
+| `postNumber` | integer | 1 = opening post |
+| `raw` | text | Markdown source |
+| `cooked` | text | Sanitized HTML |
+| `replyToPostNumber` | integer | Nullable |
+| `likeCount` | integer | |
+| `hidden` | boolean | Soft hide |
+| `deletedAt` | timestamp | Soft delete |
+| `version` | integer | Revision count |
+
+### `categories`
+
+Forum categories, managed by admins.
+
+| Column | Type |
+|--------|------|
+| `id` | serial PK |
+| `name` / `slug` | varchar |
+| `color` | varchar(7) — hex |
+| `description` | text |
+| `parentCategoryId` | FK → categories.id |
+
+### `notifications`
+
+User notification records.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `userId` | FK → users.id | |
+| `notificationTypeId` | integer | 1–11 (see User Guide) |
+| `read` | boolean | Default false |
+| `data` | jsonb | Type-specific payload |
+
+### `messages` / `message_participants`
+
+Private message threads.
+
+### `bookmarks`
+
+User-saved posts.
+
+| Column | Type |
+|--------|------|
+| `userId` | FK → users.id |
+| `postId` | FK → posts.id |
+
+### `sessions` / `accounts` / `verification_tokens`
+
+better-auth tables for session and OAuth management.
+
+### `password_reset_tokens`
+
+Short-lived tokens for the password reset flow. Cleaned up daily by Inngest.
+
+### `password_reset_rate_limits`
+
+Postgres-backed rate limiting for the password reset endpoint.
+
+### `api_rate_limits`
+
+General API rate limiting per IP per endpoint.
+
+### `query_cache`
+
+Key/value cache for expensive queries. Rows have a TTL and are purged hourly by Inngest.
+
+### `site_settings` / `admin_actions` / `user_bans`
+
+Platform configuration and audit trail.
+
+## Relationships overview
+
+```
+users (1) ──── (1) user_profiles
+users (1) ──── (N) topics
+users (1) ──── (N) posts
+topics (1) ──── (N) posts
+topics (N) ──── (1) categories
+posts (N) ──── (1) users
+posts (N) ──── (N) bookmarks
+posts (N) ──── (N) post_actions (likes, flags)
+users (1) ──── (N) notifications
+users (N) ──── (N) messages (via message_participants)
+users (1) ──── (N) sessions
+```
+
+## Migration workflow
+
+Drizzle generates migration SQL files from schema changes.
+
+```bash
+# 1. Edit schema files in src/db/schema/
+# 2. Generate the migration
+bun run db:generate
+
+# 3. Review the generated SQL in drizzle/
+# 4. Apply to the database
+bun run db:migrate
+```
+
+Migration files are stored in `drizzle/` and committed to the repository. The GitHub Actions workflow at `.github/workflows/migrations.yml` warns if schema files change without a corresponding migration file.
+
+To push schema directly without generating files (development only):
+
+```bash
+bun run db:push
+```
+
+Never use `db:push` in production.

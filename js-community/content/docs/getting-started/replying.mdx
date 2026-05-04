@@ -1,0 +1,64 @@
+---
+title: Replying to Posts
+description: How to reply, quote, and like posts in a topic thread.
+---
+
+# Replying to Posts
+
+Replies are posts made within an existing topic. Each reply increments the topic's post count and bumps it in the Latest feed.
+
+## Posting a reply
+
+At the bottom of every open topic there is a **Reply** button. Clicking it opens the composer pre-filled with the topic context.
+
+- Write your reply in Markdown
+- Click **Post Reply** to submit
+
+Your reply gets the next `postNumber` in the thread. If someone is reading the topic in real time, they see a "New reply" prompt without needing to refresh.
+
+## Replying to a specific post
+
+To reply directly to a post rather than the topic generally:
+
+1. Click the **Reply** icon on the specific post (not the bottom reply button)
+2. Your reply is linked to that post via `replyToPostNumber`
+3. Readers see a "In reply to @username" indicator at the top of your post
+
+This creates a visible threading chain — useful in long discussions where multiple sub-conversations are happening in parallel.
+
+## Quoting a post
+
+To include part of another user's post in your reply:
+
+1. Select the text you want to quote
+2. A **Quote** button appears — click it
+3. The selected text is inserted into the composer in blockquote Markdown:
+
+```markdown
+> This is the quoted text
+```
+
+You can quote from multiple posts in a single reply.
+
+## Liking a post
+
+Click the **heart** (❤) icon at the bottom of any post to like it. Likes contribute to:
+
+- The post's `likeCount`
+- The topic's overall `likeCount`
+- The author's progress toward higher trust levels
+- The topic appearing in the **Top** feed
+
+You can unlike a post by clicking the heart again.
+
+## Editing your reply
+
+Click the **Edit** (pencil) icon on your own post to edit it. Each edit creates a new version. The post displays a "last edited" timestamp for transparency.
+
+You cannot edit other users' posts. Moderators can edit any post.
+
+## Deleting a reply
+
+You can delete your own post using the **Delete** action in the post menu. Deleted posts are soft-deleted — they are hidden from members but remain in the database and can be restored by admins.
+
+The topic's `postsCount` is updated when a post is deleted.

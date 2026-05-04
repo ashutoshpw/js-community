@@ -1,0 +1,65 @@
+---
+title: Search
+description: How to use full-text search to find topics and posts across JS Community.
+---
+
+# Search
+
+JS Community uses **PostgreSQL full-text search** — no external search service required. All topics and posts are searchable immediately after creation.
+
+## Using the search interface
+
+Navigate to `/forum/search` or click the search icon in the forum header. Type your query in the search box and press Enter.
+
+## Search syntax
+
+| What you want | How to type it |
+|---------------|---------------|
+| A phrase | `react hooks` |
+| A specific word | `useState` |
+| Multiple unrelated terms | `vite webpack` |
+
+The search engine tokenizes your query and applies English-language stemming — searching for `hooks` also matches `hook`.
+
+### Minimum query length
+
+Queries must be at least **2 characters** long. This prevents unintentional full-table scans.
+
+## Filters
+
+On the search results page you can narrow results with:
+
+| Filter | What it does |
+|--------|-------------|
+| **Type** | Limit to `topics`, `posts`, or `all` |
+| **Category** | Only results within a specific category |
+| **Author** | Only topics/posts by a specific username |
+
+These filters can also be applied via the API:
+
+```
+GET /api/forum/search?q=typescript&type=topics&category=javascript&user=alice&limit=20&offset=0
+```
+
+## How results are ranked
+
+- Topics are matched by title; posts are matched by body content
+- PostgreSQL `to_tsvector` / `to_tsquery` is used first for ranked results
+- An `ilike` (`%query%`) fallback handles partial matches not covered by full-text
+- Results are sorted by most recently created
+
+## Pagination
+
+The search API supports `limit` (maximum 50) and `offset` parameters for pagination.
+
+```
+GET /api/forum/search?q=react&limit=20&offset=20
+```
+
+The response includes a `hasMore` boolean and the total result count.
+
+## Tips for better results
+
+- Use specific terms rather than broad ones — `zustand state management` returns more relevant results than `state`
+- Search by author with `user=username` to find all posts from a particular contributor
+- Use the `topics` type filter when you're looking for a discussion thread rather than a specific post

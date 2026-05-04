@@ -1,0 +1,105 @@
+---
+title: Admin Endpoints
+description: Admin-only API endpoints for metrics, settings, user management, categories, and review queue.
+---
+
+# Admin Endpoints
+
+All endpoints in this section require a valid session with `admin: true`. Any other request returns `401 Unauthorized`.
+
+## Dashboard metrics
+
+```http
+GET /api/admin/metrics
+```
+
+See [Analytics](/docs/admin-guide/analytics) for the full response shape.
+
+---
+
+## Site settings
+
+```http
+GET /api/admin/settings
+PUT /api/admin/settings
+```
+
+See [Site Settings](/docs/admin-guide/site-settings) for details.
+
+---
+
+## User management
+
+### List users
+
+```http
+GET /api/admin/users?q=alice&page=1&per_page=20
+```
+
+### Update trust level
+
+```http
+PUT /api/admin/trust-levels
+Content-Type: application/json
+
+{ "userId": 5, "trustLevel": 3 }
+```
+
+---
+
+## Category management
+
+```http
+GET  /api/admin/categories
+POST /api/admin/categories
+PUT  /api/admin/categories/[id]
+DELETE /api/admin/categories/[id]
+```
+
+See [Category Management](/docs/admin-guide/category-management) for request/response shapes.
+
+---
+
+## Review queue
+
+### List flagged content
+
+```http
+GET /api/admin/review
+```
+
+**Response `200`:**
+
+```json
+{
+  "flags": [
+    {
+      "id": 44,
+      "post": {
+        "id": 99,
+        "raw": "Buy cheap followers here...",
+        "topicId": 12,
+        "userId": 42
+      },
+      "reporter": { "id": 7, "username": "carol" },
+      "reason": "spam",
+      "note": "Promotional post",
+      "createdAt": "2026-01-15T08:00:00.000Z"
+    }
+  ]
+}
+```
+
+### Act on a flag
+
+```http
+PUT /api/admin/review/[id]
+Content-Type: application/json
+
+{
+  "action": "hide",
+  "reason": "Confirmed spam"
+}
+```
+
+Valid `action` values: `approve`, `hide`, `delete`, `suspend_user`, `ban_user`.

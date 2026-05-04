@@ -1,0 +1,66 @@
+---
+title: Site Settings
+description: How to view and update platform-wide configuration through the admin settings panel.
+---
+
+# Site Settings
+
+Site settings are stored in the `site_settings` table in PostgreSQL. They are editable from `/admin/settings` and take effect immediately without a server restart.
+
+## Accessing settings
+
+Navigate to `/admin/settings`. Settings are grouped by category. The current value is shown inline with an input field to update it.
+
+## Data types
+
+Each setting has a `dataType` field:
+
+| Type | Description | Example |
+|------|-------------|---------|
+| `string` | Free-form text | Site name, contact email |
+| `integer` | Whole number | Max posts per day, session length |
+| `boolean` | `true` or `false` | Email verification required, maintenance mode |
+| `list` | Comma-separated values | Allowed file extensions, blocked keywords |
+
+## Default categories
+
+Settings shipped with the platform are grouped into categories:
+
+- **general** — site name, description, contact email
+- **users** — registration open/closed, email verification, default trust level
+- **content** — max post length, min topic title length, allowed upload types
+- **email** — from address, SMTP configuration, notification templates
+- **security** — session duration, rate limit windows
+
+## Updating a setting
+
+1. Find the setting in the panel
+2. Edit the value in the input field
+3. Click **Save** — the change is written to `site_settings` immediately
+
+All setting changes are logged in the `admin_actions` table with the `setting_change` action type, recording which admin made the change.
+
+## API
+
+```http
+GET /api/admin/settings
+Authorization: session cookie (admin only)
+```
+
+Response:
+```json
+{
+  "settings": {
+    "general": [...],
+    "users": [...]
+  },
+  "categories": ["general", "users", "content", "email", "security"]
+}
+```
+
+```http
+PUT /api/admin/settings
+Content-Type: application/json
+
+{ "name": "setting_name", "value": "new_value" }
+```

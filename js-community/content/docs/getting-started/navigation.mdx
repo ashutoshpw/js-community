@@ -1,0 +1,84 @@
+---
+title: Navigating the Platform
+description: Understanding the forum layout, key routes, sidebar, and navigation patterns.
+---
+
+# Navigating the Platform
+
+JS Community has two main areas: the **marketing site** (public pages like home, about, features, docs) and the **forum** (all discussion content, accessible after login).
+
+## Forum layout
+
+The forum at `/forum` uses a persistent layout with three sections:
+
+```
+┌─────────────────────────────────────────────────┐
+│  Header: logo, search, notifications, user menu  │
+├──────────────┬──────────────────────────────────┤
+│              │                                  │
+│   Sidebar    │       Main content area          │
+│   (left)     │                                  │
+│              │                                  │
+└──────────────┴──────────────────────────────────┘
+```
+
+### Header
+
+- **Logo** — links back to `/forum/latest`
+- **Search** — opens the full-text search at `/forum/search`
+- **Notifications bell** — shows unread count; opens notification panel
+- **User avatar** — links to your profile; reveals sign-out option
+- **New Topic** button — links to `/forum/new`
+
+### Sidebar
+
+The sidebar shows your category list. Each category shows its name, description, and a count of recent topics. Clicking a category filters the topic feed to that category.
+
+### Main content area
+
+Changes based on the current route:
+
+| Route | Content |
+|-------|---------|
+| `/forum/latest` | Topics ordered by last activity |
+| `/forum/top` | Topics ordered by like count |
+| `/forum/categories` | Category browser |
+| `/forum/t/[id]/[slug]` | Individual topic with all posts |
+| `/forum/search` | Search results |
+| `/forum/messages` | Your private message inbox |
+| `/forum/u/[username]` | User profile |
+| `/forum/new` | New topic composer |
+
+## Key public routes
+
+| Route | Description |
+|-------|-------------|
+| `/` | Marketing homepage |
+| `/features` | Feature showcase |
+| `/faq` | Frequently asked questions |
+| `/about` | About the platform |
+| `/contact` | Contact and support |
+| `/docs` | This documentation site |
+| `/guidelines` | Community guidelines |
+| `/privacy` | Privacy policy |
+| `/terms` | Terms of service |
+
+## Forum-only routes (require login)
+
+| Route | Description |
+|-------|-------------|
+| `/forum/new` | Create a new topic |
+| `/forum/messages` | Private message inbox |
+| `/forum/messages/new` | Send a new message |
+| `/forum/u/[username]/edit` | Edit your profile |
+| `/forum/notifications` | Notification panel |
+
+## Admin routes (require admin role)
+
+| Route | Description |
+|-------|-------------|
+| `/admin` | Admin dashboard |
+| `/admin/users` | User management |
+| `/admin/categories` | Category management |
+| `/admin/review` | Flag review queue |
+| `/admin/settings` | Site settings |

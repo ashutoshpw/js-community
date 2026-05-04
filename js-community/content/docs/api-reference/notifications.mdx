@@ -1,0 +1,97 @@
+---
+title: Notifications
+description: Notification feed and preference management API.
+---
+
+# Notifications
+
+## Get notifications
+
+```http
+GET /api/forum/notifications
+Authorization: required
+```
+
+**Query parameters:**
+
+| Param | Type | Default | Description |
+|-------|------|---------|-------------|
+| `limit` | integer | `20` | Max results (up to 100) |
+| `unread_only` | boolean | `false` | Only return unread notifications |
+
+**Response `200`:**
+
+```json
+{
+  "notifications": [
+    {
+      "id": 301,
+      "type": "replied",
+      "typeId": 2,
+      "read": false,
+      "data": {
+        "topicId": 12,
+        "postNumber": 3,
+        "topicTitle": "How do I use useEffect correctly?",
+        "username": "bob"
+      },
+      "createdAt": "2026-01-12T14:00:00.000Z"
+    }
+  ],
+  "unreadCount": 4
+}
+```
+
+The `data` field is a JSON object whose shape varies by notification type.
+
+---
+
+## Mark notifications as read
+
+```http
+PATCH /api/forum/notifications
+Authorization: required
+Content-Type: application/json
+```
+
+**Request body:**
+
+```json
+{ "ids": [301, 302] }
+```
+
+Pass `"all": true` to mark every notification as read:
+
+```json
+{ "all": true }
+```
+
+**Response `200`:** `{ "updated": 2 }`
+
+---
+
+## Notification preferences
+
+```http
+GET /api/forum/notifications/preferences
+Authorization: required
+```
+
+Returns the user's current notification preference settings.
+
+```http
+PATCH /api/forum/notifications/preferences
+Authorization: required
+Content-Type: application/json
+
+{
+  "mentioned": true,
+  "replied": true,
+  "liked": false,
+  "private_message": true
+}
+```
+
+Pass `false` to disable a notification type. Omitted types are left unchanged.
+
+**Response `200`:** Updated preferences object.

@@ -1,0 +1,46 @@
+---
+title: Private Messages
+description: How to send and receive private messages with other members.
+---
+
+# Private Messages
+
+Private messages (PMs) are direct conversations between members. They are fully private — only the participants can see the messages.
+
+## Sending a new message
+
+1. Navigate to `/forum/messages/new`
+2. In the **To** field, search for the recipient by username
+3. Compose your message using the Markdown editor (same formatting as public posts)
+4. Click **Send**
+
+The recipient receives a **private_message** notification immediately.
+
+## Your message inbox
+
+Your full inbox is at `/forum/messages`. It shows all your conversations ordered by most recent activity. Each conversation shows:
+
+- The other participant's username and avatar
+- A preview of the last message
+- The timestamp of the last message
+- An unread indicator if there are new messages
+
+## Reading a conversation
+
+Click any conversation to open the thread at `/forum/messages/[id]`. All messages in the thread are shown in chronological order.
+
+## Replying
+
+In an open conversation, type your reply in the composer at the bottom and click **Reply**. Your message is appended to the thread and the recipient is notified.
+
+## Trust level limits
+
+New users (Trust Level 0) can send a maximum of **10 private messages per day**. This limit increases as your trust level rises. See [Trust Levels](/docs/user-guide/trust-levels) for the full breakdown.
+
+## Message storage
+
+All messages are stored in the `messages` table in the PostgreSQL database. Messages are not encrypted at rest — treat private messages as private but not secret (admins with database access can read them).
+
+## Abuse and moderation
+
+If you receive unwanted messages, use the **Report** option on the message or contact an admin via `/contact`. Admins can review private message abuse reports and take action on the sender's account.

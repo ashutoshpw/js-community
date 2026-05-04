@@ -1,0 +1,62 @@
+---
+title: Errors
+description: Standard error response shapes and HTTP status codes used across the API.
+---
+
+# Errors
+
+All error responses follow the same shape:
+
+```json
+{ "error": "Human-readable description of what went wrong" }
+```
+
+## HTTP status codes
+
+| Code | Meaning | When it's used |
+|------|---------|---------------|
+| `200` | OK | Successful GET, PATCH, DELETE |
+| `201` | Created | Successful POST (resource created) |
+| `400` | Bad Request | Missing required field, validation failure, malformed JSON |
+| `401` | Unauthorized | No session, or session expired |
+| `403` | Forbidden | Authenticated but insufficient permissions (e.g., accessing another user's private messages, trust level too low) |
+| `404` | Not Found | Resource with the given ID or slug does not exist |
+| `409` | Conflict | Duplicate resource (e.g., username or email already registered) |
+| `422` | Unprocessable Entity | Input is syntactically valid but semantically incorrect |
+| `429` | Too Many Requests | Rate limit exceeded — check the `Retry-After` header |
+| `500` | Internal Server Error | Unexpected server-side failure — check server logs |
+| `503` | Service Unavailable | Feature temporarily disabled (e.g., email delivery not configured) |
+
+## Common error messages
+
+| Error | Code | Meaning |
+|-------|------|---------|
+| `"Unauthorized"` | 401 | No valid session |
+| `"User not found"` | 404 | Session user deleted or missing |
+| `"Topic not found"` | 404 | Topic ID/slug does not exist or is deleted |
+| `"Post not found"` | 404 | Post ID does not exist or is soft-deleted |
+| `"Search query must be at least 2 characters"` | 400 | Query too short |
+| `"Rate limit exceeded"` | 429 | Too many requests from this IP |
+| `"Email already registered"` | 409 | Duplicate email at registration |
+| `"Username already taken"` | 409 | Duplicate username at registration |
+| `"Password reset is temporarily unavailable"` | 503 | Email delivery not configured |
+
+## Retry-After header
+
+When a `429` is returned, the response includes:
+
+```
+Retry-After: 37
+```
+
+The value is the number of seconds until the rate limit window resets. Clients should wait this long before retrying.
+
+## Validation errors
+
+Validation failures return `400` with a description of the specific problem:
+
+```json
+{ "error": "password must be at least 8 characters" }
+```
+
+Clients should display this message to the user.

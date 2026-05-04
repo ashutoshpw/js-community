@@ -1,0 +1,77 @@
+---
+title: Creating a Topic
+description: How to write and publish a new discussion thread.
+---
+
+# Creating a Topic
+
+A topic is a threaded discussion started by a member. It has a title, a category, an optional set of tags, and a body written in Markdown.
+
+## Starting a new topic
+
+1. Click the **New Topic** button in the forum header (or navigate to `/forum/new`)
+2. You must be logged in — the button is hidden for guests
+
+## The topic composer
+
+The composer form has the following fields:
+
+### Title
+
+A clear, descriptive title helps others find and understand your topic. Titles appear in the Latest feed, search results, and browser tabs.
+
+### Category
+
+Choose the most relevant category from the dropdown. Categories are created and managed by admins. Selecting the right category ensures your topic reaches the right audience and appears in the category feed.
+
+### Tags (optional)
+
+Tags allow cross-category labeling. You can add multiple tags (e.g., `react`, `typescript`, `beginner`). Tags are searchable and clickable in the feed.
+
+### Body
+
+The body is the main content of your opening post. It is written in **Markdown** — see [Markdown Formatting](/docs/getting-started/formatting) for the full syntax reference.
+
+Common patterns:
+
+```markdown
+## What I'm trying to do
+
+Explain the goal clearly.
+
+## What I've tried
+
+```javascript
+const foo = bar();
+```
+
+## Error message
+
+```
+TypeError: Cannot read property 'x' of undefined
+```
+```
+
+## After posting
+
+Once you submit, your topic:
+
+- Appears immediately in `/forum/latest`
+- Is assigned a unique URL: `/forum/t/[id]/[slug]`
+- Sends notifications to users who are watching the category
+- Can be edited — the edit creates a new revision in the post's revision history
+
+## Editing a topic
+
+You can edit your topic title or opening post after publishing. Click the **Edit** (pencil) icon below your post. Each edit increments the version number and is tracked in the revision history.
+
+## Closing and archiving
+
+Moderators and admins can:
+
+- **Close** a topic — new replies are disabled but the topic remains readable
+- **Archive** a topic — frozen for posterity
+- **Pin** a topic — shown at the top of the feed globally or per-category
+- **Delete** a topic — soft-deleted; invisible to members but recoverable by admins
+
+Members cannot close or delete topics directly — use the flag icon to report one that should be reviewed.

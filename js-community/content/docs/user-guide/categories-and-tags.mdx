@@ -1,0 +1,56 @@
+---
+title: Categories and Tags
+description: How to browse, filter, and use categories and tags on JS Community.
+---
+
+# Categories and Tags
+
+Content on JS Community is organized by **categories** (set by admins) and **tags** (applied by members). Together they let you zero in on exactly the topics that matter to you.
+
+## Categories
+
+Categories are the top-level organizational unit. Each category has:
+
+- A **name** and **slug** (used in the URL)
+- A **description** shown in the category browser
+- A **color** for visual identification in the sidebar
+
+### Browsing categories
+
+Navigate to `/forum/categories` to see all available categories. Each category card shows its name, description, and a count of recent topics.
+
+### Filtering the feed by category
+
+Click any category in the sidebar or on the categories page to filter the topic feed to only topics in that category. The URL updates to include `?category=[slug]`.
+
+You can also pass the category filter directly in the API:
+
+```
+GET /api/forum/topics?category=javascript
+```
+
+### Category permissions
+
+Category visibility is controlled by admins. Some categories may require a minimum trust level to post in, or may be restricted to specific user groups.
+
+## Tags
+
+Tags are labels applied to topics for cross-category filtering. A topic in the "Tools" category tagged with `vite` can be found by anyone browsing the `vite` tag, regardless of category.
+
+### Applying tags when creating a topic
+
+In the topic composer, the **Tags** field accepts multiple comma-separated tags. Tags must exist in the platform's tag list — new tags can be created by members at Trust Level 2 and above.
+
+### Browsing by tag
+
+Clicking a tag on any topic filters the feed to all topics with that tag. Tags are also searchable in the full-text search.
+
+## Combined filtering
+
+You can combine category and tag filters:
+
+```
+GET /api/forum/topics?category=tools&tag=vite
+```
+
+This returns only topics in the "Tools" category that also carry the `vite` tag.

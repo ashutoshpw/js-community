@@ -1,0 +1,73 @@
+---
+title: Creating an Account
+description: How to register with email and password, or sign in with Google or GitHub OAuth.
+---
+
+# Creating an Account
+
+There are two ways to create an account on JS Community: email/password registration, or OAuth via Google or GitHub.
+
+## Email and password registration
+
+1. Navigate to [/register](/register)
+2. Fill in the form:
+   - **Username** — unique, used in your profile URL (`/forum/u/[username]`)
+   - **Email address** — used for notifications and password resets
+   - **Password** — minimum 8 characters, maximum 128 characters
+3. Click **Create account**
+
+Your account is created immediately. Depending on deployment settings, email verification may be required before you can post.
+
+### Username rules
+
+- Must be unique across the platform
+- Can contain letters, numbers, underscores, and hyphens
+- Used in your public profile URL — choose carefully as changes are possible but not instant
+- Check availability live as you type on the registration form
+
+## OAuth sign-in (Google or GitHub)
+
+If Google or GitHub OAuth is configured on the deployment:
+
+1. Click **Continue with Google** or **Continue with GitHub** on the login page
+2. Authorize JS Community in the provider's dialog
+3. You will be redirected back and logged in
+
+Your OAuth account is linked to your email address. If you later register with email/password using the same address, or sign in via a different OAuth provider that shares the email, they resolve to the same user account.
+
+### Prerequisite for OAuth
+
+OAuth sign-in requires the deployment to have the following environment variables set:
+
+```bash
+# Google
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+
+# GitHub
+GITHUB_CLIENT_ID=...
+GITHUB_CLIENT_SECRET=...
+```
+
+If these are not set, only email/password login is available.
+
+## Password security
+
+Passwords are hashed with **bcrypt** before being stored — plain text is never persisted. The hash and salt are managed by [better-auth](https://www.better-auth.com/).
+
+OAuth sign-ins never store a password at all.
+
+## Resetting your password
+
+If you forget your password:
+
+1. Go to [/forgot-password](/forgot-password)
+2. Enter your email address and click **Send reset link**
+3. Check your inbox for an email from the platform
+4. Click the link — it is valid for **1 hour** and single-use
+
+Password reset requests are rate-limited: 3 attempts per 15-minute window per email/IP. After 3 attempts the identifier is blocked for 1 hour.
+
+## Session management
+
+After logging in a secure, signed session cookie is set by better-auth. Sessions persist across browser restarts. Expired sessions are cleaned up daily by an Inngest background job. You can sign out from any page using the logout button in the forum header.

@@ -1,0 +1,64 @@
+---
+title: Moderation
+description: How to manage the flag review queue, act on flagged content, and handle content moderation.
+---
+
+# Moderation
+
+JS Community includes a full moderation workflow: members flag posts, flags appear in the review queue, and moderators take action. All moderation actions are logged.
+
+## The flag system
+
+Members can flag any post using the flag (⚑) icon. Flag reasons:
+
+| Reason | Description |
+|--------|-------------|
+| Spam | Unsolicited advertising, repeated identical posts |
+| Off-topic | Does not relate to the topic or category |
+| Inappropriate | Violates community guidelines |
+| Other | Custom reason with free-text note |
+
+Flags are stored as `postActions` records with the appropriate `postActionTypeId`.
+
+## Review queue
+
+Access the review queue at `/admin/review`. It shows all pending flags ordered by creation time.
+
+### Reviewing a flag
+
+Each item in the queue shows:
+
+- The flagged post content
+- The reason given by the reporter
+- The reporter's username
+- The time of the flag
+
+### Actions available
+
+| Action | Effect |
+|--------|--------|
+| **Approve** | Dismiss the flag; post remains visible |
+| **Hide** | Sets `post.hidden = true`; post is hidden from members |
+| **Delete** | Soft-deletes the post (`deletedAt` timestamp set) |
+| **Suspend user** | Temporarily suspends the post author |
+| **Ban user** | Permanently bans the post author |
+
+All actions are logged in `admin_actions` with the target post/user ID.
+
+## Post visibility
+
+Hiding a post sets `hidden: true` and records `hiddenAt` and `hiddenReasonId` on the post. Hidden posts:
+
+- Are invisible to members in the topic thread
+- Remain in the database and are visible to admins
+- Can be restored by setting `hidden = false`
+
+Soft-deleted posts set `deletedAt` and are excluded from all public queries.
+
+## Moderator vs admin
+
+**Admins** (`admin: true`) have full access to all moderation actions plus settings and user management.
+
+**Moderators** (`moderator: true`) can access the review queue and hide/delete posts but cannot access site settings or ban users.
+
+Trust Level 4 (Leader) members get moderation-lite capabilities: recategorizing topics, renaming topics, and closing old threads.

@@ -1,0 +1,106 @@
+---
+title: Users
+description: API endpoints for user profiles, activity feeds, and username lookup.
+---
+
+# Users
+
+## Get a user profile
+
+```http
+GET /api/forum/users/[username]
+```
+
+**Response `200`:**
+
+```json
+{
+  "user": {
+    "id": 5,
+    "username": "alice",
+    "name": "Alice Smith",
+    "trustLevel": 2,
+    "admin": false,
+    "moderator": false,
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "lastSeenAt": "2026-01-15T08:30:00.000Z",
+    "profile": {
+      "bio": "JavaScript developer, React enthusiast",
+      "location": "Berlin",
+      "website": "https://alice.dev",
+      "avatarUrl": "https://blob.vercel.com/..."
+    }
+  }
+}
+```
+
+**Errors:**
+- `404` — username not found
+
+---
+
+## Get user activity
+
+```http
+GET /api/forum/users/[username]/activity
+```
+
+Returns a paginated list of topics created and posts made by the user.
+
+**Query parameters:** `page`, `per_page`, `type` (`topics` | `posts` | `all`)
+
+---
+
+## Search users
+
+```http
+GET /api/forum/users/search?q=ali&limit=10
+Authorization: required
+```
+
+Returns up to 10 users whose username starts with the query string. Used for the private message recipient lookup and @mention autocomplete.
+
+**Response `200`:**
+
+```json
+{
+  "users": [
+    { "id": 5, "username": "alice", "avatarUrl": "..." }
+  ]
+}
+```
+
+---
+
+## Check username availability
+
+```http
+GET /api/users/check-username?username=alice
+```
+
+**Response `200`:**
+
+```json
+{ "available": false }
+```
+
+Used during registration to give live feedback before form submission.
+
+---
+
+## Update a user profile
+
+```http
+PUT /api/users/[username]
+Authorization: required (own account only)
+Content-Type: application/json
+
+{
+  "name": "Alice Smith",
+  "bio": "JavaScript developer",
+  "location": "Berlin",
+  "website": "https://alice.dev"
+}
+```
+
+**Response `200`:** Updated user object.

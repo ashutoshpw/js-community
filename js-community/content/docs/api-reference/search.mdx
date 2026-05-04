@@ -1,0 +1,76 @@
+---
+title: Search
+description: Full-text search API for topics and posts.
+---
+
+# Search
+
+## Search topics and posts
+
+```http
+GET /api/forum/search
+```
+
+**Query parameters:**
+
+| Param | Type | Default | Description |
+|-------|------|---------|-------------|
+| `q` | string | — | **Required.** Search query (min 2 chars) |
+| `type` | string | `all` | `topics`, `posts`, or `all` |
+| `category` | integer | — | Category ID to restrict results |
+| `user` | string | — | Username to restrict results |
+| `limit` | integer | `20` | Results per page (max 50) |
+| `offset` | integer | `0` | Pagination offset |
+
+**Example:**
+
+```
+GET /api/forum/search?q=react+hooks&type=topics&limit=10
+```
+
+**Response `200`:**
+
+```json
+{
+  "results": [
+    {
+      "type": "topic",
+      "id": 12,
+      "topicId": 12,
+      "title": "How do I use useEffect correctly?",
+      "excerpt": "I keep getting the stale closure issue when...",
+      "username": "alice",
+      "categoryId": 2,
+      "categoryName": "JavaScript",
+      "categorySlug": "javascript",
+      "categoryColor": "#F7DF1E",
+      "createdAt": "2026-01-10T09:00:00.000Z"
+    },
+    {
+      "type": "post",
+      "id": 99,
+      "topicId": 12,
+      "title": "How do I use useEffect correctly?",
+      "excerpt": "Have you tried passing an empty dependency array...",
+      "username": "bob",
+      "postNumber": 3,
+      "createdAt": "2026-01-12T14:00:00.000Z"
+    }
+  ],
+  "query": "react hooks",
+  "hasMore": false,
+  "total": 2
+}
+```
+
+**Errors:**
+- `400` — query too short (less than 2 characters)
+- `500` — search failure (check server logs)
+
+## How search works internally
+
+1. The query is split into tokens and joined with ` & ` for PostgreSQL `to_tsquery`
+2. Topics are searched by title; posts by body (`raw`)
+3. A `to_tsvector` ranked match is attempted first
+4. An `ilike` (`%query%`) fallback is applied for partial matches
+5. Combined results are sorted by `createdAt` descending

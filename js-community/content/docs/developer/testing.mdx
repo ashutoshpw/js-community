@@ -1,0 +1,81 @@
+---
+title: Testing
+description: Vitest + React Testing Library setup, running tests, coverage thresholds, and test conventions.
+---
+
+# Testing
+
+## Stack
+
+| Tool | Version | Purpose |
+|------|---------|---------|
+| [Vitest](https://vitest.dev/) | 4.x | Test runner |
+| [React Testing Library](https://testing-library.com/react) | 16.x | Component rendering |
+| [@testing-library/jest-dom](https://github.com/testing-library/jest-dom) | 6.x | Custom matchers |
+| [@testing-library/user-event](https://github.com/testing-library/user-event) | 14.x | Realistic browser events |
+| jsdom | 27.x | Browser environment simulation |
+
+## Running tests
+
+```bash
+bun test                 # Run all tests once
+bun run test:watch       # Watch mode (re-runs on file changes)
+bun run test:ui          # Vitest browser UI
+bun run test:coverage    # Generate coverage report
+```
+
+## Coverage thresholds
+
+The coverage thresholds are enforced in `vitest.config.ts`. The CI pipeline fails if any metric drops below **80%**:
+
+```
+Lines:      80%
+Functions:  80%
+Branches:   80%
+Statements: 80%
+```
+
+Coverage reports are generated in multiple formats: `text`, `json`, `json-summary`, `html`, and `lcov`. The `lcov.info` file is uploaded to Codecov on every push.
+
+## Test file conventions
+
+- Place test files next to the source file: `component.test.tsx`, `util.test.ts`
+- Use the `describe` / `it` / `expect` pattern from Vitest (available as globals — no import needed)
+- Use `render` from `@/test/utils` (re-exports RTL with a custom provider wrapper)
+
+```typescript
+import { render, screen } from "@/test/utils";
+import { MyComponent } from "./MyComponent";
+
+describe("MyComponent", () => {
+  it("renders the title", () => {
+    render(<MyComponent title="Hello" />);
+    expect(screen.getByText("Hello")).toBeInTheDocument();
+  });
+});
+```
+
+## Test setup
+
+Global setup is in `src/test/setup.tsx`. It:
+
+- Imports `@testing-library/jest-dom/vitest` for custom matchers
+- Mocks `next/navigation` (`useRouter`, `usePathname`, `useSearchParams`)
+- Mocks `next/image` and `next/link` with simple HTML equivalents
+- Mocks `IntersectionObserver` for framer-motion compatibility
+- Calls `cleanup()` after each test
+
+## Mocks
+
+Custom mocks live in `src/test/mocks/`:
+
+- `collections-server.ts` — mocks the Fumadocs `collections/server` import for test environments where the `.source/` directory is not generated
+
+## Path aliases
+
+Tests use the same `@/*` alias as the app code. The `vitest.config.ts` resolves `@` to `./src`.
+
+## What is not yet tested
+
+- **End-to-end (E2E) tests** — Playwright is not yet set up. Critical flows (registration, login, topic creation, search) are candidates for E2E coverage. This is tracked in the test suite issue.
+- **API route integration tests** — most API routes are tested indirectly through the client components that consume them. Direct route handler tests would improve confidence.

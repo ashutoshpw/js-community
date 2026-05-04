@@ -1,0 +1,117 @@
+---
+title: Deployment
+description: Deploying JS Community to Vercel, configuring environment variables, Inngest, and the health check endpoint.
+---
+
+# Deployment
+
+JS Community is designed for deployment on Vercel but can run on any platform that supports Next.js.
+
+## Vercel deployment
+
+### Initial setup
+
+1. Fork/clone the repository and push to GitHub
+2. Import the project in the [Vercel dashboard](https://vercel.com/new)
+3. Set the **Root Directory** to `js-community`
+4. Set the **Framework Preset** to `Next.js`
+
+### Build command and output
+
+Vercel auto-detects the Next.js configuration. The build runs `bun run build` and outputs to `.next`.
+
+The `scripts/ignore-build.js` script is configured to skip builds for draft pull requests.
+
+## Required environment variables
+
+Set these in the Vercel project settings under **Environment Variables**:
+
+```bash
+DATABASE_URL=postgres://...
+BETTER_AUTH_SECRET=...
+BETTER_AUTH_URL=https://your-production-domain.com
+```
+
+## Recommended environment variables
+
+```bash
+RESEND_API_KEY=re_...
+EMAIL_FROM=noreply@yourdomain.com
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+GITHUB_CLIENT_ID=...
+GITHUB_CLIENT_SECRET=...
+BLOB_READ_WRITE_TOKEN=vercel_blob_...
+INNGEST_EVENT_KEY=...
+INNGEST_SIGNING_KEY=...
+NEXT_PUBLIC_ENABLE_REALTIME=true
+```
+
+## Database migrations
+
+Run migrations against the production database **before** each deployment that includes schema changes:
+
+```bash
+DATABASE_URL=postgres://... bun run db:migrate
+```
+
+The GitHub Actions workflow at `.github/workflows/migrations.yml` warns if schema files change without a corresponding migration file in a PR.
+
+## Inngest setup
+
+1. Create a free account at [inngest.com](https://www.inngest.com)
+2. Create a new app and copy the **Event Key** and **Signing Key**
+3. Set `INNGEST_EVENT_KEY` and `INNGEST_SIGNING_KEY` in your Vercel environment
+4. After deploying, go to the Inngest dashboard and point the **App URL** to `https://your-domain.com/api/inngest`
+5. Inngest will sync your functions and start scheduling the cron jobs
+
+### Registered functions
+
+| Function | Trigger |
+|----------|---------|
+| `cleanup-rate-limits` | Every hour (cron: `0 * * * *`) |
+| `cleanup-expired-sessions` | Daily at 03:00 UTC (cron: `0 3 * * *`) |
+| `send-email` | On `app/email.send` event |
+
+## Health check endpoint
+
+```http
+GET /api/health
+```
+
+Returns the application health status. No authentication required. Used for uptime monitoring.
+
+**Response `200` (healthy):**
+
+```json
+{
+  "status": "ok",
+  "db": "connected",
+  "timestamp": "2026-01-15T08:00:00.000Z",
+  "version": "0.1.0"
+}
+```
+
+**Response `503` (degraded):**
+
+```json
+{
+  "status": "degraded",
+  "db": "error",
+  "timestamp": "2026-01-15T08:00:00.000Z"
+}
+```
+
+Point your uptime monitoring tool (e.g., Vercel monitoring, UptimeRobot) at `https://your-domain.com/api/health`.
+
+## Vercel cron (optional)
+
+`vercel.json` defines a cron that pings `/api/inngest` once per minute to keep the Vercel function warm. Inngest handles the actual scheduling:
+
+```json
+{
+  "crons": [
+    { "path": "/api/inngest", "schedule": "* * * * *" }
+  ]
+}
+```

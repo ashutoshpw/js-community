@@ -1,21 +1,60 @@
 ---
 title: API Reference
-description: Review the primary HTTP endpoints that back authentication, account recovery, and forum features.
+description: Complete HTTP API reference for JS Community — authentication, topics, posts, users, search, notifications, and admin endpoints.
 ---
 
 # API Reference
 
-The platform exposes route handlers under `src/app/api`.
+JS Community exposes a REST API under `/api`. All endpoints return JSON. Authenticated endpoints require a valid session cookie obtained by signing in at `/api/auth/sign-in`.
 
-## Example endpoint
+## Base URL
 
-```http
-POST /api/register
-Content-Type: application/json
-
-{
-  "username": "new-user",
-  "email": "new-user@example.com",
-  "password": "strong-password"
-}
 ```
+https://your-domain.com/api
+```
+
+## Authentication
+
+Most write endpoints and all admin endpoints require authentication. Pass the session cookie automatically from the browser, or include it explicitly in server-side requests.
+
+Unauthenticated requests to protected endpoints return:
+
+```json
+{ "error": "Unauthorized" }
+```
+
+with HTTP status `401`.
+
+## In this section
+
+| Page | Endpoints covered |
+|------|------------------|
+| [Authentication](/docs/api-reference/authentication) | Sign up, sign in, sign out, session |
+| [Topics](/docs/api-reference/topics) | CRUD for topics, topic feeds |
+| [Posts](/docs/api-reference/posts) | Replies, post actions, likes |
+| [Users](/docs/api-reference/users) | User profiles, activity, username search |
+| [Categories](/docs/api-reference/categories) | Category listing |
+| [Search](/docs/api-reference/search) | Full-text search across topics and posts |
+| [Notifications](/docs/api-reference/notifications) | Notification feed, preferences |
+| [Private Messages](/docs/api-reference/private-messages) | Message threads |
+| [Admin](/docs/api-reference/admin) | Metrics, settings, users, categories, review |
+| [Errors](/docs/api-reference/errors) | Standard error shapes and HTTP codes |
+
+## Standard response shape
+
+Successful responses return the relevant resource or collection directly:
+
+```json
+{ "topic": { ... } }
+{ "topics": [...], "total": 120, "page": 1, "perPage": 20 }
+```
+
+Error responses always include an `error` string:
+
+```json
+{ "error": "Topic not found" }
+```
+
+## Rate limiting
+
+See [Security](/docs/admin-guide/security) for rate limit thresholds. Exceeded limits return `429` with a `Retry-After` header.

@@ -1,0 +1,54 @@
+---
+title: Profile Setup
+description: How to set your avatar, bio, location, and other profile fields.
+---
+
+# Profile Setup
+
+Your profile is public and accessible at `/forum/u/[username]`. It shows your posts, activity, badges, and the information you add here.
+
+## Accessing the profile edit page
+
+After logging in, go to:
+
+```
+/forum/u/[username]/edit
+```
+
+Or click your avatar in the forum header and select **Edit Profile**.
+
+## Profile fields
+
+| Field | Description |
+|-------|-------------|
+| **Name** | Your display name (distinct from your username). Can include spaces and special characters. |
+| **Bio** | A short description of yourself. Supports plain text. |
+| **Location** | Optional city or country — shown on your public profile. |
+| **Website** | Optional URL to your personal site, GitHub, or portfolio. |
+
+## Uploading an avatar
+
+1. On the profile edit page, click **Upload Avatar**
+2. Choose a JPEG, PNG, GIF, or WebP image
+3. Maximum file size is **5 MB**
+4. The image is uploaded to Vercel Blob and the URL is saved to your profile
+5. Your avatar appears in the forum header, next to your posts, and on your profile page
+
+If no avatar is uploaded, a default placeholder is shown.
+
+## Username changes
+
+You can update your username from the profile settings. Keep in mind:
+
+- Usernames must remain unique across the platform
+- Existing links to `/forum/u/[old-username]` will not automatically redirect
+- Update any external references (e.g., bio links, bookmarked URLs) after changing
+
+## Viewing your activity
+
+Your public profile includes two tabs accessible to all logged-in users:
+
+- **Activity** at `/forum/u/[username]/activity` — all topics created and posts made
+- **Bookmarks** at `/forum/u/[username]/bookmarks` — posts and topics you have saved privately
+
+Your trust level is also shown on your profile. See [Trust Levels](/docs/user-guide/trust-levels) for how it is calculated.

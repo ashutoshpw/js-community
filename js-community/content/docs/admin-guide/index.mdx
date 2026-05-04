@@ -1,15 +1,37 @@
 ---
 title: Admin Guide
-description: Moderate content, manage categories, and review operational settings for the forum.
+description: Complete guide for administrators and moderators — settings, user management, moderation, and analytics.
 ---
 
 # Admin Guide
 
-Staff tooling lives under the admin routes and supports common moderation workflows.
+The admin area at `/admin` is accessible to users with `admin: true` in the database. This section documents every admin workflow.
 
-## Admin areas
+## In this section
 
-- review flagged content
-- manage categories
-- update trust-level and platform settings
-- inspect user activity from administrative tools
+| Page | What it covers |
+|------|---------------|
+| [Site Settings](/docs/admin-guide/site-settings) | Configuring platform-wide settings |
+| [Moderation](/docs/admin-guide/moderation) | Flag review queue and content actions |
+| [User Management](/docs/admin-guide/user-management) | Trust levels, suspensions, bans, and audit logs |
+| [Category Management](/docs/admin-guide/category-management) | Creating and editing forum categories |
+| [Analytics](/docs/admin-guide/analytics) | Dashboard metrics and trends |
+| [Security](/docs/admin-guide/security) | Rate limiting, headers, and auth configuration |
+
+## Accessing the admin area
+
+Navigate to `/admin`. If your account does not have `admin: true` set in the `users` table, you will receive a 401 Unauthorized response.
+
+To grant admin access to a user, update the database directly or use the user management panel if another admin account already exists:
+
+```sql
+UPDATE users SET admin = true WHERE username = 'your-username';
+```
+
+## Admin dashboard
+
+The admin dashboard at `/admin` shows a summary of:
+
+- Total users, topics, and posts
+- New users, topics, and posts today vs yesterday (with trend %)
+- Quick links to all admin sub-sections

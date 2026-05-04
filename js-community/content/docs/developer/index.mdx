@@ -1,22 +1,36 @@
 ---
-title: Developer
-description: Follow the engineering workflow for building features, testing changes, and maintaining the docs.
+title: Developer Guide
+description: Everything you need to run, extend, test, and deploy JS Community.
 ---
 
 # Developer Guide
 
-This documentation site is generated from MDX files in `content/docs` using Fumadocs.
+This section is for engineers working on the platform itself — setting it up locally, understanding the architecture, writing tests, and deploying to production.
 
-## Documentation workflow
+## In this section
 
-1. Add or update MDX files inside `content/docs`.
-2. Run `npm run docs:dev` while authoring docs pages.
-3. Run `npm run docs:build` to verify production generation.
+| Page | What it covers |
+|------|---------------|
+| [Setup](/docs/developer/setup) | Prerequisites, environment variables, local development |
+| [Architecture](/docs/developer/architecture) | Monorepo layout, Next.js App Router, Server vs Client components |
+| [Database Schema](/docs/developer/database-schema) | All tables, relationships, and migration workflow |
+| [Testing](/docs/developer/testing) | Vitest + RTL setup, running tests, coverage |
+| [Deployment](/docs/developer/deployment) | Vercel, environment variables, Inngest, health check |
+| [Contributing](/docs/developer/contributing) | Code style, linting, commit conventions, PR process |
 
-## Validation commands
+## Tech stack at a glance
 
-```bash
-npm run lint
-npm run build
-npm test
-```
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 16 (App Router) |
+| Language | TypeScript 5 |
+| Runtime | Bun (preferred) or Node.js |
+| Database | PostgreSQL via Drizzle ORM |
+| Auth | better-auth |
+| Styling | Tailwind CSS v4 |
+| Linting/Formatting | Biome 2 |
+| Testing | Vitest 4 + React Testing Library 16 |
+| Background jobs | Inngest |
+| File storage | Vercel Blob |
+| Email | Resend (via Inngest) |
+| Docs | Fumadocs (MDX) |

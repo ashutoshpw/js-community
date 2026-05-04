@@ -1,0 +1,74 @@
+---
+title: User Management
+description: Managing user accounts, trust levels, suspensions, bans, and the admin audit log.
+---
+
+# User Management
+
+The user management panel at `/admin/users` lets admins view, search, and act on any user account.
+
+## Viewing users
+
+The users list shows all registered accounts with:
+
+- Username, email, trust level
+- Account status (active, suspended, silenced, banned)
+- Last seen timestamp
+- Join date
+
+Use the search box to filter by username or email.
+
+## Trust level management
+
+To manually set a user's trust level:
+
+1. Find the user in `/admin/users`
+2. Click **Edit Trust Level**
+3. Select the new level (0–4) and click **Save**
+
+This immediately updates the user's permissions without waiting for the automatic promotion job.
+
+## Suspending a user
+
+A suspended user cannot log in or post for the suspension duration.
+
+Fields when suspending:
+
+| Field | Description |
+|-------|-------------|
+| **Reason** | Shown to the user; also recorded in the audit log |
+| **Duration** | Specific end date/time — recorded as `suspendedTill` |
+| **Permanent** | Set `isPermanent = true` for an indefinite suspension |
+
+Suspension creates a record in the `user_bans` table and sets `suspended = true` on the user.
+
+To lift a suspension: click **Unsuspend** on the user's admin detail page. This sets `isActive = false` on the ban record and records `unbannedAt`.
+
+## Silencing a user
+
+Silenced users can read but cannot post, reply, or send messages. Less severe than suspension.
+
+- Recorded as `silenced = true` on the user with an optional `silencedTill` timestamp
+- Lifted by an admin at any time
+
+## Banning a user
+
+A permanent ban prevents login entirely.
+
+- Sets `suspended = true` with no `suspendedTill` and `isPermanent = true`
+- To reverse: set `isActive = false` on the ban record
+
+## Admin audit log
+
+All admin actions are recorded in the `admin_actions` table:
+
+| Column | Description |
+|--------|-------------|
+| `userId` | The admin who performed the action |
+| `action` | Type: `user_ban`, `user_promote`, `setting_change`, `post_hide`, etc. |
+| `targetType` | `user`, `post`, `topic`, or `setting` |
+| `targetId` | The ID of the affected record |
+| `details` | JSON string with additional context |
+| `createdAt` | Timestamp |
+
+The audit log is currently queryable directly via SQL or via the admin API. A UI for browsing it is on the roadmap.

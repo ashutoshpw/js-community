@@ -1,0 +1,74 @@
+---
+title: Analytics
+description: Understanding the admin dashboard metrics and how to interpret trends.
+---
+
+# Analytics
+
+The admin dashboard at `/admin` and the metrics API at `/api/admin/metrics` provide a real-time overview of platform activity.
+
+## Dashboard metrics
+
+The following counters are displayed on the admin dashboard:
+
+| Metric | Description |
+|--------|-------------|
+| **Total users** | All registered accounts in the `users` table |
+| **New users today** | Users with `createdAt >= start of today` |
+| **Total topics** | All non-deleted, visible topics |
+| **New topics today** | Topics created today |
+| **Total posts** | All non-deleted, non-hidden posts |
+| **New posts today** | Posts created today |
+
+## Trend calculation
+
+Each metric is compared against the same metric from yesterday:
+
+```
+trend = ((today - yesterday) / yesterday) * 100
+```
+
+- A positive trend (e.g., `+25%`) means more activity today than yesterday
+- A negative trend means less
+- If yesterday's count was 0 but today's is > 0, the trend shows `+100%`
+
+Trends are rounded to the nearest whole percentage.
+
+## Metrics API
+
+```http
+GET /api/admin/metrics
+Authorization: session cookie (admin only)
+```
+
+Response shape:
+
+```json
+{
+  "users": {
+    "total": 1240,
+    "newToday": 12,
+    "trend": 20
+  },
+  "topics": {
+    "total": 3840,
+    "newToday": 47,
+    "trend": -5
+  },
+  "posts": {
+    "total": 18600,
+    "newToday": 203,
+    "trend": 12
+  }
+}
+```
+
+## Extending analytics
+
+The metrics API queries the database directly with aggregate counts. To add custom metrics:
+
+1. Add the SQL query to `/api/admin/metrics/route.ts`
+2. Return the new field in the response JSON
+3. Update the admin dashboard client to display the new field
+
+For time-series data (e.g., signups per day over 30 days), add a dedicated endpoint and use a charting library on the client.

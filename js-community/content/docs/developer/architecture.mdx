@@ -1,0 +1,104 @@
+---
+title: Architecture
+description: Monorepo layout, Next.js App Router structure, and Server vs Client component conventions.
+---
+
+# Architecture
+
+## Monorepo layout
+
+```
+js-community/                  ← repo root
+├── js-community/              ← Next.js application
+│   ├── src/
+│   │   ├── app/               ← Next.js App Router (routes + components)
+│   │   ├── db/schema/         ← Drizzle ORM schema definitions
+│   │   ├── inngest/           ← Inngest background functions
+│   │   ├── lib/               ← Shared utilities and services
+│   │   └── test/              ← Test setup, utils, mocks
+│   ├── content/docs/          ← MDX documentation files (Fumadocs)
+│   └── public/                ← Static assets
+├── discourse/                 ← Legacy Discourse reference (submodule)
+└── scripts/                   ← Shared build/CI scripts
+```
+
+## App Router structure
+
+```
+src/app/
+├── (public pages)
+│   ├── page.tsx               ← Homepage
+│   ├── features/
+│   ├── faq/
+│   ├── about/
+│   ├── contact/
+│   ├── guidelines/
+│   ├── privacy/
+│   └── terms/
+├── forum/                     ← All forum routes
+│   ├── layout.tsx             ← Forum layout (header + sidebar)
+│   ├── latest/
+│   ├── top/
+│   ├── categories/
+│   ├── t/[id]/[slug]/         ← Individual topic
+│   ├── new/                   ← New topic composer
+│   ├── search/
+│   ├── messages/              ← Private messages
+│   └── u/[username]/          ← User profiles
+├── admin/                     ← Admin area
+│   ├── layout.tsx
+│   ├── page.tsx               ← Dashboard
+│   ├── users/
+│   ├── categories/
+│   ├── review/
+│   └── settings/
+├── api/                       ← API route handlers
+│   ├── auth/[...all]/         ← better-auth catch-all
+│   ├── forum/                 ← Forum API routes
+│   ├── admin/                 ← Admin API routes
+│   ├── inngest/               ← Inngest handler
+│   └── health/                ← Health check
+├── docs/[[...slug]]/          ← Fumadocs documentation
+└── components/                ← Shared UI components
+```
+
+## Server vs Client components
+
+Next.js App Router defaults to **Server Components**. Use `"use client"` only when you need:
+
+- Browser APIs (`window`, `document`, `localStorage`)
+- React state (`useState`, `useReducer`)
+- React effects (`useEffect`, `useCallback`)
+- Event handlers (`onClick`, `onChange`)
+- Third-party client-only libraries (framer-motion, etc.)
+
+### Conventions in this codebase
+
+| Pattern | Example |
+|---------|---------|
+| Page file is a Server Component | `src/app/forum/t/[id]/[slug]/page.tsx` |
+| Interactive parts are split into a `*Client.tsx` file | `ReviewClient.tsx`, `SettingsClient.tsx` |
+| Data fetching happens in the Server Component | DB queries in `page.tsx` |
+| Props are passed down to the Client Component | `<ReviewClient flags={flags} />` |
+
+This keeps the bundle small — only code that truly needs the browser ships as client JS.
+
+## Library structure (`src/lib/`)
+
+| File/Dir | Purpose |
+|----------|---------|
+| `auth.ts` | better-auth configuration |
+| `auth-client.ts` | Client-side better-auth instance |
+| `auth-helpers.ts` | `isUserAdmin`, `isUserModerator` utilities |
+| `database.ts` | Drizzle ORM connection |
+| `email.ts` | Resend email templates and sending functions |
+| `inngest.ts` | Inngest client instance |
+| `rate-limit.ts` | Password-reset rate limiting (Postgres-backed) |
+| `permissions/` | Trust level system and permission checks |
+| `realtime/` | SSE event store and types |
+| `markdown.ts` | marked.js rendering pipeline |
+| `sanitize.ts` | DOMPurify sanitization |
+| `validation.ts` | Email, password, username validation |
+| `logger.ts` | Structured logger |
+| `env.ts` | Environment variable validation |
+| `cache.ts` | Postgres-backed query cache |

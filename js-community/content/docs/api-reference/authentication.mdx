@@ -1,0 +1,150 @@
+---
+title: Authentication
+description: Sign up, sign in, sign out, and session management via better-auth.
+---
+
+# Authentication
+
+Authentication is powered by [better-auth](https://www.better-auth.com/). Sessions are managed via signed HTTP-only cookies.
+
+## Register
+
+```http
+POST /api/register
+Content-Type: application/json
+```
+
+**Request body:**
+
+```json
+{
+  "username": "alice",
+  "email": "alice@example.com",
+  "password": "securepassword123"
+}
+```
+
+| Field | Type | Rules |
+|-------|------|-------|
+| `username` | string | Unique, URL-safe |
+| `email` | string | Valid email, unique |
+| `password` | string | 8–128 characters |
+
+**Response `201`:**
+
+```json
+{ "message": "Account created successfully" }
+```
+
+**Errors:**
+- `400` — validation failure (invalid email, weak password)
+- `409` — email or username already exists
+
+---
+
+## Sign in
+
+```http
+POST /api/auth/sign-in/email
+Content-Type: application/json
+```
+
+**Request body:**
+
+```json
+{
+  "email": "alice@example.com",
+  "password": "securepassword123"
+}
+```
+
+**Response `200`:** Sets a `Set-Cookie` header with the session token.
+
+**Errors:**
+- `401` — invalid credentials
+
+---
+
+## Sign in with OAuth
+
+Redirect the browser to the provider authorize URL:
+
+```
+GET /api/auth/sign-in/google
+GET /api/auth/sign-in/github
+```
+
+The user is redirected to the OAuth provider. After authorization they are redirected back and a session cookie is set.
+
+---
+
+## Sign out
+
+```http
+POST /api/auth/sign-out
+```
+
+Invalidates the session and clears the cookie.
+
+**Response `200`:** `{ "success": true }`
+
+---
+
+## Get current session
+
+```http
+GET /api/auth/get-session
+```
+
+**Response `200` (authenticated):**
+
+```json
+{
+  "user": {
+    "id": "42",
+    "email": "alice@example.com",
+    "name": "Alice"
+  },
+  "session": {
+    "id": "sess_...",
+    "expiresAt": "2026-02-01T00:00:00.000Z"
+  }
+}
+```
+
+**Response `200` (not authenticated):**
+
+```json
+{ "user": null, "session": null }
+```
+
+---
+
+## Password reset
+
+**Request a reset link:**
+
+```http
+POST /api/password-reset/request
+Content-Type: application/json
+
+{ "email": "alice@example.com" }
+```
+
+Response `200`: `{ "message": "Reset link sent if account exists" }`
+
+The reset link is sent via Resend (email delivery via Inngest). It expires after **1 hour** and is single-use.
+
+**Confirm a reset:**
+
+```http
+POST /api/password-reset/confirm
+Content-Type: application/json
+
+{
+  "token": "<reset-token-from-email>",
+  "password": "newpassword123"
+}
+```
+
+Response `200`: `{ "message": "Password updated successfully" }`

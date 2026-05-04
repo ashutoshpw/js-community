@@ -1,0 +1,58 @@
+---
+title: Notifications
+description: How notifications work, what triggers them, and how to manage your preferences.
+---
+
+# Notifications
+
+JS Community tracks activity relevant to you and surfaces it via the notification bell in the forum header. The badge shows your unread count; clicking it opens the notification panel.
+
+## Notification types
+
+There are 11 notification types, each with a numeric ID used internally:
+
+| Type | When it fires |
+|------|--------------|
+| **mentioned** (1) | Someone writes `@[your-username]` in a post |
+| **replied** (2) | Someone replies directly to one of your posts |
+| **quoted** (3) | Someone quotes your post in their reply |
+| **liked** (4) | Someone likes one of your posts |
+| **posted** (5) | A new post is made in a topic you are watching |
+| **private_message** (6) | You receive a new private message |
+| **invited_to_topic** (7) | You are invited to participate in a topic |
+| **badge_earned** (8) | You earn a new badge |
+| **topic_linked** (9) | Someone links to one of your topics |
+| **watching_first_post** (10) | First post in a watched category |
+| **trust_level_change** (11) | Your trust level is promoted |
+
+## Viewing notifications
+
+The notification panel shows the 20 most recent notifications by default. Each notification shows:
+
+- The notification type (icon)
+- A short description with a link to the relevant topic or post
+- A timestamp
+- Read/unread state (unread items are highlighted)
+
+## Marking notifications as read
+
+- Click any individual notification to mark it as read
+- Use the **Mark all as read** button in the panel to clear all at once
+
+The unread count badge resets accordingly.
+
+## Notification preferences
+
+You can control which notification types you receive at:
+
+```
+/api/forum/notifications/preferences
+```
+
+This API endpoint accepts a `PATCH` request with your preference settings. A UI for this is available in your profile settings under **Notifications**.
+
+## Real-time delivery
+
+When real-time updates are enabled (the `NEXT_PUBLIC_ENABLE_REALTIME` flag is set to `"true"`), notifications are pushed to your browser via Server-Sent Events the moment they are created — no page refresh needed. The badge count updates instantly.
+
+When real-time is disabled, notifications appear on the next page load.

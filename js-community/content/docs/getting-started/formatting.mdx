@@ -1,0 +1,147 @@
+---
+title: Markdown Formatting
+description: Complete Markdown syntax reference for posts and topics on JS Community.
+---
+
+# Markdown Formatting
+
+All posts and topic bodies on JS Community are written in **Markdown**, rendered by [marked.js](https://marked.js.org/) and sanitized by DOMPurify. This page covers every syntax element supported.
+
+## Headings
+
+Use `#` characters for headings. Up to 6 levels are supported.
+
+```markdown
+# Heading 1
+## Heading 2
+### Heading 3
+#### Heading 4
+```
+
+## Emphasis
+
+```markdown
+**bold text**
+*italic text*
+~~strikethrough~~
+```
+
+Renders as: **bold text**, *italic text*, ~~strikethrough~~
+
+## Lists
+
+**Unordered list:**
+
+```markdown
+- First item
+- Second item
+  - Nested item
+```
+
+**Ordered list:**
+
+```markdown
+1. First item
+2. Second item
+3. Third item
+```
+
+## Code
+
+**Inline code:** surround with single backticks.
+
+```markdown
+Use `const` instead of `var`.
+```
+
+**Fenced code blocks:** surround with triple backticks, optionally specifying the language for syntax highlighting.
+
+````markdown
+```javascript
+const greet = (name) => `Hello, ${name}!`;
+console.log(greet("World"));
+```
+````
+
+Supported language identifiers include `javascript`, `typescript`, `jsx`, `tsx`, `html`, `css`, `json`, `bash`, `sql`, `python`, `rust`, and many more.
+
+## Links
+
+```markdown
+[Link text](https://example.com)
+[Link with title](https://example.com "Title shown on hover")
+```
+
+Bare URLs are automatically linked: `https://example.com`
+
+## Images
+
+```markdown
+![Alt text](https://example.com/image.png)
+```
+
+To include an uploaded image, use the URL returned from the `/api/forum/uploads` endpoint.
+
+## Blockquotes
+
+```markdown
+> This is a blockquote.
+> It can span multiple lines.
+
+> Nested quote:
+>> Inner level
+```
+
+## Tables
+
+```markdown
+| Column A | Column B | Column C |
+|----------|----------|----------|
+| Cell 1   | Cell 2   | Cell 3   |
+| Cell 4   | Cell 5   | Cell 6   |
+```
+
+Alignment is controlled by colons in the separator row:
+
+```markdown
+| Left     | Center   | Right    |
+|:---------|:--------:|--------:|
+| text     | text     | text     |
+```
+
+## Horizontal rule
+
+```markdown
+---
+```
+
+## Task lists
+
+```markdown
+- [x] Completed task
+- [ ] Pending task
+```
+
+## Escaping
+
+Prefix a Markdown character with a backslash to render it literally:
+
+```markdown
+\*not italic\*
+\# not a heading
+```
+
+## HTML
+
+Inline HTML is supported but sanitized through DOMPurify before rendering. Dangerous tags (`<script>`, `<iframe>`, event attributes like `onclick`) are stripped automatically. Safe tags like `<kbd>`, `<sup>`, `<sub>`, and `<details>` work correctly.
+
+```markdown
+Press <kbd>Ctrl</kbd>+<kbd>C</kbd> to copy.
+
+H<sub>2</sub>O is water. E = mc<sup>2</sup>.
+
+<details>
+<summary>Show more</summary>
+Hidden content here.
+</details>
+```

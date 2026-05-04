@@ -1,0 +1,103 @@
+---
+title: Contributing
+description: Code style, linting, commit conventions, file size limits, and the PR process.
+---
+
+# Contributing
+
+## Code style
+
+All code is formatted and linted with [Biome 2](https://biomejs.dev/). Configuration lives in `biome.json`.
+
+```bash
+bun run lint       # Check for lint errors
+bun run format     # Auto-format all files
+```
+
+Key rules:
+
+- **2-space indentation** — no tabs
+- **Double quotes** for strings
+- React/Next.js-aware rules are enabled
+- `biome-ignore` directives are allowed for documented exceptions (e.g., `// biome-ignore lint/suspicious/noExplicitAny: Self-referencing FK`)
+
+## File size limit
+
+**No file may exceed 500 lines.** This is enforced:
+
+- Locally via a Lefthook pre-commit hook
+- In CI via the `.github/workflows/file-line-limits.yml` workflow
+
+If you need to add significant code to a file that would breach the limit, refactor first — extract helpers, split into sub-modules, or move types to a separate file.
+
+## TypeScript
+
+- All new code must be typed
+- `any` is allowed only with a `biome-ignore` comment explaining why
+- Use the `@/*` path alias for all imports from `src/`
+- Avoid barrel `index.ts` re-exports in deeply nested directories — they make tree-shaking harder
+
+## Git hooks
+
+[Lefthook](https://github.com/evilmartians/lefthook) runs pre-commit hooks:
+
+1. `bun run lint:lines` — checks changed files for the 500-line limit
+2. `bun run build` — ensures the production build succeeds before committing
+
+Install hooks (first time):
+
+```bash
+bunx lefthook install
+```
+
+## Commit conventions
+
+Use the [Conventional Commits](https://www.conventionalcommits.org/) format:
+
+```
+type(scope): short description
+
+Optional longer description.
+```
+
+Types:
+
+| Type | Use for |
+|------|---------|
+| `feat` | New feature |
+| `fix` | Bug fix |
+| `docs` | Documentation only |
+| `chore` | Tooling, dependencies, CI |
+| `refactor` | Refactoring without behavior change |
+| `test` | Adding or updating tests |
+| `perf` | Performance improvement |
+
+Reference issues in the commit message:
+
+```
+feat: add /faq page with categorized Q&A and client-side search #50
+```
+
+## Pull request process
+
+1. Create a branch from `main`: `git checkout -b feat/my-feature`
+2. Make your changes, keeping each commit focused
+3. Run `bun test` and `bun run build` locally before pushing
+4. Open a PR against `main`
+5. The CI pipeline runs: lint, tests, coverage, build, file-line-limits check
+6. Address review comments
+7. Squash-merge once approved
+
+## Database changes
+
+If your PR modifies schema files in `src/db/schema/`:
+
+1. Run `bun run db:generate` to create a migration file
+2. Review the SQL in `drizzle/`
+3. Commit the migration file alongside the schema change
+
+The `migrations.yml` workflow will warn if a migration file is missing.
+
+## Documentation
+
+If your PR adds or changes user-facing behavior, update the relevant MDX file in `content/docs/`. Documentation is part of the PR, not a follow-up.

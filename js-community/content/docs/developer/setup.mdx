@@ -1,0 +1,122 @@
+---
+title: Setup
+description: How to run JS Community locally — prerequisites, environment variables, and first boot.
+---
+
+# Setup
+
+## Prerequisites
+
+| Tool | Version | Purpose |
+|------|---------|---------|
+| [Bun](https://bun.sh) | ≥ 1.0 | Runtime and package manager |
+| [PostgreSQL](https://www.postgresql.org/) | ≥ 14 | Database |
+| [Node.js](https://nodejs.org/) | ≥ 20 | Alternative runtime (Bun preferred) |
+
+## 1. Clone the repository
+
+```bash
+git clone https://github.com/ashutoshpw/js-community.git
+cd js-community
+```
+
+## 2. Install dependencies
+
+```bash
+cd js-community
+bun install
+```
+
+## 3. Configure environment variables
+
+Copy the example file and fill in the values:
+
+```bash
+cp .env.example .env
+```
+
+### Required variables
+
+```bash
+# PostgreSQL connection string
+DATABASE_URL=postgres://user:password@localhost:5432/js_community
+
+# Secret used to sign better-auth session tokens (min 32 chars)
+BETTER_AUTH_SECRET=your-random-secret-here
+
+# Public URL of this deployment
+BETTER_AUTH_URL=http://localhost:3000
+```
+
+### Optional variables
+
+```bash
+# Email delivery (required in production)
+RESEND_API_KEY=re_...
+EMAIL_FROM=noreply@yourdomain.com
+
+# OAuth providers
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+GITHUB_CLIENT_ID=...
+GITHUB_CLIENT_SECRET=...
+
+# Vercel Blob (required for file uploads)
+BLOB_READ_WRITE_TOKEN=vercel_blob_...
+
+# Inngest background jobs
+INNGEST_EVENT_KEY=...
+INNGEST_SIGNING_KEY=...
+
+# Real-time SSE (opt-in)
+NEXT_PUBLIC_ENABLE_REALTIME=true
+```
+
+## 4. Set up the database
+
+Create the database, then push the Drizzle schema:
+
+```bash
+createdb js_community  # or use your PostgreSQL client
+bun run db:push
+```
+
+To generate and apply migrations instead of pushing directly:
+
+```bash
+bun run db:generate
+bun run db:migrate
+```
+
+## 5. Start the development server
+
+```bash
+bun dev
+```
+
+The app is available at [http://localhost:3000](http://localhost:3000).
+
+## 6. (Optional) Start the Inngest dev server
+
+In a separate terminal, run the [Inngest dev server](https://www.inngest.com/docs/local-development):
+
+```bash
+npx inngest-cli@latest dev
+```
+
+This connects to your local Next.js server and lets you trigger and inspect background functions at [http://localhost:8288](http://localhost:8288).
+
+## Useful commands
+
+```bash
+bun dev              # Start development server
+bun run build        # Production build
+bun run lint         # Biome linter
+bun run format       # Biome auto-format
+bun test             # Run tests
+bun run test:watch   # Tests in watch mode
+bun run test:coverage # Coverage report
+bun run db:studio    # Drizzle Studio (database GUI)
+bun run db:generate  # Generate migrations from schema changes
+bun run db:migrate   # Apply pending migrations
+```

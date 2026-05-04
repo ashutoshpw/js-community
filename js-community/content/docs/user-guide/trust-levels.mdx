@@ -1,0 +1,93 @@
+---
+title: Trust Levels
+description: How the 5-tier trust level system works, what requirements unlock each level, and what permissions they grant.
+---
+
+# Trust Levels
+
+JS Community uses a **5-tier trust level system** modeled on Discourse. Trust levels represent how invested a member is in the community and gate progressively broader permissions. Promotions happen automatically in the background — you do not need to apply.
+
+## Trust level overview
+
+| Level | Name | How you get it |
+|-------|------|---------------|
+| **0** | New User | Default at registration |
+| **1** | Basic | Meet participation minimums |
+| **2** | Member | Consistent, active participation |
+| **3** | Regular | Long-term, high-quality contribution |
+| **4** | Leader | Manually granted by admins |
+
+## Promotion requirements
+
+### Level 1 — Basic
+
+You must meet **all** of the following:
+
+- Visited the forum on at least **1 day**
+- Entered (opened) at least **5 topics**
+- Read at least **30 posts**
+- Spent at least **10 minutes** reading
+- Given at least **1 like**
+
+### Level 2 — Member
+
+You must meet **all** of the following:
+
+- Visited on at least **15 days**
+- Entered at least **20 topics**
+- Read at least **100 posts**
+- Spent at least **1 hour** reading
+- Received at least **1 like**
+- Given at least **10 likes**
+- Created at least **3 topics**
+- Made at least **10 posts**
+
+### Level 3 — Regular
+
+You must meet **all** of the following:
+
+- Visited on at least **50 days**
+- Entered at least **100 topics**
+- Read at least **500 posts**
+- Spent at least **4 hours** reading
+- Received at least **20 likes**
+- Given at least **50 likes**
+- Created at least **10 topics**
+- Made at least **50 posts**
+
+### Level 4 — Leader
+
+Granted manually by an admin. There are no automatic requirements.
+
+## Permissions by trust level
+
+| Permission | TL 0 | TL 1 | TL 2 | TL 3 | TL 4 |
+|-----------|------|------|------|------|------|
+| Read all public topics | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Create topics | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Reply to posts | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Like posts | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Send private messages (daily limit) | 10/day | 20/day | 50/day | 100/day | Unlimited |
+| Upload images | — | ✓ | ✓ | ✓ | ✓ |
+| Create new tags | — | — | ✓ | ✓ | ✓ |
+| Recategorize topics | — | — | — | ✓ | ✓ |
+| Close/rename topics | — | — | — | — | ✓ |
+| Moderate (like staff) | — | — | — | — | ✓ |
+
+## Rate limits by trust level
+
+| Action | TL 0 | TL 1 | TL 2 | TL 3 | TL 4 |
+|--------|------|------|------|------|------|
+| Topics per day | 3 | 5 | 10 | 20 | Unlimited |
+| Replies per day | 10 | 20 | 50 | 100 | Unlimited |
+| Likes per day | 20 | 40 | 75 | 150 | Unlimited |
+
+## How promotions run
+
+Trust level promotion checks run as a background job. The Inngest `cleanup-rate-limits` and trust level service evaluate each active user's stats against the requirements and promote them if they qualify. This means promotion may not be instant — typically within an hour of meeting requirements.
+
+Admins can also manually set a user's trust level from the `/admin/users` panel.
+
+## Demotion
+
+Trust levels can be manually demoted by admins. There is no automatic demotion for inactivity, but admins can lower a user's trust level as part of a moderation action.

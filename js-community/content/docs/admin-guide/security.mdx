@@ -1,0 +1,96 @@
+---
+title: Security
+description: Security architecture — authentication, rate limiting, security headers, and best practices.
+---
+
+# Security
+
+This page covers the security controls built into JS Community and how to configure them correctly for production.
+
+## Authentication
+
+Authentication is handled by [better-auth](https://www.better-auth.com/):
+
+- **Session tokens** are stored as signed HTTP-only cookies — not accessible to JavaScript
+- **Passwords** are hashed with bcrypt (minimum 8, maximum 128 characters)
+- **OAuth tokens** (Google, GitHub) are stored in the `accounts` table; plain tokens are never persisted after the OAuth flow completes
+- **CSRF protection** is implicit — better-auth requires the session cookie which is `SameSite=Lax` by default
+
+### Required environment variables
+
+```bash
+BETTER_AUTH_SECRET=<at-least-32-char-random-string>
+BETTER_AUTH_URL=https://your-domain.com
+```
+
+Generating a strong secret:
+
+```bash
+openssl rand -hex 32
+```
+
+## Rate limiting
+
+All `/api/*` routes are protected by a Postgres-backed rate limiter applied in Next.js middleware.
+
+### General API limits
+
+- **60 requests per minute** per IP address
+- Returns `429 Too Many Requests` with a `Retry-After` header when exceeded
+
+### Auth route limits (stricter)
+
+Routes matching `/api/auth/*`:
+- **10 requests per 15 minutes** per IP
+
+Password reset specifically:
+- **3 attempts per 15 minutes** per email/IP, then blocked for **1 hour**
+
+Rate limit state is stored in the `api_rate_limits` table and cleaned up hourly by an Inngest job.
+
+## Security headers
+
+The following HTTP headers are set on every response via `next.config.ts`:
+
+| Header | Value |
+|--------|-------|
+| `X-Frame-Options` | `DENY` — prevents clickjacking |
+| `X-Content-Type-Options` | `nosniff` — prevents MIME-type sniffing |
+| `Referrer-Policy` | `strict-origin-when-cross-origin` |
+| `Permissions-Policy` | `camera=(), microphone=(), geolocation=()` |
+| `Strict-Transport-Security` | `max-age=31536000; includeSubDomains` |
+| `X-DNS-Prefetch-Control` | `on` |
+| `Content-Security-Policy` | Restrictive policy — see next.config.ts for details |
+
+## Input sanitization
+
+- All post and topic body content is sanitized with **DOMPurify** before being stored and before being rendered
+- Dangerous HTML (`<script>`, `<iframe>`, event attributes) is stripped
+- SQL injection is prevented by using Drizzle ORM parameterized queries throughout — raw string interpolation in SQL is never used
+
+## File upload security
+
+The upload endpoint at `/api/forum/uploads`:
+
+- Requires authentication — unauthenticated requests are rejected with `401`
+- Validates MIME type against an allowlist: `image/jpeg`, `image/png`, `image/gif`, `image/webp`
+- Enforces a 5 MB maximum file size
+- Stores files on Vercel Blob — files are not executed server-side
+
+## Admin route protection
+
+All `/api/admin/*` routes check:
+
+1. A valid session exists (`auth.api.getSession`)
+2. The session user has `admin: true` in the `users` table
+
+Any failure returns `401 Unauthorized`.
+
+## Recommended production checklist
+
+- [ ] Set `BETTER_AUTH_SECRET` to a 32+ character random string
+- [ ] Set `BETTER_AUTH_URL` to your production domain
+- [ ] Set `DATABASE_URL` to a connection string with a non-superuser role
+- [ ] Enable HTTPS (enforced by HSTS header once deployed)
+- [ ] Set `INNGEST_EVENT_KEY` and `INNGEST_SIGNING_KEY` for background job security
+- [ ] Review the Content-Security-Policy in `next.config.ts` for your domain

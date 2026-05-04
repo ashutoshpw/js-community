@@ -1,0 +1,116 @@
+---
+title: Private Messages
+description: API for creating and reading private message threads.
+---
+
+# Private Messages
+
+## List conversations
+
+```http
+GET /api/forum/messages
+Authorization: required
+```
+
+**Response `200`:**
+
+```json
+{
+  "conversations": [
+    {
+      "id": 7,
+      "otherUser": { "id": 3, "username": "bob", "avatarUrl": null },
+      "lastMessage": "Sure, I can help with that!",
+      "lastMessageAt": "2026-01-14T10:00:00.000Z",
+      "unread": true
+    }
+  ]
+}
+```
+
+---
+
+## Get a conversation
+
+```http
+GET /api/forum/messages/[id]
+Authorization: required (participant only)
+```
+
+**Response `200`:**
+
+```json
+{
+  "conversation": {
+    "id": 7,
+    "participants": [
+      { "id": 5, "username": "alice" },
+      { "id": 3, "username": "bob" }
+    ],
+    "messages": [
+      {
+        "id": 101,
+        "senderId": 5,
+        "body": "Hey, quick question about your React post...",
+        "createdAt": "2026-01-14T09:50:00.000Z"
+      },
+      {
+        "id": 102,
+        "senderId": 3,
+        "body": "Sure, I can help with that!",
+        "createdAt": "2026-01-14T10:00:00.000Z"
+      }
+    ]
+  }
+}
+```
+
+Non-participants receive `403 Forbidden`.
+
+---
+
+## Send a new message
+
+```http
+POST /api/forum/messages
+Authorization: required
+Content-Type: application/json
+```
+
+**Request body:**
+
+```json
+{
+  "recipientUsername": "bob",
+  "body": "Hey, quick question about your React post..."
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `recipientUsername` | string | The username of the recipient |
+| `body` | string | Message content (Markdown supported) |
+
+**Response `201`:**
+
+```json
+{ "conversationId": 7 }
+```
+
+**Errors:**
+- `400` — missing fields or recipient not found
+- `403` — daily message limit reached (Trust Level 0: 10/day)
+
+---
+
+## Reply to a conversation
+
+```http
+POST /api/forum/messages/[id]
+Authorization: required (participant only)
+Content-Type: application/json
+
+{ "body": "Thanks, that makes sense!" }
+```
+
+**Response `201`:** New message object.

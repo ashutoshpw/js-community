@@ -1,0 +1,129 @@
+---
+title: Topics
+description: API endpoints for creating, reading, updating, and deleting topics.
+---
+
+# Topics
+
+Topics are the top-level discussion threads. Each topic has an opening post, optional tags, a category, and a feed of replies.
+
+## List topics
+
+```http
+GET /api/forum/topics
+```
+
+**Query parameters:**
+
+| Param | Type | Default | Description |
+|-------|------|---------|-------------|
+| `page` | integer | `1` | Page number |
+| `per_page` | integer | `20` | Results per page (max 50) |
+| `sort` | string | `latest` | `latest`, `top`, or `new` |
+| `category` | string | — | Filter by category slug |
+
+**Response `200`:**
+
+```json
+{
+  "topics": [
+    {
+      "id": 12,
+      "title": "How do I use useEffect correctly?",
+      "slug": "how-do-i-use-useeffect-correctly",
+      "views": 340,
+      "postsCount": 8,
+      "likeCount": 15,
+      "pinned": false,
+      "closed": false,
+      "createdAt": "2026-01-10T09:00:00.000Z",
+      "lastPostedAt": "2026-01-12T14:22:00.000Z",
+      "author": { "id": 5, "username": "alice", "avatarUrl": null },
+      "category": { "id": 2, "name": "JavaScript", "slug": "javascript", "color": "#F7DF1E" }
+    }
+  ],
+  "total": 84,
+  "page": 1,
+  "perPage": 20
+}
+```
+
+---
+
+## Create a topic
+
+```http
+POST /api/forum/topics
+Authorization: required
+Content-Type: application/json
+```
+
+**Request body:**
+
+```json
+{
+  "title": "How do I use useEffect correctly?",
+  "body": "I keep getting the stale closure issue...",
+  "categoryId": 2,
+  "tags": ["react", "hooks"]
+}
+```
+
+**Response `201`:**
+
+```json
+{
+  "topic": {
+    "id": 12,
+    "slug": "how-do-i-use-useeffect-correctly",
+    ...
+  }
+}
+```
+
+---
+
+## Get a topic
+
+```http
+GET /api/forum/topics/[id]
+```
+
+Returns the topic with its first post, category, author, and tag list.
+
+---
+
+## Get posts in a topic
+
+```http
+GET /api/forum/topics/[id]/posts
+```
+
+**Query parameters:** `page`, `per_page`
+
+Returns all posts for the topic in `postNumber` order.
+
+---
+
+## Update a topic
+
+```http
+PUT /api/forum/topics/[id]
+Authorization: required (author or admin)
+Content-Type: application/json
+
+{ "title": "Updated title" }
+```
+
+---
+
+## Delete a topic
+
+```http
+DELETE /api/forum/topics/[id]
+Authorization: required (author or admin)
+```
+
+Soft-deletes the topic by setting `deletedAt`. It is removed from public feeds but remains in the database.
+
+**Response `200`:** `{ "success": true }`

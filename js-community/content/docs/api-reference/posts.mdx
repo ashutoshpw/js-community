@@ -1,0 +1,117 @@
+---
+title: Posts
+description: API endpoints for creating, editing, deleting posts, and post actions (likes, flags).
+---
+
+# Posts
+
+Posts are individual messages within a topic. The first post (`postNumber = 1`) is the topic body; subsequent posts are replies.
+
+## Create a post (reply)
+
+```http
+POST /api/forum/posts
+Authorization: required
+Content-Type: application/json
+```
+
+**Request body:**
+
+```json
+{
+  "topicId": 12,
+  "raw": "Have you tried passing an empty dependency array `[]` to useEffect?",
+  "replyToPostNumber": 1
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `topicId` | integer | yes | The topic to post in |
+| `raw` | string | yes | Markdown content |
+| `replyToPostNumber` | integer | no | Post number this is replying to |
+
+**Response `201`:**
+
+```json
+{
+  "post": {
+    "id": 99,
+    "postNumber": 3,
+    "raw": "Have you tried...",
+    "cooked": "<p>Have you tried...</p>",
+    "userId": 5,
+    "topicId": 12,
+    "createdAt": "2026-01-12T14:00:00.000Z"
+  }
+}
+```
+
+The `cooked` field contains the sanitized HTML rendered from `raw`.
+
+---
+
+## Get a post
+
+```http
+GET /api/forum/posts/[id]
+```
+
+---
+
+## Update a post
+
+```http
+PUT /api/forum/posts/[id]
+Authorization: required (author or admin)
+Content-Type: application/json
+
+{ "raw": "Updated content" }
+```
+
+Increments `version` and records `lastVersionAt`. Creates a `postRevision` record.
+
+---
+
+## Delete a post
+
+```http
+DELETE /api/forum/posts/[id]
+Authorization: required (author or admin)
+```
+
+Soft-deletes by setting `deletedAt`. Hidden from all members but recoverable.
+
+---
+
+## Like a post
+
+```http
+POST /api/forum/posts/[id]/likes
+Authorization: required
+```
+
+Increments `post.likeCount` and `topic.likeCount`. Creates a `postActions` record with `postActionTypeId` for the like type.
+
+**Response `200`:** `{ "liked": true, "likeCount": 16 }`
+
+To unlike, send the same request again — the like is toggled.
+
+---
+
+## Post actions (flags)
+
+```http
+POST /api/forum/posts/[id]/actions
+Authorization: required
+Content-Type: application/json
+
+{
+  "actionType": "flag",
+  "reason": "spam",
+  "note": "This post is advertising an unrelated product"
+}
+```
+
+Creates a flag in the moderation queue. Valid `actionType` values: `flag`.
+Valid `reason` values: `spam`, `off_topic`, `inappropriate`, `other`.

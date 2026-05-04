@@ -1,0 +1,68 @@
+---
+title: User Settings
+description: Managing your profile, avatar, username, and account preferences.
+---
+
+# User Settings
+
+Your account settings are spread across two areas: the **public profile** (what others see) and **account preferences** (private configuration).
+
+## Public profile
+
+Edit your public profile at `/forum/u/[username]/edit`.
+
+### Fields
+
+| Field | Notes |
+|-------|-------|
+| **Display name** | Shown next to your avatar; separate from your username |
+| **Bio** | Short description visible on your profile page |
+| **Location** | Optional; shown on your profile (e.g., "Berlin, Germany") |
+| **Website** | Optional URL — link to your portfolio, GitHub, etc. |
+
+### Avatar
+
+Upload a profile avatar from the edit page. Requirements:
+
+- Formats: JPEG, PNG, GIF, or WebP
+- Maximum size: **5 MB**
+- Stored on Vercel Blob; served via CDN
+
+If no avatar is uploaded, a default placeholder is displayed.
+
+## Username
+
+To change your username:
+
+1. Go to your profile edit page
+2. Update the **Username** field
+3. Save changes
+
+Constraints:
+- Must be unique across the entire platform
+- The check-username API (`GET /api/users/check-username?username=...`) lets you verify availability before saving
+
+Note: Old profile URLs using your previous username will not redirect automatically.
+
+## Password
+
+To change your password:
+
+1. Go to account settings
+2. Enter your current password
+3. Enter and confirm your new password (8–128 characters)
+
+Passwords are hashed with bcrypt. You cannot view your current password; only reset it.
+
+## Email address
+
+Your email address is used for:
+
+- Account recovery (password reset)
+- Transactional notifications (when email delivery is configured)
+
+To update your email, go to account settings. Email changes may require re-verification depending on deployment configuration.
+
+## Account deletion
+
+To request account deletion, contact the platform team via `/contact` or use the **Delete Account** option in your account settings. Deletion is permanent and may anonymize your authored posts in line with the Privacy Policy.
