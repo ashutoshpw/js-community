@@ -12,10 +12,20 @@
  */
 
 import { serve } from "inngest/next";
+import {
+  cleanupCache,
+  cleanupExpiredSessions,
+  cleanupRateLimits,
+  sendEmail,
+} from "@/inngest";
 import { inngest } from "@/lib/inngest";
-import { cleanupRateLimits, cleanupExpiredSessions, cleanupCache, sendEmail } from "@/inngest";
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
-  functions: [cleanupRateLimits, cleanupExpiredSessions, cleanupCache, sendEmail],
+  functions: [
+    cleanupRateLimits,
+    cleanupExpiredSessions,
+    cleanupCache,
+    sendEmail,
+  ],
 });

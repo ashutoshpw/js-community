@@ -11,8 +11,8 @@
  *   - contact-form    : forwards a contact form submission to the right department
  */
 
+import { sendContactFormEmail, sendPasswordResetEmail } from "@/lib/email";
 import { inngest } from "@/lib/inngest";
-import { sendPasswordResetEmail, sendContactFormEmail } from "@/lib/email";
 
 export type SendEmailEventData =
   | {

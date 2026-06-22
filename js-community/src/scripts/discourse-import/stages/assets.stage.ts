@@ -17,12 +17,7 @@
  */
 
 import { createHash } from "node:crypto";
-import {
-  appendFileSync,
-  createWriteStream,
-  existsSync,
-  readFileSync,
-} from "node:fs";
+import { appendFileSync, existsSync, readFileSync } from "node:fs";
 import { extname, join } from "node:path";
 import { put } from "@vercel/blob";
 import { eq } from "drizzle-orm";
@@ -122,7 +117,7 @@ function sha256(buf: Buffer): string {
 }
 
 function appendFailure(failurePath: string, entry: FailedAsset): void {
-  appendFileSync(failurePath, JSON.stringify(entry) + "\n");
+  appendFileSync(failurePath, `${JSON.stringify(entry)}\n`);
 }
 
 // ---------------------------------------------------------------------------
@@ -173,8 +168,20 @@ export async function runAssetsStage(
             return;
           }
 
-          const fullUrl =
-            DISCOURSE_BASE + expandAvatarUrl(u.avatar_template!, 240);
+          const avatarTemplate = u.avatar_template;
+          if (!avatarTemplate) {
+            progress.failed++;
+            appendFailure(failurePath, {
+              type: "avatar",
+              discourseId: u.id,
+              url: "",
+              reason: "Missing avatar template",
+              ts: new Date().toISOString(),
+            });
+            return;
+          }
+
+          const fullUrl = DISCOURSE_BASE + expandAvatarUrl(avatarTemplate, 240);
 
           if (config.dryRun) {
             log.info("dry-run: would fetch+upload avatar", {

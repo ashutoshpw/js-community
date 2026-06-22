@@ -32,9 +32,10 @@ export function FeatureHero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          JS Community is a full-stack forum platform built on Next.js, PostgreSQL, and TypeScript.
-          It combines Discourse-proven patterns with a modern, performant architecture — no
-          compromises on features, no compromises on developer experience.
+          JS Community is a full-stack forum platform built on Next.js,
+          PostgreSQL, and TypeScript. It combines Discourse-proven patterns with
+          a modern, performant architecture — no compromises on features, no
+          compromises on developer experience.
         </motion.p>
 
         <motion.div

@@ -29,7 +29,9 @@ describe("sanitize", () => {
 
     it("should allow lists", () => {
       const html = "<ul><li>Item 1</li><li>Item 2</li></ul>";
-      expect(sanitizeHtml(html)).toBe("<ul><li>Item 1</li><li>Item 2</li></ul>");
+      expect(sanitizeHtml(html)).toBe(
+        "<ul><li>Item 1</li><li>Item 2</li></ul>",
+      );
     });
 
     it("should allow links with href", () => {
@@ -60,7 +62,7 @@ describe("sanitize", () => {
     });
 
     it("should remove form tags", () => {
-      const html = "<form><input type=\"text\"></form>";
+      const html = '<form><input type="text"></form>';
       expect(sanitizeHtml(html)).toBe("");
     });
 

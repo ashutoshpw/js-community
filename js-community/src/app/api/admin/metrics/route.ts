@@ -10,8 +10,8 @@ import { NextResponse } from "next/server";
 import * as schema from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { isUserAdmin } from "@/lib/auth-helpers";
-import { db } from "@/lib/database";
 import { getCached } from "@/lib/cache";
+import { db } from "@/lib/database";
 
 async function fetchMetrics() {
   const now = new Date();
@@ -49,9 +49,7 @@ async function fetchMetrics() {
     .where(gte(schema.users.lastSeenAt, startOfToday));
 
   // Get topic counts
-  const [totalTopics] = await db
-    .select({ count: count() })
-    .from(schema.topics);
+  const [totalTopics] = await db.select({ count: count() }).from(schema.topics);
 
   const [newTopicsToday] = await db
     .select({ count: count() })

@@ -75,9 +75,7 @@ export async function generateMetadata({
         description,
         type: "article",
         publishedTime: topic.createdAt,
-        authors: topic.author?.username
-          ? [topic.author.username]
-          : undefined,
+        authors: topic.author?.username ? [topic.author.username] : undefined,
         tags: Array.isArray(topic.tags)
           ? topic.tags.map((t: { name: string }) => t.name)
           : undefined,

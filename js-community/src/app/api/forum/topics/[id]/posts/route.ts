@@ -11,7 +11,10 @@ import { type NextRequest, NextResponse } from "next/server";
 import * as schema from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/database";
+import { requireForumPermission } from "@/lib/forum/forum-user";
+import { notifyTopicReplied } from "@/lib/forum/notifications";
 import { parseMarkdownAsync } from "@/lib/markdown";
+import { PERMISSIONS } from "@/lib/permissions/trust-levels";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -111,11 +114,12 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       .limit(perPage)
       .offset(offset);
 
-    // Get user actions (likes, bookmarks) for current user
+    // Get user actions (likes) and bookmarks for current user
     const userActions: Map<number, { liked: boolean; bookmarked: boolean }> =
       new Map();
     if (currentUserId && posts.length > 0) {
       const postIds = posts.map((p) => p.id);
+
       const actions = await db
         .select({
           postId: schema.postActions.postId,
@@ -126,8 +130,30 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           and(
             eq(schema.postActions.userId, currentUserId),
             isNull(schema.postActions.deletedAt),
+            eq(schema.postActions.postActionTypeId, 2),
           ),
         );
+
+      const bookmarkRows = await db
+        .select({ postId: schema.bookmarks.postId })
+        .from(schema.bookmarks)
+        .where(
+          and(
+            eq(schema.bookmarks.userId, currentUserId),
+            isNull(schema.bookmarks.deletedAt),
+          ),
+        );
+
+      const bookmarkedIds = new Set(
+        bookmarkRows.map((row) => row.postId).filter(Boolean) as number[],
+      );
+
+      for (const postId of postIds) {
+        userActions.set(postId, {
+          liked: false,
+          bookmarked: bookmarkedIds.has(postId),
+        });
+      }
 
       for (const action of actions) {
         if (!postIds.includes(action.postId)) continue;
@@ -135,9 +161,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           liked: false,
           bookmarked: false,
         };
-        // Action type 2 = like, 1 = bookmark (Discourse convention)
         if (action.actionType === 2) existing.liked = true;
-        if (action.actionType === 1) existing.bookmarked = true;
         userActions.set(action.postId, existing);
       }
     }
@@ -215,8 +239,12 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       headers: await headers(),
     });
 
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const userOrResponse = await requireForumPermission(
+      session,
+      PERMISSIONS.REPLY_TO_TOPIC,
+    );
+    if (userOrResponse instanceof NextResponse) {
+      return userOrResponse;
     }
 
     const { id } = await params;
@@ -226,12 +254,14 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: "Invalid topic ID" }, { status: 400 });
     }
 
-    // Check topic exists and is open
     const topicResult = await db
       .select({
         id: schema.topics.id,
         closed: schema.topics.closed,
+        archived: schema.topics.archived,
         highestPostNumber: schema.topics.highestPostNumber,
+        userId: schema.topics.userId,
+        title: schema.topics.title,
       })
       .from(schema.topics)
       .where(
@@ -254,6 +284,13 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       );
     }
 
+    if (topicResult[0].archived) {
+      return NextResponse.json(
+        { error: "Topic is archived and cannot receive replies" },
+        { status: 403 },
+      );
+    }
+
     const body = await request.json();
     const { content, replyToPostNumber } = body;
 
@@ -264,18 +301,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // Get user ID
-    const userResult = await db
-      .select({ id: schema.users.id })
-      .from(schema.users)
-      .where(eq(schema.users.email, session.user.email || ""))
-      .limit(1);
-
-    if (userResult.length === 0) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    const userId = userResult[0].id;
+    const userId = userOrResponse.id;
     const now = new Date();
     const newPostNumber = topicResult[0].highestPostNumber + 1;
 
@@ -324,6 +350,15 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
           ),
         );
     }
+
+    await notifyTopicReplied({
+      topicAuthorId: topicResult[0].userId,
+      actorId: userId,
+      actorUsername: userOrResponse.username || "Unknown",
+      topicId,
+      postId: postResult[0].id,
+      topicTitle: topicResult[0].title,
+    });
 
     return NextResponse.json({
       post: {

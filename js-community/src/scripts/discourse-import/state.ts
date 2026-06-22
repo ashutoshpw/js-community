@@ -95,14 +95,20 @@ export class ImportState {
   // --- ID maps ---
 
   loadIdMap(entity: string): IdMap {
-    if (this.idMaps[entity]) return this.idMaps[entity]!;
+    const cached = this.idMaps[entity];
+    if (cached) {
+      return cached;
+    }
+
     const path = join(this.stateDir, `id-map-${entity}.json`);
     if (existsSync(path)) {
-      this.idMaps[entity] = JSON.parse(readFileSync(path, "utf-8"));
+      const loadedMap = JSON.parse(readFileSync(path, "utf-8"));
+      this.idMaps[entity] = loadedMap;
     } else {
       this.idMaps[entity] = {};
     }
-    return this.idMaps[entity]!;
+
+    return this.idMaps[entity] ?? {};
   }
 
   saveIdMap(entity: string, map: IdMap): void {

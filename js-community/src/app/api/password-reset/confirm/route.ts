@@ -6,6 +6,7 @@
  */
 
 import { type NextRequest, NextResponse } from "next/server";
+import { updateUserPassword } from "@/lib/auth-password";
 import {
   markTokenAsUsed,
   validatePasswordResetToken,
@@ -17,7 +18,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { token, password } = body;
 
-    // Validate password
     const passwordValidation = validatePassword(password);
     if (!passwordValidation.valid) {
       return NextResponse.json(
@@ -26,7 +26,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate token
     const tokenValidation = await validatePasswordResetToken(token);
     if (!tokenValidation.valid) {
       return NextResponse.json(
@@ -40,28 +39,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid token" }, { status: 400 });
     }
 
-    // Update password using better-auth
-    const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
-    const response = await fetch(`${baseUrl}/api/auth/reset-password`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        token,
-        password,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      return NextResponse.json(
-        { error: errorData.error || "Failed to reset password" },
-        { status: response.status },
-      );
-    }
-
-    // Mark token as used
+    await updateUserPassword(userId, password);
     await markTokenAsUsed(token);
 
     return NextResponse.json(

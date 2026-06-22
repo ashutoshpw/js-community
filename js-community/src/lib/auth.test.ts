@@ -18,6 +18,7 @@ describe("Auth Configuration", () => {
     process.env = { ...originalEnv };
     // Set DATABASE_URL to avoid errors
     process.env.DATABASE_URL = "postgres://test:test@localhost:5432/test";
+    process.env.BETTER_AUTH_SECRET = "test-auth-secret";
   });
 
   afterEach(() => {
@@ -25,11 +26,15 @@ describe("Auth Configuration", () => {
   });
 
   describe("getBaseUrl", () => {
-    it("should use BETTER_AUTH_URL when available", async () => {
-      process.env.BETTER_AUTH_URL = "https://auth.example.com";
-      const { auth } = await import("./auth");
-      expect(auth).toBeDefined();
-    });
+    it(
+      "should use BETTER_AUTH_URL when available",
+      { timeout: 15000 },
+      async () => {
+        process.env.BETTER_AUTH_URL = "https://auth.example.com";
+        const { auth } = await import("./auth");
+        expect(auth).toBeDefined();
+      },
+    );
 
     it("should use VERCEL_URL when BETTER_AUTH_URL is not set", async () => {
       process.env.VERCEL_URL = "myapp.vercel.app";

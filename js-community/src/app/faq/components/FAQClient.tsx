@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { FAQCategory } from "./FAQCategory";
 
 const FAQ_DATA = [

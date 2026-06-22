@@ -5,6 +5,9 @@
  * for the application.
  */
 
+// API rate limit schema
+export type { ApiRateLimit, NewApiRateLimit } from "./api-rate-limits";
+export { apiRateLimits } from "./api-rate-limits";
 // Auth schemas
 export type {
   Account,
@@ -28,6 +31,9 @@ export {
 // Bookmark schemas
 export type { Bookmark, NewBookmark } from "./bookmarks";
 export { bookmarks, bookmarksRelations } from "./bookmarks";
+// Query cache schema
+export type { NewQueryCacheEntry, QueryCacheEntry } from "./cache";
+export { queryCache } from "./cache";
 // Category schemas
 export type {
   Category,
@@ -165,18 +171,12 @@ export {
   posts,
   postsRelations,
 } from "./posts";
-// API rate limit schema
-export type { ApiRateLimit, NewApiRateLimit } from "./api-rate-limits";
-export { apiRateLimits } from "./api-rate-limits";
 // Password reset rate limit schemas
 export type {
   NewPasswordResetRateLimit,
   PasswordResetRateLimit,
 } from "./rate-limits";
 export { passwordResetRateLimits } from "./rate-limits";
-// Query cache schema
-export type { NewQueryCacheEntry, QueryCacheEntry } from "./cache";
-export { queryCache } from "./cache";
 // Site Settings schemas (admin)
 export { adminActions, siteSettings, userBans } from "./site-settings";
 // Tag schemas

@@ -10,3 +10,5 @@ bun.lockb
 
 # OS
 .DS_Store
+.vercel
+.env*.local

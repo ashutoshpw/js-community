@@ -19,7 +19,11 @@ const RATE_LIMIT_WINDOW_MS = 60_000; // 1 minute
 const RATE_LIMIT_MAX = 100; // requests per window per IP
 
 // Routes that require more aggressive limits (e.g. auth endpoints)
-const STRICT_ROUTES = ["/api/auth/sign-in", "/api/auth/sign-up", "/api/contact"];
+const STRICT_ROUTES = [
+  "/api/auth/sign-in",
+  "/api/auth/sign-up",
+  "/api/contact",
+];
 const STRICT_RATE_LIMIT_MAX = 10;
 
 // Routes excluded from rate-limiting entirely

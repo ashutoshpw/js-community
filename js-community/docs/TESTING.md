@@ -54,15 +54,15 @@ git commit --no-verify -m "your message"
 
 **Tests run automatically on every PR to main!** This provides an additional layer of quality assurance.
 
-The project uses GitHub Actions with **Bun** to run the full test suite on every pull request and push to the main branch. The CI workflow includes:
+The project uses GitHub Actions with **pnpm** to run the full test suite on every pull request and push to the main branch. The CI workflow includes:
 
 1. **Linting** - Code quality checks with Biome
-2. **Tests** - Full test suite execution with Bun
+2. **Tests** - Full test suite execution with pnpm
 3. **Coverage** - Code coverage reporting with 80% thresholds
 4. **Build** - Verification that the project builds successfully
 
 The workflow automatically:
-- Uses Bun for faster dependency installation (`bun install`)
+- Uses pnpm for deterministic dependency installation (`pnpm install --frozen-lockfile`)
 - Comments coverage reports on PRs
 - Uploads coverage to Codecov (if configured)
 - Prevents merging if tests fail
@@ -74,16 +74,16 @@ You can view the test results in the "Actions" tab of the GitHub repository or i
 
 ```bash
 # Run all tests once
-npm test
+pnpm test
 
 # Run tests in watch mode (re-runs on file changes)
-npm run test:watch
+pnpm run test:watch
 
 # Run tests with coverage report
-npm run test:coverage
+pnpm run test:coverage
 
 # Open Vitest UI in browser
-npm run test:ui
+pnpm run test:ui
 ```
 
 ## Writing Tests
@@ -239,7 +239,7 @@ it("should handle user input", async () => {
 ### Running Coverage
 
 ```bash
-npm run test:coverage
+pnpm run test:coverage
 ```
 
 ### Coverage Reports

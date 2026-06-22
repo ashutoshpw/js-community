@@ -22,13 +22,19 @@ interface TopicListHeaderProps {
   currentSort?: string;
 }
 
+function buildSortHref(baseUrl: string, sort: string): string {
+  if (baseUrl.startsWith("/forum/c/")) {
+    return `${baseUrl}?sort=${sort}`;
+  }
+  return `${baseUrl}/${sort}`;
+}
+
 export function TopicListHeader({
   baseUrl = "/forum",
   currentSort,
 }: TopicListHeaderProps) {
   const pathname = usePathname();
 
-  // Determine current sort from pathname if not provided
   const activeSort =
     currentSort ||
     (pathname.includes("/top")
@@ -42,19 +48,19 @@ export function TopicListHeader({
       value: "latest",
       label: "Latest",
       icon: Clock,
-      href: `${baseUrl}/latest`,
+      href: buildSortHref(baseUrl, "latest"),
     },
     {
       value: "top",
       label: "Top",
       icon: TrendingUp,
-      href: `${baseUrl}/top`,
+      href: buildSortHref(baseUrl, "top"),
     },
     {
       value: "new",
       label: "New",
       icon: Sparkles,
-      href: `${baseUrl}/new`,
+      href: buildSortHref(baseUrl, "new"),
     },
   ];
 

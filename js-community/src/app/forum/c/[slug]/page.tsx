@@ -95,7 +95,7 @@ export default async function CategoryPage({
             page: data.pagination.page,
             totalPages: data.pagination.totalPages,
           }}
-          baseUrl={`/forum/c/${slug}/${sort}`}
+          baseUrl={`/forum/c/${slug}`}
         />
       </div>
     </div>

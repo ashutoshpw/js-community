@@ -5,8 +5,8 @@
  * to keep the table size bounded.
  */
 
-import { inngest } from "@/lib/inngest";
 import { cleanupExpiredCache } from "@/lib/cache";
+import { inngest } from "@/lib/inngest";
 
 export const cleanupCache = inngest.createFunction(
   {

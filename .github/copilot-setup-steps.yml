@@ -1,40 +1,29 @@
 name: Setup JS Community Development Environment
 
 # This workflow pre-installs dependencies before Copilot coding agent starts working
-# It ensures Bun and project dependencies are available for building, testing, and linting
-
-env:
-  BUN_INSTALL: $HOME/.bun
+# It ensures pnpm and project dependencies are available for building, testing, and linting
 
 steps:
   - name: Initialize Git Submodules
     run: |
       git submodule update --init --recursive
 
-  - name: Install Bun
+  - name: Install pnpm
     run: |
-      # Install Bun if not already available
-      if ! command -v bun &> /dev/null; then
-        # Download and verify Bun installation script
-        curl -fsSL https://bun.sh/install -o /tmp/bun-install.sh
-        # Install Bun using the official installer
-        bash /tmp/bun-install.sh
-        rm /tmp/bun-install.sh
-      fi
-      # Add Bun to PATH for subsequent steps
-      echo "$BUN_INSTALL/bin" >> $GITHUB_PATH
-      $BUN_INSTALL/bin/bun --version
+      corepack enable
+      corepack prepare pnpm@11.0.8 --activate
+      pnpm --version
 
   - name: Install Project Dependencies
     run: |
       cd js-community
-      bun install
+      pnpm install --frozen-lockfile
 
   - name: Verify Installation
     run: |
       cd js-community
-      echo "Verifying Bun installation..."
-      bun --version
+      echo "Verifying pnpm installation..."
+      pnpm --version
       echo "Checking project dependencies..."
-      bun run --version || true
+      pnpm run --help >/dev/null
       echo "Setup complete!"

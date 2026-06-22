@@ -18,7 +18,7 @@ JS Community is designed for deployment on Vercel but can run on any platform th
 
 ### Build command and output
 
-Vercel auto-detects the Next.js configuration. The build runs `bun run build` and outputs to `.next`.
+Vercel auto-detects the Next.js configuration. The build runs `pnpm run build` and outputs to `.next`.
 
 The `scripts/ignore-build.js` script is configured to skip builds for draft pull requests.
 
@@ -52,7 +52,7 @@ NEXT_PUBLIC_ENABLE_REALTIME=true
 Run migrations against the production database **before** each deployment that includes schema changes:
 
 ```bash
-DATABASE_URL=postgres://... bun run db:migrate
+DATABASE_URL=postgres://... pnpm run db:migrate
 ```
 
 The GitHub Actions workflow at `.github/workflows/migrations.yml` warns if schema files change without a corresponding migration file in a PR.

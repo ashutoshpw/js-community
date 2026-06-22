@@ -15,13 +15,13 @@ export interface StageLogger {
 export function makeLogger(stage: string): StageLogger {
   const emit = (level: string, msg: string, data?: Record<string, unknown>) => {
     process.stdout.write(
-      JSON.stringify({
+      `${JSON.stringify({
         ts: new Date().toISOString(),
         level,
         stage,
         msg,
         ...data,
-      }) + "\n",
+      })}\n`,
     );
   };
   return {
@@ -45,11 +45,11 @@ export function emptyProgress(): StageProgress {
 
 export function printSummary(stage: string, p: StageProgress): void {
   process.stdout.write(
-    JSON.stringify({
+    `${JSON.stringify({
       ts: new Date().toISOString(),
       level: "summary",
       stage,
       ...p,
-    }) + "\n",
+    })}\n`,
   );
 }

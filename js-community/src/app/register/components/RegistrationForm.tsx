@@ -49,7 +49,13 @@ export default function RegistrationForm() {
 
   // Debounced username availability check
   useEffect(() => {
+    let isActive = true;
+
     const checkUsername = async () => {
+      if (!isActive) {
+        return;
+      }
+
       if (!formData.username || formData.username.length < 3) {
         setUsernameAvailable(null);
         return;
@@ -57,7 +63,14 @@ export default function RegistrationForm() {
 
       const validation = validateUsername(formData.username);
       if (!validation.valid) {
+        if (!isActive) {
+          return;
+        }
         setUsernameAvailable(null);
+        return;
+      }
+
+      if (!isActive) {
         return;
       }
 
@@ -69,6 +82,9 @@ export default function RegistrationForm() {
 
         if (!response.ok) {
           // Handle HTTP errors
+          if (!isActive) {
+            return;
+          }
           setUsernameAvailable(null);
           setErrors((prev) => ({
             ...prev,
@@ -79,6 +95,9 @@ export default function RegistrationForm() {
         }
 
         const data = await response.json();
+        if (!isActive) {
+          return;
+        }
         setUsernameAvailable(data.available);
 
         if (!data.available && data.error) {
@@ -92,18 +111,26 @@ export default function RegistrationForm() {
         }
       } catch (error) {
         console.error("Error checking username:", error);
-        setUsernameAvailable(null);
-        setErrors((prev) => ({
-          ...prev,
-          username: "Failed to check username availability. Please try again.",
-        }));
+        if (isActive) {
+          setUsernameAvailable(null);
+          setErrors((prev) => ({
+            ...prev,
+            username:
+              "Failed to check username availability. Please try again.",
+          }));
+        }
       } finally {
-        setIsCheckingUsername(false);
+        if (isActive) {
+          setIsCheckingUsername(false);
+        }
       }
     };
 
     const timeoutId = setTimeout(checkUsername, 500);
-    return () => clearTimeout(timeoutId);
+    return () => {
+      isActive = false;
+      clearTimeout(timeoutId);
+    };
   }, [formData.username]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

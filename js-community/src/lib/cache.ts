@@ -95,7 +95,7 @@ export async function invalidateCachePrefix(prefix: string): Promise<void> {
   const { sql } = await import("drizzle-orm");
   await db
     .delete(queryCache)
-    .where(sql`${queryCache.key} LIKE ${prefix + "%"}`);
+    .where(sql`${queryCache.key} LIKE ${`${prefix}%`}`);
 }
 
 /**

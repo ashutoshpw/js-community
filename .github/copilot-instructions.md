@@ -1,13 +1,14 @@
 # JS Community - GitHub Copilot Instructions
 
-This is a Next.js 16 project using Bun as the package manager and runtime. The repository is migrating a Discourse (Ruby-based) community platform to a modern JavaScript/TypeScript stack within the `js-community` folder.
+This is a Next.js 16 project using pnpm for package management and Node.js for runtime. The repository is migrating a Discourse (Ruby-based) community platform to a modern JavaScript/TypeScript stack within the `js-community` folder.
 
 ## Project Overview
 
 - **Framework**: Next.js 16 (App Router)
 - **Language**: TypeScript
-- **Package Manager**: Bun
-- **Runtime**: Node.js/Bun
+- **Package Manager**: pnpm
+- **Runtime**: Node.js
+- **Package Manager**: pnpm
 - **Styling**: TailwindCSS v4
 - **Linter/Formatter**: Biome
 - **Migration Context**: Transitioning from Discourse (Ruby) to Next.js
@@ -15,22 +16,22 @@ This is a Next.js 16 project using Bun as the package manager and runtime. The r
 ## Code Standards
 
 ### Required Before Each Commit
-- Run `bun run lint` to check code quality with Biome
-- Run `bun run format` to format code with Biome
+- Run `pnpm run lint` to check code quality with Biome
+- Run `pnpm run format` to format code with Biome
 - Ensure TypeScript compilation passes without errors
-- **Run `npm test` to ensure all tests pass**
+- **Run `pnpm test` to ensure all tests pass**
 
 **Note**: Pre-commit hooks automatically run tests, linting, and build verification. Tests must pass before commits are allowed.
 
 ### Development Flow
-- **Install dependencies**: `bun install` (preferred) or `npm install`
-- **Development server**: `bun dev` or `npm run dev` (starts on http://localhost:3000)
-- **Build**: `bun run build` or `npm run build`
-- **Production server**: `bun start` or `npm start`
-- **Lint**: `bun run lint` or `npm run lint`
-- **Format**: `bun run format` or `npm run format`
-- **Test**: `npm test` or `npm run test:watch` (watch mode)
-- **Coverage**: `npm run test:coverage` (generates coverage report)
+- **Install dependencies**: `pnpm install`
+- **Development server**: `pnpm run dev` (starts on http://localhost:3000)
+- **Build**: `pnpm run build`
+- **Production server**: `pnpm start`
+- **Lint**: `pnpm run lint`
+- **Format**: `pnpm run format`
+- **Test**: `pnpm test` or `pnpm run test:watch` (watch mode)
+- **Coverage**: `pnpm run test:coverage` (generates coverage report)
 
 ## Repository Structure
 
@@ -51,7 +52,7 @@ This is a Next.js 16 project using Bun as the package manager and runtime. The r
 
 ## Key Guidelines
 
-1. **Use Bun**: Prefer Bun commands (`bun install`, `bun dev`) over npm/yarn/pnpm when possible
+1. **Use pnpm**: Prefer pnpm commands (`pnpm install`, `pnpm run dev`) for dependency and script management
 2. **TypeScript**: All new code should be written in TypeScript with proper type annotations
 3. **Next.js App Router**: Use the App Router paradigm (Server Components by default, Client Components when needed)
 4. **Biome for Code Quality**: Follow Biome's recommended rules for React and Next.js
@@ -113,10 +114,10 @@ This project uses **Vitest** with React Testing Library. All new code MUST inclu
 
 ### Quick Commands
 ```bash
-npm test              # Run all tests
-npm run test:watch    # Watch mode for development
-npm run test:coverage # Generate coverage report
-npm run test:ui       # Open Vitest UI
+pnpm test              # Run all tests
+pnpm run test:watch    # Watch mode for development
+pnpm run test:coverage # Generate coverage report
+pnpm run test:ui       # Open Vitest UI
 ```
 
 See `docs/TESTING.md` for comprehensive testing guidelines and examples.

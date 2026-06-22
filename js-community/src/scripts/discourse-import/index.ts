@@ -54,7 +54,7 @@ async function main() {
     config.stage === "all" ? STAGE_ORDER : [config.stage];
 
   process.stdout.write(
-    JSON.stringify({
+    `${JSON.stringify({
       ts: new Date().toISOString(),
       level: "info",
       msg: "Discourse import started",
@@ -64,7 +64,7 @@ async function main() {
       dryRun: config.dryRun,
       resume: config.resume,
       batchSize: config.batchSize,
-    }) + "\n",
+    })}\n`,
   );
 
   const allProgress: Partial<Record<string, StageProgress>> = {};
@@ -72,12 +72,12 @@ async function main() {
   for (const stage of stagesToRun) {
     if (config.resume && state.isStageComplete(stage)) {
       process.stdout.write(
-        JSON.stringify({
+        `${JSON.stringify({
           ts: new Date().toISOString(),
           level: "info",
           msg: "Skipping already-completed stage",
           stage,
-        }) + "\n",
+        })}\n`,
       );
       continue;
     }
@@ -94,12 +94,12 @@ async function main() {
 
   // Final summary
   process.stdout.write(
-    JSON.stringify({
+    `${JSON.stringify({
       ts: new Date().toISOString(),
       level: "complete",
       msg: "Import finished",
       summary: allProgress,
-    }) + "\n",
+    })}\n`,
   );
 }
 

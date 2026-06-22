@@ -77,10 +77,6 @@ async function main() {
   // -------------------------------------------------------------------------
   // 1. Count parity
   // -------------------------------------------------------------------------
-  type AnyTable = Parameters<typeof db.select>[0] extends undefined
-    ? unknown
-    : unknown;
-
   const entityFiles: Array<{
     name: string;
     file: string;

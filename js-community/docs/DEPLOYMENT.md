@@ -35,9 +35,9 @@ GITHUB_CLIENT_SECRET=...
 
 ## Deployment checklist
 
-1. Install project dependencies locally with `npm install`.
-2. Generate or update SQL migrations after schema changes with `npm run db:generate`.
-3. Apply migrations to the target database before promoting the deployment with `npm run db:migrate`.
+1. Install project dependencies locally with `pnpm install`.
+2. Generate or update SQL migrations after schema changes with `pnpm run db:generate`.
+3. Apply migrations to the target database before promoting the deployment with `pnpm run db:migrate`.
 4. In Vercel, configure all required environment variables.
 5. Attach a Vercel Blob store to the project.
 6. Configure Resend with the `EMAIL_FROM` sender used above.

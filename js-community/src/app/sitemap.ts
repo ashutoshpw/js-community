@@ -6,10 +6,10 @@
  * - All visible, non-deleted topics from the database
  */
 
-import type { MetadataRoute } from "next";
 import { and, desc, eq, isNull } from "drizzle-orm";
-import { db } from "@/lib/database";
+import type { MetadataRoute } from "next";
 import { topics } from "@/db/schema";
+import { db } from "@/lib/database";
 import { getAppBaseUrl } from "@/lib/site-url";
 
 const STATIC_PAGES = [

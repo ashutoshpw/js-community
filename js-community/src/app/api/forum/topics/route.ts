@@ -11,7 +11,13 @@ import { type NextRequest, NextResponse } from "next/server";
 import * as schema from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/database";
+import {
+  requireForumPermission,
+  userHasPermission,
+} from "@/lib/forum/forum-user";
+import { attachTagsToTopic } from "@/lib/forum/tags";
 import { parseMarkdownAsync } from "@/lib/markdown";
+import { PERMISSIONS } from "@/lib/permissions/trust-levels";
 
 export async function GET(request: NextRequest) {
   try {
@@ -161,17 +167,20 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const userOrResponse = await requireForumPermission(
+      session,
+      PERMISSIONS.CREATE_TOPIC,
+    );
+    if (userOrResponse instanceof NextResponse) {
+      return userOrResponse;
     }
 
     const body = await request.json();
-    const { title, content, categoryId, tags: _tags } = body;
+    const { title, content, categoryId, tags } = body;
 
     // Validate required fields
     if (!title?.trim()) {
@@ -195,18 +204,7 @@ export async function POST(request: NextRequest) {
     // Parse markdown to HTML
     const cooked = await parseMarkdownAsync(content);
 
-    // Get user ID from session email
-    const userResult = await db
-      .select({ id: schema.users.id })
-      .from(schema.users)
-      .where(eq(schema.users.email, session.user.email || ""))
-      .limit(1);
-
-    if (userResult.length === 0) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    const userId = userResult[0].id;
+    const userId = userOrResponse.id;
     const now = new Date();
 
     // Create topic
@@ -241,6 +239,12 @@ export async function POST(request: NextRequest) {
       createdAt: now,
       updatedAt: now,
     });
+
+    const canCreateTags = userHasPermission(
+      userOrResponse,
+      PERMISSIONS.CREATE_TAGS,
+    );
+    await attachTagsToTopic(topicId, tags, canCreateTags);
 
     return NextResponse.json({
       topic: {

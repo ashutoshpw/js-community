@@ -8,8 +8,8 @@
  */
 
 import { NextResponse } from "next/server";
-import { getForumCategories } from "@/lib/forum-data";
 import { getCached } from "@/lib/cache";
+import { getForumCategories } from "@/lib/forum-data";
 
 export async function GET() {
   try {

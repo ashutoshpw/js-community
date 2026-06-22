@@ -10,8 +10,8 @@ description: Code style, linting, commit conventions, file size limits, and the 
 All code is formatted and linted with [Biome 2](https://biomejs.dev/). Configuration lives in `biome.json`.
 
 ```bash
-bun run lint       # Check for lint errors
-bun run format     # Auto-format all files
+pnpm run lint       # Check for lint errors
+pnpm run format     # Auto-format all files
 ```
 
 Key rules:
@@ -41,13 +41,13 @@ If you need to add significant code to a file that would breach the limit, refac
 
 [Lefthook](https://github.com/evilmartians/lefthook) runs pre-commit hooks:
 
-1. `bun run lint:lines` — checks changed files for the 500-line limit
-2. `bun run build` — ensures the production build succeeds before committing
+1. `pnpm run lint:lines` — checks changed files for the 500-line limit
+2. `pnpm run build` — ensures the production build succeeds before committing
 
 Install hooks (first time):
 
 ```bash
-bunx lefthook install
+pnpm exec lefthook install
 ```
 
 ## Commit conventions
@@ -82,7 +82,7 @@ feat: add /faq page with categorized Q&A and client-side search #50
 
 1. Create a branch from `main`: `git checkout -b feat/my-feature`
 2. Make your changes, keeping each commit focused
-3. Run `bun test` and `bun run build` locally before pushing
+3. Run `pnpm test` and `pnpm run build` locally before pushing
 4. Open a PR against `main`
 5. The CI pipeline runs: lint, tests, coverage, build, file-line-limits check
 6. Address review comments
@@ -92,7 +92,7 @@ feat: add /faq page with categorized Q&A and client-side search #50
 
 If your PR modifies schema files in `src/db/schema/`:
 
-1. Run `bun run db:generate` to create a migration file
+1. Run `pnpm run db:generate` to create a migration file
 2. Review the SQL in `drizzle/`
 3. Commit the migration file alongside the schema change
 

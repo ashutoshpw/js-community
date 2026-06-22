@@ -2,6 +2,7 @@
   "name": "js-community",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@11.0.8",
   "scripts": {
     "dev": "next dev",
     "docs:dev": "next dev",
@@ -20,14 +21,14 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:check": "drizzle-kit check",
-    "import:discourse": "bun src/scripts/discourse-import/index.ts",
-    "import:discourse:dry-run": "bun src/scripts/discourse-import/index.ts --dry-run",
-    "import:discourse:reconcile": "bun src/scripts/discourse-import/reconcile/reconcile.ts"
+    "import:discourse": "tsx src/scripts/discourse-import/index.ts",
+    "import:discourse:dry-run": "tsx src/scripts/discourse-import/index.ts --dry-run",
+    "import:discourse:reconcile": "tsx src/scripts/discourse-import/reconcile/reconcile.ts"
   },
   "dependencies": {
     "@types/mdx": "^2.0.13",
     "@vercel/blob": "^2.0.1",
-    "better-auth": "^1.4.15",
+    "better-auth": "^1.6.20",
     "date-fns": "^4.1.0",
     "dompurify": "^3.3.3",
     "drizzle-orm": "^0.45.1",

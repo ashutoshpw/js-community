@@ -159,7 +159,7 @@ describe("RegistrationForm", () => {
     // Note: This is a best-effort test as the spinner may appear/disappear quickly
   });
 
-  it("should disable submit button when loading", async () => {
+  it("should call registration endpoint when submitting valid form", async () => {
     const mockFetch = vi.mocked(global.fetch);
     mockFetch.mockResolvedValueOnce({
       ok: true,
@@ -193,6 +193,13 @@ describe("RegistrationForm", () => {
     // Wait for username check to complete
     await waitFor(
       () => {
+        expect(screen.getByTitle("Available")).toBeInTheDocument();
+      },
+      { timeout: 2000 },
+    );
+
+    await waitFor(
+      () => {
         expect(mockFetch).toHaveBeenCalled();
       },
       { timeout: 2000 },
@@ -203,7 +210,19 @@ describe("RegistrationForm", () => {
     });
     await user.click(submitButton);
 
-    expect(submitButton).toBeDisabled();
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+    });
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        2,
+        "/api/register",
+        expect.objectContaining({
+          method: "POST",
+        }),
+      );
+    });
   });
 
   // Note: Email validation, registration failure, and success tests are complex integration tests

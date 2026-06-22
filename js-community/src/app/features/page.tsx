@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Footer from "@/app/components/Footer";
-import { FeatureHero } from "./components/FeatureHero";
-import { FeatureDetail } from "./components/FeatureDetail";
 import { ComparisonTable } from "./components/ComparisonTable";
 import { FeatureCTA } from "./components/FeatureCTA";
+import { FeatureDetail } from "./components/FeatureDetail";
+import { FeatureHero } from "./components/FeatureHero";
 
 export const metadata: Metadata = {
   title: "Features | JS Community",

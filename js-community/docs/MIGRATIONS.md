@@ -40,7 +40,7 @@ export const users = pgTable("users", {
 Generate a new migration file from your schema changes:
 
 ```bash
-npm run db:generate
+pnpm run db:generate
 ```
 
 This command:
@@ -74,7 +74,7 @@ Check for:
 Apply pending migrations to your database:
 
 ```bash
-npm run db:migrate
+pnpm run db:migrate
 ```
 
 This runs the custom migration script (`src/scripts/migrate.ts`) which:
@@ -95,11 +95,11 @@ Database: postgres://user:****@localhost:5432/js_community
 
 | Script | Description | When to Use |
 |--------|-------------|-------------|
-| `npm run db:generate` | Generate migration files from schema | After modifying schema files |
-| `npm run db:migrate` | Apply pending migrations | Deploy changes to database |
-| `npm run db:push` | Push schema directly (no migration) | **Development only** - quick prototyping |
-| `npm run db:studio` | Open Drizzle Studio GUI | Browse/edit database visually |
-| `npm run db:check` | Validate migration consistency | Before committing changes |
+| `pnpm run db:generate` | Generate migration files from schema | After modifying schema files |
+| `pnpm run db:migrate` | Apply pending migrations | Deploy changes to database |
+| `pnpm run db:push` | Push schema directly (no migration) | **Development only** - quick prototyping |
+| `pnpm run db:studio` | Open Drizzle Studio GUI | Browse/edit database visually |
+| `pnpm run db:check` | Validate migration consistency | Before committing changes |
 
 ## Best Practices
 
@@ -107,7 +107,7 @@ Database: postgres://user:****@localhost:5432/js_community
 
 1. **Generate migrations for all schema changes**
    ```bash
-   npm run db:generate
+   pnpm run db:generate
    git add drizzle/
    git commit -m "feat: add display_name to users"
    ```
@@ -165,7 +165,7 @@ Database: postgres://user:****@localhost:5432/js_community
 Fast iteration with `db:push`:
 ```bash
 # Quick prototyping - NOT for production
-npm run db:push
+pnpm run db:push
 ```
 
 **Use when:**
@@ -178,16 +178,16 @@ npm run db:push
 Always use migrations:
 ```bash
 # Generate migration
-npm run db:generate
+pnpm run db:generate
 
 # Review the generated SQL
 cat drizzle/XXXX_*.sql
 
 # Apply to staging
-DATABASE_URL=postgres://staging npm run db:migrate
+DATABASE_URL=postgres://staging pnpm run db:migrate
 
 # Apply to production
-DATABASE_URL=postgres://production npm run db:migrate
+DATABASE_URL=postgres://production pnpm run db:migrate
 ```
 
 ## Troubleshooting
@@ -200,7 +200,7 @@ Your schema matches the database state. This means:
 
 ```bash
 # Generate migration if you made schema changes
-npm run db:generate
+pnpm run db:generate
 ```
 
 ### "Migration failed" errors
@@ -217,7 +217,7 @@ npm run db:generate
 
 3. **Check database state:**
    ```bash
-   npm run db:studio
+   pnpm run db:studio
    # Verify tables/columns exist as expected
    ```
 
@@ -225,16 +225,16 @@ npm run db:generate
 
 ```bash
 # Validate schema consistency
-npm run db:check
+pnpm run db:check
 
 # If drift detected, options:
 # 1. Generate fixing migration
-npm run db:generate
+pnpm run db:generate
 
 # 2. (DEV ONLY) Reset to migrations
 # WARNING: This drops all data!
 # dropdb js_community_dev && createdb js_community_dev
-# npm run db:migrate
+# pnpm run db:migrate
 ```
 
 ## CI/CD Integration
@@ -252,7 +252,7 @@ The project includes automated migration checks in GitHub Actions:
 ```yaml
 # Example workflow step
 - name: Run database migrations
-  run: npm run db:migrate
+  run: pnpm run db:migrate
   env:
     DATABASE_URL: ${{ secrets.DATABASE_URL }}
 ```
@@ -305,14 +305,14 @@ export const users = pgTable("users", {
 });
 
 // 2. Generate migration
-// $ npm run db:generate
+// $ pnpm run db:generate
 
 // 3. Review generated SQL
 // $ cat drizzle/0001_*.sql
 // ALTER TABLE "users" ADD COLUMN "bio" text;
 
 // 4. Apply migration
-// $ npm run db:migrate
+// $ pnpm run db:migrate
 ```
 
 ### Example 2: Create a new table
@@ -337,8 +337,8 @@ export { notifications } from "./notifications";
 // ],
 
 // 4. Generate and apply
-// $ npm run db:generate
-// $ npm run db:migrate
+// $ pnpm run db:generate
+// $ pnpm run db:migrate
 ```
 
 ### Example 3: Add an index
@@ -359,8 +359,8 @@ export const posts = pgTable(
 );
 
 // 2. Generate and apply
-// $ npm run db:generate
-// $ npm run db:migrate
+// $ pnpm run db:generate
+// $ pnpm run db:migrate
 ```
 
 ## Resources

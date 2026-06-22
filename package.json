@@ -4,10 +4,11 @@
   "private": true,
   "description": "Monorepo for Discourse and JS Community",
   "scripts": {
+    "db:push": "cd js-community && node --env-file=../.env.local ./node_modules/drizzle-kit/bin.cjs push",
     "prepare": "lefthook install"
   },
   "devDependencies": {
     "lefthook": "^2.0.13"
   },
-  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
+  "packageManager": "pnpm@11.0.8"
 }

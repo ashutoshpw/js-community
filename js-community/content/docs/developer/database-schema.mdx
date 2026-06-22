@@ -156,11 +156,11 @@ Drizzle generates migration SQL files from schema changes.
 ```bash
 # 1. Edit schema files in src/db/schema/
 # 2. Generate the migration
-bun run db:generate
+pnpm run db:generate
 
 # 3. Review the generated SQL in drizzle/
 # 4. Apply to the database
-bun run db:migrate
+pnpm run db:migrate
 ```
 
 Migration files are stored in `drizzle/` and committed to the repository. The GitHub Actions workflow at `.github/workflows/migrations.yml` warns if schema files change without a corresponding migration file.
@@ -168,7 +168,7 @@ Migration files are stored in `drizzle/` and committed to the repository. The Gi
 To push schema directly without generating files (development only):
 
 ```bash
-bun run db:push
+pnpm run db:push
 ```
 
 Never use `db:push` in production.

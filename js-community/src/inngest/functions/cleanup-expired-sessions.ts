@@ -8,10 +8,10 @@
  * This keeps the auth tables lean without needing Redis TTL.
  */
 
-import { and, eq, lt, or } from "drizzle-orm";
-import { inngest } from "@/lib/inngest";
+import { eq, lt, or } from "drizzle-orm";
+import { passwordResetTokens, sessions } from "@/db/schema";
 import { db } from "@/lib/database";
-import { sessions, passwordResetTokens } from "@/db/schema";
+import { inngest } from "@/lib/inngest";
 
 export const cleanupExpiredSessions = inngest.createFunction(
   {

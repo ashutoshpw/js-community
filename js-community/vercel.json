@@ -1,14 +1,12 @@
 {
   "framework": "nextjs",
-  "buildCommand": "node scripts/ignore-build.js || bun run build",
-  "installCommand": "bun install",
+  "buildCommand": "node scripts/ignore-build.js || pnpm run build",
+  "installCommand": "pnpm install --frozen-lockfile",
   "regions": ["iad1"],
   "headers": [
     {
       "source": "/api/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "no-store, max-age=0" }
-      ]
+      "headers": [{ "key": "Cache-Control", "value": "no-store, max-age=0" }]
     },
     {
       "source": "/(.*)",

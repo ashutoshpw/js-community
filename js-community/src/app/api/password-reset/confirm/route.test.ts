@@ -7,13 +7,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { POST } from "./route";
 
 // Mock modules
+vi.mock("@/lib/auth-password", () => ({
+  updateUserPassword: vi.fn(),
+}));
+
 vi.mock("@/lib/password-reset", () => ({
   validatePasswordResetToken: vi.fn(),
   markTokenAsUsed: vi.fn(),
 }));
-
-// Mock fetch globally
-global.fetch = vi.fn();
 
 /**
  * Helper to create NextRequest for testing
@@ -138,17 +139,16 @@ describe("POST /api/password-reset/confirm", () => {
     const { validatePasswordResetToken, markTokenAsUsed } = vi.mocked(
       await import("@/lib/password-reset"),
     );
-    const mockFetch = vi.mocked(global.fetch);
+    const { updateUserPassword } = vi.mocked(
+      await import("@/lib/auth-password"),
+    );
 
     validatePasswordResetToken.mockResolvedValue({
       valid: true,
       userId: 123,
     });
 
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ message: "Password reset successful" }),
-    } as Response);
+    updateUserPassword.mockResolvedValue(true);
 
     const request = createNextRequest(
       "http://localhost:3000/api/password-reset/confirm",
@@ -167,18 +167,16 @@ describe("POST /api/password-reset/confirm", () => {
     const { validatePasswordResetToken } = vi.mocked(
       await import("@/lib/password-reset"),
     );
-    const mockFetch = vi.mocked(global.fetch);
+    const { updateUserPassword } = vi.mocked(
+      await import("@/lib/auth-password"),
+    );
 
     validatePasswordResetToken.mockResolvedValue({
       valid: true,
       userId: 123,
     });
 
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      status: 400,
-      json: async () => ({ error: "User not found" }),
-    } as Response);
+    updateUserPassword.mockRejectedValue(new Error("User not found"));
 
     const request = createNextRequest(
       "http://localhost:3000/api/password-reset/confirm",
@@ -188,8 +186,8 @@ describe("POST /api/password-reset/confirm", () => {
     const response = await POST(request);
     const data = await response.json();
 
-    expect(response.status).toBe(400);
-    expect(data.error).toBe("User not found");
+    expect(response.status).toBe(500);
+    expect(data.error).toContain("error occurred");
   });
 
   it("should handle unexpected errors gracefully", async () => {
