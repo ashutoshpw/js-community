@@ -18,13 +18,14 @@ Audit all Bun and CI references, centralize the Bun version in project-local con
 - [x] Run lint, tests, coverage, and build with Bun 1.4.2.
 - [x] Inspect and update the Discourse submodule from its configured upstream.
 - [x] Review the complete diff for unrelated changes.
-- [ ] Commit and push `main`, then monitor and repair CI failures.
+- [x] Commit and push `main`, then monitor and repair CI failures.
 
 ## Acceptance criteria
-- [ ] Every Bun CI setup resolves Bun 1.4.2 from the project version file.
-- [ ] Project-local configuration declares Bun 1.4.2.
-- [ ] `bun run lint`, `bun run test`, `bun run test:coverage`, and `bun run build` pass.
-- [ ] The Discourse submodule matches its configured upstream branch.
-- [ ] `origin/main` contains the verified changes.
-- [ ] GitHub Actions checks on `origin/main` complete successfully.
-- [ ] No unrelated working-tree changes are introduced.
+- [x] Every Bun CI setup resolves Bun 1.4.2 from the project version file.
+- [x] Project-local configuration declares Bun 1.4.2.
+- [x] `bun run lint`, `bun run test`, `bun run test:coverage`, and `bun run build` pass.
+- [x] The Discourse submodule matches its configured upstream branch.
+- [x] `origin/main` contains the verified changes.
+- [x] GitHub Actions checks on `origin/main` complete successfully.
+- [x] Vercel's automatic commit status succeeds with the Bun commands.
+- [x] No unrelated working-tree changes are introduced.
