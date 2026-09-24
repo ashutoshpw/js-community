@@ -38,16 +38,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          version: 11.0.8
+          bun-version-file: ".bun-version"
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: bun install --frozen-lockfile
 
       - name: Check migration consistency
-        run: pnpm run db:check
+        run: bun run db:check
         continue-on-error: true
         id: check
 
@@ -90,11 +90,11 @@ jobs:
               Schema files were modified but no migration files were found.
               
               **Action Required:**
-              Run \`pnpm run db:generate\` to create migration files for your schema changes.
+              Run \`bun run db:generate\` to create migration files for your schema changes.
               
               \`\`\`bash
               cd js-community
-              pnpm run db:generate
+              bun run db:generate
               git add drizzle/
               git commit -m "chore: add database migration"
               git push
@@ -210,22 +210,22 @@ jobs:
   #     - name: Checkout code
   #       uses: actions/checkout@v6
   #     
-  #     - name: Setup pnpm
-  #       uses: pnpm/action-setup@v4
+  #     - name: Setup Bun
+  #       uses: oven-sh/setup-bun@v2
   #       with:
-  #         version: 11.0.8
+  #         bun-version-file: ".bun-version"
   #     
   #     - name: Install dependencies
-  #       run: pnpm install --frozen-lockfile
+  #       run: bun install --frozen-lockfile
   #     
   #     - name: Run migrations on test database
-  #       run: pnpm run db:migrate
+  #       run: bun run db:migrate
   #       env:
   #         DATABASE_URL: postgres://postgres:postgres@localhost:5432/js_community_test
   #     
   #     - name: Verify database state
   #       run: |
   #         echo "Checking if migrations applied successfully..."
-  #         npx tsx scripts/test-db-connection.ts
+  #         bun --env-file=.env scripts/test-db-connection.ts
   #       env:
   #         DATABASE_URL: postgres://postgres:postgres@localhost:5432/js_community_test

@@ -31,7 +31,7 @@ You are a specialized testing agent for a Next.js 16 + TypeScript + Vitest proje
 - **Test Framework**: Vitest 4.x
 - **React Testing**: @testing-library/react 16.x
 - **Utilities**: @testing-library/jest-dom, @testing-library/user-event
-- **Runtime**: pnpm / Node.js
+- **Runtime**: Bun 1.4.2 / Node.js
 - **Framework**: Next.js 16 (App Router with React 19.2.3)
 - **Database**: PostgreSQL with Drizzle ORM
 - **Language**: TypeScript with strict mode
@@ -272,10 +272,10 @@ The project has global mocks in `src/test/setup.tsx`:
 Run tests using:
 ```bash
 cd js-community
-pnpm test              # Run all tests
-pnpm run test:watch        # Watch mode
-pnpm run test:ui           # Vitest UI
-pnpm run test:coverage     # Generate coverage report
+bun run test              # Run all tests
+bun run test:watch        # Watch mode
+bun run test:ui           # Vitest UI
+bun run test:coverage     # Generate coverage report
 ```
 
 ## Best Practices
@@ -289,7 +289,7 @@ pnpm run test:coverage     # Generate coverage report
 7. **Accessibility First**: Use RTL queries by role, label, text (not test IDs)
 8. **Co-locate Tests**: Place tests near the code they test
 9. **Watch File Size**: Split tests if approaching 500-line limit
-10. **Run Tests Before Committing**: Ensure tests pass (`pnpm test`)
+10. **Run Tests Before Committing**: Ensure tests pass (`bun run test`)
 
 ## Query Priority (React Testing Library)
 
@@ -390,8 +390,8 @@ When creating or updating tests, always:
    - Highlight any uncovered edge cases
 
 4. **Suggest running tests**:
-   - Remind to run `pnpm test` to verify
-   - Suggest `pnpm run test:coverage` if coverage is a concern
+   - Remind to run `bun run test` to verify
+   - Suggest `bun run test:coverage` if coverage is a concern
 
 ## Remember
 

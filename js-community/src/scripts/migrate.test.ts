@@ -61,32 +61,23 @@ describe("Migration System", () => {
     await expect(fs.access(journalPath)).resolves.not.toThrow();
   });
 
-  it("should have correct package.json scripts", async () => {
+  it("should use Bun for package scripts", async () => {
     const fs = await import("node:fs/promises");
     const path = await import("node:path");
 
     const packagePath = path.join(__dirname, "..", "..", "package.json");
     const packageJson = JSON.parse(await fs.readFile(packagePath, "utf-8"));
 
+    expect(packageJson.packageManager).toBe("bun@1.4.2");
+    expect(packageJson.engines.bun).toBe("1.4.2");
     expect(packageJson.scripts).toHaveProperty("db:generate");
     expect(packageJson.scripts).toHaveProperty("db:migrate");
     expect(packageJson.scripts).toHaveProperty("db:push");
     expect(packageJson.scripts).toHaveProperty("db:studio");
     expect(packageJson.scripts).toHaveProperty("db:check");
-
-    // Verify correct migration script
-    expect(packageJson.scripts["db:migrate"]).toContain("tsx");
-    expect(packageJson.scripts["db:migrate"]).toContain("migrate.ts");
-  });
-
-  it("should have tsx as dev dependency", async () => {
-    const fs = await import("node:fs/promises");
-    const path = await import("node:path");
-
-    const packagePath = path.join(__dirname, "..", "..", "package.json");
-    const packageJson = JSON.parse(await fs.readFile(packagePath, "utf-8"));
-
-    expect(packageJson.devDependencies).toHaveProperty("tsx");
+    expect(packageJson.scripts["db:migrate"]).toBe(
+      "bun src/scripts/migrate.ts",
+    );
   });
 
   it("should have drizzle-kit as dev dependency", async () => {

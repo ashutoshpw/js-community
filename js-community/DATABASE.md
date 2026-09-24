@@ -5,7 +5,7 @@ This document explains how to set up and use the database connection with Drizzl
 ## Prerequisites
 
 - PostgreSQL 12 or higher installed and running
-- Node.js 18 or higher
+- Bun 1.4.2
 - A PostgreSQL database created for the application
 
 ## Installation
@@ -54,12 +54,7 @@ DATABASE_URL=postgres://user:password@host:5432/dbname?sslmode=require
 Run the test script to verify your database connection:
 
 ```bash
-npx tsx scripts/test-db-connection.ts
-```
-
-Or with node (if you have Node.js 20.6+):
-```bash
-node --env-file=.env scripts/test-db-connection.ts
+bun --env-file=.env scripts/test-db-connection.ts
 ```
 
 You should see:

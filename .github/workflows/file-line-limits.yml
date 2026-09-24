@@ -24,10 +24,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          version: 11.0.8
+          bun-version-file: ".bun-version"
 
       - name: Get changed files
         id: changed-files
@@ -50,4 +50,4 @@ jobs:
       - name: Check file line limits
         if: steps.changed-files.outputs.has_files == 'true'
         run: |
-          pnpm exec node scripts/check-file-lines.js $(cat changed_files.txt)
+          bun scripts/check-file-lines.js $(cat changed_files.txt)

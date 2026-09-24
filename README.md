@@ -30,8 +30,8 @@ js-community/
 
 - **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Runtime**: [Node.js](https://nodejs.org/)
-- **Package Manager**: [pnpm](https://pnpm.io/) 11.0.8
+- **Runtime**: [Bun](https://bun.sh/) 1.4.2
+- **Package Manager**: [Bun](https://bun.sh/) 1.4.2
 - **Styling**: [TailwindCSS v4](https://tailwindcss.com/)
 - **Linting/Formatting**: [Biome](https://biomejs.dev/)
 - **React Version**: 19.2.3
@@ -40,7 +40,7 @@ js-community/
 
 Before you begin, ensure you have the following installed:
 
-- [pnpm](https://pnpm.io/) 11.0.8
+- [Bun](https://bun.sh/) 1.4.2
 - [Node.js](https://nodejs.org/) - Version 20 or higher
 
 ## 🚀 Getting Started
@@ -63,7 +63,7 @@ cd js-community
 3. **Install dependencies**
 
 ```bash
-pnpm install
+bun install --frozen-lockfile
 ```
 
 ### Development
@@ -71,7 +71,7 @@ pnpm install
 Start the development server:
 
 ```bash
-pnpm run dev
+bun run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
@@ -81,13 +81,13 @@ Open [http://localhost:3000](http://localhost:3000) in your browser to see the a
 Build the application:
 
 ```bash
-pnpm run build
+bun run build
 ```
 
 Start the production server:
 
 ```bash
-pnpm start
+bun run start
 ```
 
 ### Code Quality
@@ -95,23 +95,23 @@ pnpm start
 **Lint your code:**
 
 ```bash
-pnpm run lint
+bun run lint
 ```
 
 **Format your code:**
 
 ```bash
-pnpm run format
+bun run format
 ```
 
 ## 📝 Development Workflow
 
 1. Create a new branch for your feature or fix
 2. Make your changes in the `js-community/` directory
-3. Run `pnpm run lint` to check for issues
-4. Run `pnpm run format` to format your code
-5. Test your changes locally with `pnpm run dev`
-6. Build the project with `pnpm run build` to ensure it compiles
+3. Run `bun run lint` to check for issues
+4. Run `bun run format` to format your code
+5. Test your changes locally with `bun run dev`
+6. Build the project with `bun run build` to ensure it compiles
 7. Commit your changes and create a pull request
 
 ## 🔄 Migration from Discourse
@@ -144,7 +144,7 @@ Contributions are welcome! Please follow these guidelines:
 
 - [Next.js Documentation](https://nextjs.org/docs)
 - [TypeScript Documentation](https://www.typescriptlang.org/docs/)
-- [pnpm Documentation](https://pnpm.io/motivation)
+- [Bun Documentation](https://bun.sh/docs)
 - [TailwindCSS Documentation](https://tailwindcss.com/docs)
 - [Biome Documentation](https://biomejs.dev/)
 - [React Documentation](https://react.dev/)
@@ -159,4 +159,4 @@ If you encounter any issues or have questions, please [open an issue](https://gi
 
 ---
 
-Built with Next.js, TypeScript, and pnpm
+Built with Next.js, TypeScript, and Bun

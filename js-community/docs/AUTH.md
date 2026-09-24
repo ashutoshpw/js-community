@@ -81,10 +81,10 @@ GITHUB_CLIENT_SECRET=your-github-client-secret
 Run migrations to create the auth tables:
 
 ```bash
-pnpm run db:generate  # Generate migration files
-pnpm run db:migrate   # Apply migrations
+bun run db:generate  # Generate migration files
+bun run db:migrate   # Apply migrations
 # OR
-pnpm run db:push      # Push schema changes directly (development)
+bun run db:push      # Push schema changes directly (development)
 ```
 
 ### 2. Configure OAuth Providers (Optional)
@@ -108,7 +108,7 @@ pnpm run db:push      # Push schema changes directly (development)
 The implementation includes comprehensive tests:
 
 ```bash
-pnpm test  # Run all tests
+bun run test  # Run all tests
 ```
 
 Test coverage:
@@ -212,9 +212,9 @@ All authentication endpoints are handled by `/api/auth/[...all]`:
 All authentication components are thoroughly tested:
 
 ```bash
-pnpm test                    # Run all tests
-pnpm run test:watch          # Watch mode
-pnpm run test:coverage       # Generate coverage report
+bun run test                    # Run all tests
+bun run test:watch          # Watch mode
+bun run test:coverage       # Generate coverage report
 ```
 
 Test files:

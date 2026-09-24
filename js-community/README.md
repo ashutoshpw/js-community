@@ -5,8 +5,8 @@ JS Community is a Next.js 16 forum platform that is replacing the legacy Discour
 First, install dependencies and run the development server:
 
 ```bash
-pnpm install
-pnpm run dev
+bun install --frozen-lockfile
+bun run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -21,16 +21,16 @@ This project uses [Vitest](https://vitest.dev) for testing. See [docs/TESTING.md
 
 ```bash
 # Run tests
-pnpm test
+bun run test
 
 # Run tests in watch mode
-pnpm run test:watch
+bun run test:watch
 
 # Run tests with coverage
-pnpm run test:coverage
+bun run test:coverage
 
 # Open Vitest UI
-pnpm run test:ui
+bun run test:ui
 ```
 
 ## Database
@@ -39,13 +39,13 @@ This project uses [Drizzle ORM](https://orm.drizzle.team) with PostgreSQL. See [
 
 ```bash
 # Generate migration from schema changes
-pnpm run db:generate
+bun run db:generate
 
 # Apply migrations to database
-pnpm run db:migrate
+bun run db:migrate
 
 # Open Drizzle Studio (database GUI)
-pnpm run db:studio
+bun run db:studio
 ```
 
 ## Documentation

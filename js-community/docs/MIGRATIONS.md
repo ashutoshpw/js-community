@@ -15,7 +15,7 @@ The project uses **Drizzle Kit** for generating SQL migrations and a custom migr
 ## Prerequisites
 
 - PostgreSQL 12 or higher running locally or remotely
-- Node.js 18 or higher
+- Bun 1.4.2
 - Environment variable `DATABASE_URL` configured in `.env`
 
 ## Migration Workflow
@@ -40,7 +40,7 @@ export const users = pgTable("users", {
 Generate a new migration file from your schema changes:
 
 ```bash
-pnpm run db:generate
+bun run db:generate
 ```
 
 This command:
@@ -74,7 +74,7 @@ Check for:
 Apply pending migrations to your database:
 
 ```bash
-pnpm run db:migrate
+bun run db:migrate
 ```
 
 This runs the custom migration script (`src/scripts/migrate.ts`) which:
@@ -95,11 +95,11 @@ Database: postgres://user:****@localhost:5432/js_community
 
 | Script | Description | When to Use |
 |--------|-------------|-------------|
-| `pnpm run db:generate` | Generate migration files from schema | After modifying schema files |
-| `pnpm run db:migrate` | Apply pending migrations | Deploy changes to database |
-| `pnpm run db:push` | Push schema directly (no migration) | **Development only** - quick prototyping |
-| `pnpm run db:studio` | Open Drizzle Studio GUI | Browse/edit database visually |
-| `pnpm run db:check` | Validate migration consistency | Before committing changes |
+| `bun run db:generate` | Generate migration files from schema | After modifying schema files |
+| `bun run db:migrate` | Apply pending migrations | Deploy changes to database |
+| `bun run db:push` | Push schema directly (no migration) | **Development only** - quick prototyping |
+| `bun run db:studio` | Open Drizzle Studio GUI | Browse/edit database visually |
+| `bun run db:check` | Validate migration consistency | Before committing changes |
 
 ## Best Practices
 
@@ -107,7 +107,7 @@ Database: postgres://user:****@localhost:5432/js_community
 
 1. **Generate migrations for all schema changes**
    ```bash
-   pnpm run db:generate
+   bun run db:generate
    git add drizzle/
    git commit -m "feat: add display_name to users"
    ```
@@ -165,7 +165,7 @@ Database: postgres://user:****@localhost:5432/js_community
 Fast iteration with `db:push`:
 ```bash
 # Quick prototyping - NOT for production
-pnpm run db:push
+bun run db:push
 ```
 
 **Use when:**
@@ -178,16 +178,16 @@ pnpm run db:push
 Always use migrations:
 ```bash
 # Generate migration
-pnpm run db:generate
+bun run db:generate
 
 # Review the generated SQL
 cat drizzle/XXXX_*.sql
 
 # Apply to staging
-DATABASE_URL=postgres://staging pnpm run db:migrate
+DATABASE_URL=postgres://staging bun run db:migrate
 
 # Apply to production
-DATABASE_URL=postgres://production pnpm run db:migrate
+DATABASE_URL=postgres://production bun run db:migrate
 ```
 
 ## Troubleshooting
@@ -200,14 +200,14 @@ Your schema matches the database state. This means:
 
 ```bash
 # Generate migration if you made schema changes
-pnpm run db:generate
+bun run db:generate
 ```
 
 ### "Migration failed" errors
 
 1. **Check database connection:**
    ```bash
-   npx tsx scripts/test-db-connection.ts
+   bun --env-file=.env scripts/test-db-connection.ts
    ```
 
 2. **Verify migration SQL:**
@@ -217,7 +217,7 @@ pnpm run db:generate
 
 3. **Check database state:**
    ```bash
-   pnpm run db:studio
+   bun run db:studio
    # Verify tables/columns exist as expected
    ```
 
@@ -225,16 +225,16 @@ pnpm run db:generate
 
 ```bash
 # Validate schema consistency
-pnpm run db:check
+bun run db:check
 
 # If drift detected, options:
 # 1. Generate fixing migration
-pnpm run db:generate
+bun run db:generate
 
 # 2. (DEV ONLY) Reset to migrations
 # WARNING: This drops all data!
 # dropdb js_community_dev && createdb js_community_dev
-# pnpm run db:migrate
+# bun run db:migrate
 ```
 
 ## CI/CD Integration
@@ -252,7 +252,7 @@ The project includes automated migration checks in GitHub Actions:
 ```yaml
 # Example workflow step
 - name: Run database migrations
-  run: pnpm run db:migrate
+  run: bun run db:migrate
   env:
     DATABASE_URL: ${{ secrets.DATABASE_URL }}
 ```
@@ -305,14 +305,14 @@ export const users = pgTable("users", {
 });
 
 // 2. Generate migration
-// $ pnpm run db:generate
+// $ bun run db:generate
 
 // 3. Review generated SQL
 // $ cat drizzle/0001_*.sql
 // ALTER TABLE "users" ADD COLUMN "bio" text;
 
 // 4. Apply migration
-// $ pnpm run db:migrate
+// $ bun run db:migrate
 ```
 
 ### Example 2: Create a new table
@@ -337,8 +337,8 @@ export { notifications } from "./notifications";
 // ],
 
 // 4. Generate and apply
-// $ pnpm run db:generate
-// $ pnpm run db:migrate
+// $ bun run db:generate
+// $ bun run db:migrate
 ```
 
 ### Example 3: Add an index
@@ -359,8 +359,8 @@ export const posts = pgTable(
 );
 
 // 2. Generate and apply
-// $ pnpm run db:generate
-// $ pnpm run db:migrate
+// $ bun run db:generate
+// $ bun run db:migrate
 ```
 
 ## Resources
@@ -375,5 +375,5 @@ export const posts = pgTable(
 
 - **Schema questions:** Check `src/db/schema/` files for examples
 - **Migration errors:** Review generated SQL in `drizzle/` folder
-- **Database issues:** Run `npx tsx scripts/test-db-connection.ts`
+- **Database issues:** Run `bun --env-file=.env scripts/test-db-connection.ts`
 - **Team support:** Open an issue with migration file and error output

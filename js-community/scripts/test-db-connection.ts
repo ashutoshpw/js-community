@@ -2,8 +2,7 @@
  * Test script to verify database connection
  *
  * This script tests the database connection and runs a simple query.
- * Run with: node --env-file=.env scripts/test-db-connection.js
- * Or with tsx: npx tsx scripts/test-db-connection.ts
+ * Run with: bun --env-file=.env scripts/test-db-connection.ts
  */
 
 import { closeConnection, testConnection } from "../src/lib/database";

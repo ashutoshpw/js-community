@@ -10,7 +10,7 @@ This is a monorepo containing a Next.js 16 community platform (`js-community/`) 
 
 - **Framework**: Next.js 16 (App Router)
 - **Language**: TypeScript
-- **Runtime**: pnpm / Node.js
+- **Runtime**: Bun 1.4.2 / Node.js
 - **Database**: PostgreSQL with Drizzle ORM
 - **Styling**: TailwindCSS v4
 - **Linting/Formatting**: Biome
@@ -24,31 +24,31 @@ All commands should be run from the `js-community/` directory unless otherwise s
 ### Development
 ```bash
 cd js-community
-pnpm install              # Install dependencies (preferred)
-pnpm run dev                  # Start development server (http://localhost:3000)
-pnpm run build            # Build for production
-pnpm start                # Start production server
+bun install --frozen-lockfile # Install dependencies
+bun run dev                  # Start development server (http://localhost:3000)
+bun run build                # Build for production
+bun run start                # Start production server
 ```
 
 ### Code Quality
 ```bash
-pnpm run lint             # Run Biome linter
-pnpm run format           # Format code with Biome
-pnpm run lint:lines       # Check for files exceeding 500-line limit
+bun run lint             # Run Biome linter
+bun run format           # Format code with Biome
+bun run lint:lines       # Check for files exceeding 500-line limit
 ```
 
 ### Database (Drizzle ORM)
 ```bash
-pnpm run db:generate      # Generate migrations from schema
-pnpm run db:migrate       # Run migrations
-pnpm run db:push          # Push schema changes to database
-pnpm run db:studio        # Open Drizzle Studio (database GUI)
+bun run db:generate      # Generate migrations from schema
+bun run db:migrate       # Run migrations
+bun run db:push          # Push schema changes to database
+bun run db:studio        # Open Drizzle Studio (database GUI)
 ```
 
 ### Git Hooks (Lefthook)
 Pre-commit hooks automatically run:
 - File line limit checker (500 lines max for `js-community/**/*.{js,jsx,ts,tsx}`)
-- Build verification (`pnpm run build` in js-community/)
+- Build verification (`bun run build` in js-community/)
 
 ## Architecture
 
@@ -138,7 +138,7 @@ DATABASE_URL=postgres://user:password@localhost:5432/js_community
 
 ### Git Workflow
 - Lefthook automatically runs checks on pre-commit
-- Ensure `pnpm run build` passes before committing
+- Ensure `bun run build` passes before committing
 - Keep files under 500 lines (checked automatically)
 
 ## Testing
@@ -150,10 +150,10 @@ DATABASE_URL=postgres://user:password@localhost:5432/js_community
 
 ### Running Tests
 ```bash
-pnpm test              # Run all tests
-pnpm run test:watch        # Watch mode
-pnpm run test:ui           # Vitest UI
-pnpm run test:coverage     # Generate coverage report
+bun run test              # Run all tests
+bun run test:watch        # Watch mode
+bun run test:ui           # Vitest UI
+bun run test:coverage     # Generate coverage report
 ```
 
 ### Test File Convention

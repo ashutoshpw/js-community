@@ -86,7 +86,7 @@ Agent: I've created tests covering:
 - Error handling
 
 The tests are in src/app/topics/page.test.tsx
-Run `pnpm test` to verify all tests pass.
+Run `bun run test` to verify all tests pass.
 ```
 
 ## Agent Configuration
